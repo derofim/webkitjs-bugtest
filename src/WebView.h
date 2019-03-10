@@ -51,7 +51,7 @@ namespace WebCore {
 
 	class WebView {
 	public:
-		WebView(SDL_Window *window,  SDL_GLContext& context, int width, int height, bool accelerated);
+		WebView(cairo_t *cairo_context, SDL_Window *window,  SDL_GLContext& context, int width, int height, bool accelerated);
 		~WebView();
 
 		void setTransparent(bool transparent) { m_private->transparent = transparent; };
@@ -102,6 +102,8 @@ namespace WebCore {
   // TODO:
     SDL_Window *window_;
     SDL_GLContext& context_;
+
+    static cairo_t *cairo_context_;
 	};
 }
 

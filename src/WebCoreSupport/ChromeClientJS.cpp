@@ -39,6 +39,7 @@ namespace WebCore {
 			cairo_set_operator(cr, CAIRO_OPERATOR_SOURCE);
 		} else
 			cairo_set_operator(cr, CAIRO_OPERATOR_CLEAR);
+      
 		cairo_paint(cr);
 	}
 
@@ -125,7 +126,12 @@ namespace WebCore {
 		Vector<IntRect> rects = dirtyRegion.rects();
 		coalesceRectsIfPossible(dirtyRegion.bounds(), rects);
 
-		RefPtr<cairo_t> backingStoreContext = adoptRef(cairo_create(webView->p()->backingStore->cairoSurface()));
+    auto crp = cairo_create(webView->p()->backingStore->cairoSurface());
+
+      // >>>
+      webView->cairo_context_ = crp;
+
+		RefPtr<cairo_t> backingStoreContext = adoptRef(crp);
 		GraphicsContext gc(backingStoreContext.get());
 		gc.applyDeviceScaleFactor(frame->page()->deviceScaleFactor());
 
@@ -256,7 +262,11 @@ namespace WebCore {
 																									 0x000000FF,	/* Bmask */
 																									 0xFF000000); /* Amask */
 			PassOwnPtr<WidgetBackingStore> newBackingStore = WebCore::WidgetBackingStoreCairo::create(surface, newSize);
-			RefPtr<cairo_t> cr = adoptRef(cairo_create(newBackingStore->cairoSurface()));
+      auto crp = cairo_create(newBackingStore->cairoSurface());
+			RefPtr<cairo_t> cr = adoptRef(crp);
+
+      // >>>
+      m_view->cairo_context_ = crp;
 
 			clearEverywhereInBackingStore(m_view, cr.get());
 
@@ -273,7 +283,12 @@ namespace WebCore {
 		} else if (oldWidgetSize.width() < newSize.width() || oldWidgetSize.height() < newSize.height()) {
 			// The widget is growing, but we did not need to create a new backing store.
 			// We should clear any old data outside of the old widget region.
-			RefPtr<cairo_t> cr = adoptRef(cairo_create(m_view->m_private->backingStore->cairoSurface()));
+      auto crp = cairo_create(m_view->m_private->backingStore->cairoSurface());
+			RefPtr<cairo_t> cr = adoptRef(crp);
+
+      // >>>
+      m_view->cairo_context_ = crp;
+
 			clipOutOldWidgetArea(cr.get(), oldWidgetSize, newSize);
 			clearEverywhereInBackingStore(m_view, cr.get());
 		}
@@ -291,8 +306,10 @@ namespace WebCore {
 	{
 		webkitTrace();
 
-		if (!m_view->m_private->backingStore)
+		if (!m_view->m_private->backingStore) {
+      webkitTrace();
 			return;
+    }
 
 		// Scroll all pending scroll rects and invalidate those parts of the widget.
 		for (size_t i = 0; i < m_rectsToScroll.size(); i++) {
@@ -507,8 +524,10 @@ namespace WebCore {
 			return;
 		}
 
-		if (updateRect.isEmpty())
+		if (updateRect.isEmpty()) {
+      webkitTrace();
 			return;
+    }
 
 		m_dirtyRegion.unite(updateRect);
 		m_displayTimer.startOneShot(0);
@@ -688,11 +707,19 @@ namespace WebCore {
 				m_displayTimer.stop();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(0, IntSize(1, 1));
 			}
-      
+
       if (turningOffCompositing) {
         webkitTrace();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(m_view->m_private->sdl_screen, roundedIntSize(m_view->positionAndSize().size()));
-				RefPtr<cairo_t> cr = adoptRef(cairo_create(m_view->m_private->backingStore->cairoSurface()));
+				
+        //RefPtr<cairo_t> cr = adoptRef(cairo_create(m_view->m_private->backingStore->cairoSurface()));
+        
+        auto crp = cairo_create(m_view->m_private->backingStore->cairoSurface());
+        RefPtr<cairo_t> cr = adoptRef(crp);
+
+        // >>>
+        m_view->cairo_context_ = crp;
+
 				clearEverywhereInBackingStore(m_view, cr.get());
 			}
 		}
