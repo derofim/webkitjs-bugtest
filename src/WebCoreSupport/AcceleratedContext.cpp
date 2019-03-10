@@ -79,13 +79,13 @@ namespace WebCore {
 		webkitTrace();
 
 // FIX IT: TextureMapper::create ERROR: To use dlopen, you need to use Emscripten's linking support
-/*
+
 #if USE(TEXTURE_MAPPER) && USE(TEXTURE_MAPPER_GL)
 		m_textureMapper = TextureMapper::create(TextureMapper::OpenGLMode);
 		static_cast<TextureMapperGL*>(m_textureMapper.get())->setEnableEdgeDistanceAntialiasing(true);
 		webkitTrace();
 		toTextureMapperLayer(m_rootLayer.get())->setTextureMapper(m_textureMapper.get());
-#endif*/
+#endif/**/
 
 		webkitTrace();
 		scheduleLayerFlush();

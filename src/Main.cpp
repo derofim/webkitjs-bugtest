@@ -11,12 +11,6 @@
 #include "cairo-gl.h"
 #include "PlatformContextCairo.h"
 
-/*
-	Draws on screen using opengl 3 in PC or openglES 2 in browser.
-	Precompile command : "D:\exarion\vendor\emscripten\SDK\emscripten\1.35.0\emcc" --clear-cache
-	Compile command : "D:\exarion\vendor\emscripten\SDK\emscripten\1.35.0\emcc" Source.cpp -s USE_SDL=2 -s FULL_ES2=1 -o test.html -O3 -s ALLOW_MEMORY_GROWTH=1 -s USE_SDL_IMAGE=2 -s USE_SDL_TTF=2 -s SDL2_IMAGE_FORMATS="['png']" -s EXPORTED_FUNCTIONS="['_main', '_mainLoop']" -std=c++11 -Werror -s WARN_ON_UNDEFINED_SYMBOLS=1 -s SIMD=1 -s NO_EXIT_RUNTIME=1 -s AGGRESSIVE_VARIABLE_ELIMINATION=1 -s SEPARATE_ASM=1
-	Run generated page in server.
-*/
 #include "config.h"
 #include "SDL.h"
 
@@ -36,6 +30,13 @@
 #include <functional>
 #include <cmath>
 
+static GLfloat const kVertexData[] = {
+    1.0f, 1.0f, 1.0f, 0.0f,
+    -1.0f, 1.0f, 0.0f, 0.0f,
+    1.0f, -1.0f, 1.0f, 1.0f,
+    -1.0f, -1.0f, 0.0f, 1.0f
+};
+
 namespace WebCore {
 	static WebCore::WebView* mainView = NULL;
 #ifdef DEBUG
@@ -44,10 +45,13 @@ namespace WebCore {
 }
 
 static GLuint programObject;
-static int width = 1024;
-static int height = 768;
 
-static GLint uniformZoom, uniformColor, uniformMVP;
+// must be POT
+static int width = 512;
+// must be POT
+static int height = 512;
+
+static GLint uniformTex;
 static float zoom = 1.0;
 
 static SDL_Window *window;
@@ -59,9 +63,13 @@ static bool quit = false;
 //Event handler
 static SDL_Event e;
 
-static cairo_device_t* cairo_device;
+static GLuint vertexPosObject;
+
+//static cairo_device_t* cairo_device;
 
 static cairo_surface_t* cairo_surface;
+
+cairo_t *cairo_context;
 
 static GLuint cairo_texture = 0;
 
@@ -77,165 +85,44 @@ bool makeCairoCurrent() {
   return !SDL_GL_MakeCurrent(window, context);
 }
 
+// https://www.cairographics.org/samples/
 inline void cairo_draw(cairo_surface_t* surface) {
 	static double s = 1.0;
 
-	cairo_t* cr = cairo_create(surface);
+  // TODO: https://github.com/acomminos/scrap-engine/blob/f9984bcf67fd83644d93e385215a3d741dfcc2ec/src/scrap/gl/cairo_renderer.cc#L125
 
-	cairo_set_source_rgba(cr, 0.0, 1.0, 0.0, 1.0);
-	cairo_paint(cr);
-	cairo_translate(cr, width / 2, height / 2);
-	cairo_scale(cr, s, s);
-	cairo_arc(cr, 0.0, 0.0, width / 4, 0.0, 2.0 * 3.14159);
-	cairo_set_source_rgba(cr, 1.0, 0.0, 0.0, 1.0);
-	cairo_fill(cr);
+	//cairo_t* cr = cairo_create(surface);
+
+	cairo_set_source_rgba(cairo_context, 0.0, 1.0, 0.0, 1.0);
+	
+  //cairo_paint(cairo_context);
+  cairo_save(cairo_context);
+  cairo_set_operator(cairo_context, CAIRO_OPERATOR_CLEAR);
+  cairo_paint(cairo_context);
+  cairo_restore(cairo_context);
+
+	cairo_translate(cairo_context, width / 2, height / 2);
+	cairo_scale(cairo_context, s, s);
+	cairo_arc(cairo_context, 0.0, 0.0, width / 4, 0.0, 2.0 * 3.14159);
+  
+	cairo_set_source_rgba(cairo_context, 1.0, 0.0, 0.0, 1.0);
+	cairo_fill(cairo_context);
+
+	cairo_set_source_rgba(cairo_context, 1.0, 1.0, 0.0, 1.0);
+  cairo_set_line_width (cairo_context, 40.96);
+  cairo_move_to (cairo_context, 76.8, 84.48);
+  cairo_rel_line_to (cairo_context, 51.2, -51.2);
+  cairo_rel_line_to (cairo_context, 51.2, 51.2);
+  cairo_set_line_join (cairo_context, CAIRO_LINE_JOIN_MITER); /* default */
+  cairo_stroke (cairo_context);
+
 	cairo_surface_flush(surface);
-	cairo_destroy(cr);
+	cairo_destroy(cairo_context);
 
 	s += 1.0 / 180.0;
 
 	if(s >= 2.0) s = 1.0;
 }
-
-//The application time based timer
-class LTimer
-{
-public:
-	//Initializes variables
-	LTimer();
-
-	//The various clock actions
-	void start();
-	void stop();
-	void pause();
-	void unpause();
-
-	//Gets the timer's time
-	Uint32 getTicks();
-
-	//Checks the status of the timer
-	bool isStarted();
-	bool isPaused();
-
-private:
-	//The clock time when the timer started
-	Uint32 mStartTicks;
-
-	//The ticks stored when the timer was paused
-	Uint32 mPausedTicks;
-
-	//The timer status
-	bool mPaused;
-	bool mStarted;
-};
-
-LTimer::LTimer()
-{
-	//Initialize the variables
-	mStartTicks = 0;
-	mPausedTicks = 0;
-
-	mPaused = false;
-	mStarted = false;
-}
-
-void LTimer::start()
-{
-	//Start the timer
-	mStarted = true;
-
-	//Unpause the timer
-	mPaused = false;
-
-	//Get the current clock time
-	mStartTicks = SDL_GetTicks();
-	mPausedTicks = 0;
-}
-
-void LTimer::stop()
-{
-	//Stop the timer
-	mStarted = false;
-
-	//Unpause the timer
-	mPaused = false;
-
-	//Clear tick variables
-	mStartTicks = 0;
-	mPausedTicks = 0;
-}
-
-void LTimer::pause()
-{
-	//If the timer is running and isn't already paused
-	if (mStarted && !mPaused)
-	{
-		//Pause the timer
-		mPaused = true;
-
-		//Calculate the paused ticks
-		mPausedTicks = SDL_GetTicks() - mStartTicks;
-		mStartTicks = 0;
-	}
-}
-
-void LTimer::unpause()
-{
-	//If the timer is running and paused
-	if (mStarted && mPaused)
-	{
-		//Unpause the timer
-		mPaused = false;
-
-		//Reset the starting ticks
-		mStartTicks = SDL_GetTicks() - mPausedTicks;
-
-		//Reset the paused ticks
-		mPausedTicks = 0;
-	}
-}
-
-Uint32 LTimer::getTicks()
-{
-	//The actual timer time
-	Uint32 time = 0;
-
-	//If the timer is running
-	if (mStarted)
-	{
-		//If the timer is paused
-		if (mPaused)
-		{
-			//Return the number of ticks when the timer was paused
-			time = mPausedTicks;
-		}
-		else
-		{
-			//Return the current time minus the start time
-			time = SDL_GetTicks() - mStartTicks;
-		}
-	}
-
-	return time;
-}
-
-bool LTimer::isStarted()
-{
-	//Timer is running and paused or unpaused
-	return mStarted;
-}
-
-bool LTimer::isPaused()
-{
-	//Timer is running and paused
-	return mPaused && mStarted;
-}
-
-//The frames per second timer
-LTimer fpsTimer;
-
-//Start counting frames per second
-int countedFrames = 0;
 
 GLuint LoadShader(GLenum type, const char *shaderSrc)
 {
@@ -269,23 +156,31 @@ GLuint LoadShader(GLenum type, const char *shaderSrc)
 int Init()
 {
 	char vShaderStr[] =
-		"attribute vec4 vPosition;                \n"
-//		"attribute vec4 vTexCoord;                \n"
-		"uniform mat4 uMVPMatrix; \n"
-		"uniform float zoom;	\n"
+		"attribute vec2 vPosition;                \n"
+		"attribute vec2 vUV;                \n"
+    "varying vec2 v_texcoord;\n"
+		//"uniform mat4 uMVPMatrix; \n"
+		//"uniform float zoom;	\n"
 		"void main()                              \n"
 		"{                                        \n"
-		"   gl_Position = uMVPMatrix * vPosition;              \n"
-		"   gl_Position.x = gl_Position.x * zoom; \n"
-		"   gl_Position.y = gl_Position.y * zoom; \n"
+    "    v_texcoord = vUV;\n"
+    "    gl_Position = vec4(vPosition, -1, 1);\n"
+//		"   gl_Position = uMVPMatrix * vPosition;              \n"
+//		"   gl_Position.x = gl_Position.x * zoom; \n"
+//		"   gl_Position.y = gl_Position.y * zoom; \n"
 		"}                                        \n";
 
 	char fShaderStr[] =
 		"precision mediump float;\n"
-		"uniform vec4 vColor;"
+    "uniform sampler2D u_tex;\n"
+    "varying vec2 v_texcoord;\n"
+//		"uniform vec4 vColor;"
 		"void main()                                  \n"
 		"{                                            \n"
-		"  gl_FragColor = vColor;        \n"
+//		"  gl_FragColor = vColor;        \n"
+    "    vec4 colour = texture2D(u_tex, v_texcoord);\n"
+    "    colour.rgba = colour.bgra; // cairo outputs in ARGB\n"
+    "    gl_FragColor = colour;\n"
 		"}                                            \n";
 
 	GLuint vertexShader;
@@ -302,10 +197,9 @@ int Init()
 	glAttachShader(programObject, vertexShader);
 	glAttachShader(programObject, fragmentShader);
 	glBindAttribLocation(programObject, 0, "vPosition");
+	glBindAttribLocation(programObject, 1, "vUV");
 	glLinkProgram(programObject);
-	uniformColor = glGetUniformLocation(programObject, "vColor");
-	uniformZoom = glGetUniformLocation(programObject, "zoom");
-	uniformMVP = glGetUniformLocation(programObject, "uMVPMatrix");
+	uniformTex = glGetUniformLocation(programObject, "u_tex");
 	glGetProgramiv(programObject, GL_LINK_STATUS, &linked);
 	if (!linked)
 	{
@@ -321,13 +215,24 @@ int Init()
 		glDeleteProgram(programObject);
 		return GL_FALSE;
 	}
-	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-	fpsTimer.start();
+    glGenTextures(1, &cairo_texture);
+
+	// No clientside arrays, so do this in a webgl-friendly manner
+	glGenBuffers(1, &vertexPosObject);
+	glBindBuffer(GL_ARRAY_BUFFER, vertexPosObject);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(kVertexData), kVertexData,
+                 GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 	return GL_TRUE;
 }
 
+#define DRAW_TEST
+
+#ifdef DRAW_TEST
 ///
 // Draw using the shader pair created in Init()
 //
@@ -345,60 +250,33 @@ void Draw()
   if(makeCurrent()) {
     int x = 0;
     int y = 0;
-
-    /*glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluOrtho2D(0.0, WIDTH, 0.0, HEIGHT);
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    glBindTexture(GL_TEXTURE_2D, cairo_texture);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glBegin(GL_QUADS);
-
-    // Bottom-Left
-    glTexCoord2i(0, 1);
-    glVertex2i(x, y);
-
-    // Upper-Left
-    glTexCoord2i(0, 0);
-    glVertex2i(x, y + height);
-
-    // Upper-Right
-    glTexCoord2i(1, 0);
-    glVertex2i(x + width, y + height);
-
-    // Bottom-Right
-    glTexCoord2i(1, 1);
-    glVertex2i(x + width, y);
-
-    glEnd();*/
-  } else {
-    printf("!makeCurrent \n");
-  }
-
-  // uncomment if you want to draw triangle >>>
-
-	/*GLfloat vVertices[] = { 0.0f,  0.5f, 0.0f,
-		-0.5f, -0.5f, 0.0f,
-		0.5f, -0.5f, 0.0f };
-	// No clientside arrays, so do this in a webgl-friendly manner
-	GLuint vertexPosObject;
-	glGenBuffers(1, &vertexPosObject);
-	glBindBuffer(GL_ARRAY_BUFFER, vertexPosObject);
-	glBufferData(GL_ARRAY_BUFFER, 9 * 4, vVertices, GL_STATIC_DRAW);
 	
 	glViewport(0, 0, width, height);
 	glClear(GL_COLOR_BUFFER_BIT);
 	glUseProgram(programObject);
 
+
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, cairo_texture);
+    cairo_surface_flush(cairo_surface);
+    unsigned char *data = cairo_image_surface_get_data(cairo_surface);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA,
+                 cairo_image_surface_get_width(cairo_surface),
+                 cairo_image_surface_get_height(cairo_surface), 
+                 0, GL_RGBA, GL_UNSIGNED_BYTE, (GLvoid*)data);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glUniform1i(uniformTex, 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, vertexPosObject);
-	glVertexAttribPointer(0, 3, GL_FLOAT, 0, 0, 0);
+  //
+	glVertexAttribPointer(0,  2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+                          NULL);
 	glEnableVertexAttribArray(0);
+  //
+	glVertexAttribPointer(1,  2, GL_FLOAT, GL_FALSE, 4 * sizeof(GLfloat),
+                          (GLvoid*)(2 * sizeof(GLfloat)));
+	glEnableVertexAttribArray(1);
 
 	int w, h, fs;
 #ifdef __EMSCRIPTEN__
@@ -410,22 +288,22 @@ void Draw()
 	float xs = (float)h / w;
 	float ys = 1.0f;
 	float mat[] = { xs, 0, 0, 0, 0, ys, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1 };
-	glUniformMatrix4fv(uniformMVP, 1, 0, mat);
 
-	glUniform1f(uniformZoom, zoom);
-	float color[] = { 0.2f, 0.1f, 0.51f, 1.0f };
-	glUniform4fv(uniformColor, 1, color);
+ glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-	glDrawArrays(GL_TRIANGLES, 0, 3);*/
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+
+  } else {
+    printf("!makeCurrent \n");
+  }
 }
+#endif // DRAW_TEST
 
 void tick() {
-	//Calculate and correct fps
-	float avgFPS = countedFrames / (fpsTimer.getTicks() / 1000.f);
-	if (avgFPS > 2000000)
-	{
-		avgFPS = 0;
-	}
+
 #ifdef __EMSCRIPTEN__
 	if (quit) emscripten_cancel_main_loop();
 #endif
@@ -464,13 +342,14 @@ void tick() {
 		}
 	}
 	//Render
+
+#ifdef DRAW_TEST
 	Draw();
-	//std::cout << " avgFPS = " << avgFPS << std::endl;
-	++countedFrames;
+#endif // DRAW_TEST
 }
 
 extern "C" {
-	void setHtml(char *html) { WebCore::mainView->setHtml(html,strlen(html)); }
+	void setHtml(const char *html) { WebCore::mainView->setHtml(html,strlen(html)); }
 	void setTransparent(bool transparent) { WebCore::mainView->setTransparent(transparent); }
 	void scrollBy(int x, int y) { WebCore::mainView->scrollBy(x,y); }
 	void resize(int w, int h) { WebCore::mainView->resize(w,h); }
@@ -531,6 +410,14 @@ int main(int argc, char** argv)
 	}
 
 	Init();
+
+#ifdef DRAW_TEST
+
+
+    // TODO: surface creation error handling
+    // https://github.com/acomminos/scrap-engine/blob/f9984bcf67fd83644d93e385215a3d741dfcc2ec/src/scrap/gl/cairo_renderer.cc
+    cairo_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
+    cairo_context = cairo_create(cairo_surface);
 /*
   // https://github.com/cubicool/cairo-gl-sdl2/blob/master/src/common/SDL2.hpp
   cairo_device = cairo_egl_device_create(
@@ -569,11 +456,14 @@ int main(int argc, char** argv)
 
 		return 4;
 	}*/
+#endif // DRAW_TEST
 
+#ifndef DRAW_TEST
 	printf("createWebKit... \n");
-  createWebKit(window, context, width, height, false);
-  setHtml("<html><body style='background-color:red'>iiii</body></html>");
-  
+  createWebKit(window, context, width, height, true);
+  setHtml(std::string("<html><body style='background-color:red;height:500px;width:500px'></body></html>").c_str());
+#endif
+
   //WebCore::mainView = new WebCore::WebView(window, context, width, height, /*accel*/ true);
 
 #ifdef __EMSCRIPTEN__
@@ -585,9 +475,10 @@ int main(int argc, char** argv)
 	}
 #endif
 
-  // TODO
-	//cairo_surface_destroy(surface);
-	//cairo_device_destroy(device);
+	cairo_surface_destroy(cairo_surface);
+  glDeleteTextures(1, &cairo_texture);
+  glDeleteBuffers(1, &vertexPosObject);
+  cairo_destroy(cairo_context);
 
 	SDL_DestroyWindow(window);
 	window = NULL;

@@ -216,7 +216,7 @@ namespace WebCore {
 
 	void ChromeClientJS::widgetSizeChanged(const IntSize& oldWidgetSize, IntSize newSize)
 	{
-    return; // TODO
+    //return; // TODO
 
 
 		webkitTrace();
@@ -687,7 +687,9 @@ namespace WebCore {
 		    webkitTrace();
 				m_displayTimer.stop();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(0, IntSize(1, 1));
-			} else if (turningOffCompositing) {
+			}
+      
+      if (turningOffCompositing) {
         webkitTrace();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(m_view->m_private->sdl_screen, roundedIntSize(m_view->positionAndSize().size()));
 				RefPtr<cairo_t> cr = adoptRef(cairo_create(m_view->m_private->backingStore->cairoSurface()));

@@ -32,6 +32,9 @@ typedef EGLNativeWindowType GLNativeWindowType;
 typedef uint64_t GLNativeWindowType;
 #endif
 
+#include "GLContext.h"
+#include <EGL/egl.h>
+
 #if USE(CAIRO)
 typedef struct _cairo_device cairo_device_t;
 #endif
@@ -47,6 +50,8 @@ namespace WebCore {
 class GLContext {
     WTF_MAKE_NONCOPYABLE(GLContext);
 public:
+    enum EGLSurfaceType { PbufferSurface, WindowSurface, PixmapSurface };
+    
     static PassOwnPtr<GLContext> createContextForWindow(GLNativeWindowType windowHandle, GLContext* sharingContext, SDL_Window *sdl_window);
     static PassOwnPtr<GLContext> createOffscreenContext(GLContext* sharing, SDL_Window *sdl_window);
     static PassOwnPtr<GLContext> createOffscreenContext(GLContext* sharing);
@@ -85,6 +90,10 @@ public:
     SDL_Window *window_;
 
     static SDL_Window *gWindow;
+
+    EGLContext m_context;
+    EGLSurface m_surface;
+    EGLSurfaceType m_type;
 };
 
 } // namespace WebCore

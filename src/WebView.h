@@ -59,7 +59,7 @@ namespace WebCore {
 		
 		void setUrl(char *);
 		char *url();
-		void setHtml(char *, int len);
+		void setHtml(const char *, int len);
 		char *html();
 
 		void resize(int width, int height);
