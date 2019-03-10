@@ -130,6 +130,7 @@ namespace WebCore {
 
       // >>>
       webView->cairo_context_ = crp;
+      webView->cairo_surface_ = webView->p()->backingStore->cairoSurface();
 
 		RefPtr<cairo_t> backingStoreContext = adoptRef(crp);
 		GraphicsContext gc(backingStoreContext.get());
@@ -157,12 +158,18 @@ namespace WebCore {
 
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
       printf("m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
+			//return;
+      return;
+    }
+
+		if(!m_view->m_private->backingStore) {
+      printf("!m_view->m_private->backingStore \n");
 			return;
     }
 
-		if(m_dirtyRegion.isEmpty() || !m_view->m_private->backingStore) {
-      printf("m_dirtyRegion.isEmpty() || !m_view->m_private->backingStore \n");
-			return;
+		if(m_dirtyRegion.isEmpty()) {
+      printf("m_dirtyRegion.isEmpty()\n");
+			//return;
     }
 
 		static const double minimumFrameInterval = 1.0 / 60.0; // No more than 60 frames a second.
@@ -172,15 +179,16 @@ namespace WebCore {
 		if (timeUntilNextDisplay > 0 && !m_forcePaint) {
       printf("timeUntilNextDisplay > 0 && !m_forcePaint \n");
 			m_displayTimer.startOneShot(timeUntilNextDisplay);
-			return;
+			//return;
+      return;
 		}
 
-		m_forcePaint = false;
+		m_forcePaint = false;//true;//false;
 
 		Frame& frame = (m_view->m_private->mainFrame->coreFrame()->mainFrame());
 		if (!frame.contentRenderer() || !frame.view()) {
       printf("!frame.contentRenderer() || !frame.view() \n");
-			return;
+			//return;
     }
 
 		frame.view()->updateLayoutAndStyleIfNeededRecursive();
@@ -267,6 +275,7 @@ namespace WebCore {
 
       // >>>
       m_view->cairo_context_ = crp;
+      m_view->cairo_surface_ = newBackingStore->cairoSurface();
 
 			clearEverywhereInBackingStore(m_view, cr.get());
 
@@ -288,6 +297,7 @@ namespace WebCore {
 
       // >>>
       m_view->cairo_context_ = crp;
+      m_view->cairo_surface_ = m_view->m_private->backingStore->cairoSurface();
 
 			clipOutOldWidgetArea(cr.get(), oldWidgetSize, newSize);
 			clearEverywhereInBackingStore(m_view, cr.get());
@@ -719,6 +729,7 @@ namespace WebCore {
 
         // >>>
         m_view->cairo_context_ = crp;
+        m_view->cairo_surface_ = m_view->m_private->backingStore->cairoSurface();
 
 				clearEverywhereInBackingStore(m_view, cr.get());
 			}

@@ -62,12 +62,13 @@ using namespace WTF;
 namespace WebCore {
 
   cairo_t *WebView::cairo_context_;
+  cairo_surface_t *WebView::cairo_surface_;
 
-	WebView::WebView(cairo_t *cairo_context, SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = true) : 
+	WebView::WebView(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = true) : 
     context_(context), window_(window)
 	{
     printf("creating WebView...\n");
-    WebView::cairo_context_ = cairo_context;
+    //WebView::cairo_context_ = cairo_context;
 
     //GLContext::setGlobalWindow(window_);
 
