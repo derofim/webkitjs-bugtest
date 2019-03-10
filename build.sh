@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 if [ "$1" == "debug" ]; then
 	echo "building webkit.js (debug)"
 	ninja -C Debug

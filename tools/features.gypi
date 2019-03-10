@@ -12,8 +12,11 @@
       'ENABLE_ORIENTATION_EVENTS=0',
       'ENABLE_PRINTING=0',
       'ENABLE_NAVIGATOR_CONTENT_UTILS=0',
-      'ENABLE_3D_RENDERING=1',
-      'ENABLE_ACCELERATED_2D_CANVAS=0',
+      'ENABLE_3D_RENDERING=0',
+      # >>>>>
+      'ENABLE_ACCELERATED_2D_CANVAS=1',
+      #
+      'ENABLE_HIGH_DPI_CANVAS=1',
       'ENABLE_ACCELERATED_OVERFLOW_SCROLLING=1',
       'ENABLE_BLOB=0',
       'ENABLE_CACHE_PARTITIONING=0',
@@ -56,7 +59,6 @@
       'ENABLE_GAMEPAD=0',
       'ENABLE_GEOLOCATION=0',
       'ENABLE_HIDDEN_PAGE_DOM_TIMER_THROTTLING=0',
-      'ENABLE_HIGH_DPI_CANVAS=1',
       'ENABLE_ICONDATABASE=0',
       'ENABLE_IFRAME_SEAMLESS=0',
       'ENABLE_INDEXED_DATABASE=0',
@@ -148,7 +150,33 @@
       'ENABLE_DEBUG_WITH_BREAKPOINT=0',
       'ENABLE_OBJECT_MARK_LOGGING=0',
       'ENABLE_GLOBAL_FASTMALLOC_NEW=0',
-
+      #
+      # >>
+      #
+      'WTF_USE_JSC=0',
+      'WTF_USE_V8=0',
+      #'WTF_USE_JSC=1',
+      #
+      # https://github.com/youtube/h5vcc/blob/7da685fe633dac18fd8db35624f7bade8619c977/external/chromium/third_party/WebKit/Source/WebKit/chromium/features.gypi
+      # https://fossies.org/diffs/WebKit/r174650_vs_r189384/Source/WTF/wtf/Platform.h-diff.html
+      # WTF_USE_BUILTIN_UTF8_CODEC
+      # WTF_USE_DYNAMIC_ANNOTATIONS
+      # WTF_USE_OPENTYPE_SANITIZER
+      # WTF_USE_RTL_SCROLLBAR
+      # WTF_USE_SKIA_TEXT
+      # WTF_USE_IMLANG_FONT_LINK2
+      # WTF_USE_WEBKIT_IMAGE_DECODERS
+      # WTF_USE_SKIA_ON_MAC_CHROMIUM
+      # WTF_USE_ACCELERATE
+      # WTF_USE_MEDIATOOLBOX
+      # WTF_USE_IOSURFACE
+      # WTF_USE_GRAMMAR_CHECKING
+      'WTF_USE_QUERY_PERFORMANCE_COUNTER=0',
+      'WTF_USE_SOUP=0',
+      'WTF_USE_WEBP=0',
+      #
+      # <<
+      #
       # Specific setting to to change platform and implementation
       # settings, e.g., use cairo instead of xyz graphics backend.
       'WTF_PLATFORM_JS=1',
@@ -182,8 +210,8 @@
 	'WTF_USE_HARFBUZZ=1',
 	'WTF_USE_CAIRO=1',
 	'WTF_USE_SKIA=0',
-      'WTF_USE_ICU_UNICODE=0',
-      'WTF_USE_WCHAR_UNICODE=1',
+      'WTF_USE_ICU_UNICODE=1',
+      'WTF_USE_WCHAR_UNICODE=0',
 
 	# Enabling opengles requires egl as well. Note always specify
 	# OPENGL_ES_2 and OPENGL otherwise we won't compile.

@@ -1,6 +1,8 @@
 #ifndef __glext_h_
 #define __glext_h_
 
+#include "SDL_opengles2.h"
+
 #ifdef __cplusplus
 extern "C" {
 #endif

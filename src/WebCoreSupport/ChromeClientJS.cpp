@@ -11,7 +11,7 @@
 #include "GraphicsLayer.h"
 #include "GraphicsLayerFactory.h"
 
-#include <WTF/CurrentTime.h>
+#include <wtf/CurrentTime.h>
 #include <platform/cairo/WidgetBackingStore.h>
 #include <platform/cairo/WidgetBackingStoreCairo.h>
 
@@ -103,8 +103,10 @@ namespace WebCore {
 	}
 
 	void ChromeClientJS::forceRepaint() {
-		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled())
+		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
+      printf("forceRepaint: m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
 			return;
+    }
 
 		m_dirtyRegion.unite(IntRect(IntPoint(), m_view->m_private->backingStore->size()));
 		m_forcePaint = true;
@@ -115,8 +117,10 @@ namespace WebCore {
 	static void paintWebView(WebView* webView, Frame* frame, const Region& dirtyRegion)
 	{
 		webkitTrace();
-		if (!webView->p()->backingStore)
+		if (!webView->p()->backingStore) {
+      printf("!webView->p()->backingStore \n");
 			return;
+    }
 
 		Vector<IntRect> rects = dirtyRegion.rects();
 		coalesceRectsIfPossible(dirtyRegion.bounds(), rects);
@@ -145,17 +149,22 @@ namespace WebCore {
 	{
 		webkitTrace();
 
-		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled())
+		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
+      printf("m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
 			return;
+    }
 
-		if(m_dirtyRegion.isEmpty() || !m_view->m_private->backingStore)
+		if(m_dirtyRegion.isEmpty() || !m_view->m_private->backingStore) {
+      printf("m_dirtyRegion.isEmpty() || !m_view->m_private->backingStore \n");
 			return;
+    }
 
 		static const double minimumFrameInterval = 1.0 / 60.0; // No more than 60 frames a second.
 		double timeSinceLastDisplay = monotonicallyIncreasingTime() - m_lastDisplayTime;
 		double timeUntilNextDisplay = minimumFrameInterval - timeSinceLastDisplay;
 
 		if (timeUntilNextDisplay > 0 && !m_forcePaint) {
+      printf("timeUntilNextDisplay > 0 && !m_forcePaint \n");
 			m_displayTimer.startOneShot(timeUntilNextDisplay);
 			return;
 		}
@@ -163,8 +172,10 @@ namespace WebCore {
 		m_forcePaint = false;
 
 		Frame& frame = (m_view->m_private->mainFrame->coreFrame()->mainFrame());
-		if (!frame.contentRenderer() || !frame.view())
+		if (!frame.contentRenderer() || !frame.view()) {
+      printf("!frame.contentRenderer() || !frame.view() \n");
 			return;
+    }
 
 		frame.view()->updateLayoutAndStyleIfNeededRecursive();
 		performAllPendingScrolls();
@@ -205,6 +216,9 @@ namespace WebCore {
 
 	void ChromeClientJS::widgetSizeChanged(const IntSize& oldWidgetSize, IntSize newSize)
 	{
+    return; // TODO
+
+
 		webkitTrace();
 		MainFrame& frame = (m_view->m_private->mainFrame->coreFrame()->mainFrame());
 		if(frame.view()) {
@@ -665,15 +679,16 @@ namespace WebCore {
 		if(m_view->m_private->acceleratedContext) {
 			bool turningOffCompositing = !rootLayer && m_view->m_private->acceleratedContext->enabled();
 			bool turningOnCompositing = rootLayer && !m_view->m_private->acceleratedContext->enabled();
+      //bool turningOnCompositing = true;
 
 			m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer);
 
 			if (turningOnCompositing) {
+		    webkitTrace();
 				m_displayTimer.stop();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(0, IntSize(1, 1));
-			}
-
-			if (turningOffCompositing) {
+			} else if (turningOffCompositing) {
+        webkitTrace();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(m_view->m_private->sdl_screen, roundedIntSize(m_view->positionAndSize().size()));
 				RefPtr<cairo_t> cr = adoptRef(cairo_create(m_view->m_private->backingStore->cairoSurface()));
 				clearEverywhereInBackingStore(m_view, cr.get());

@@ -28,6 +28,7 @@ generator_default_variables = {
   'STATIC_LIB_SUFFIX': '.bc',
   'SHARED_LIB_PREFIX': 'lib',
   'SHARED_LIB_SUFFIX': '.so',
+  #'SHARED_LIB_SUFFIX': '.bc',
   'JS_LIB_SUFFIX':     '.js',
   'JS_LIB_PREFIX':     '',
 
@@ -378,7 +379,8 @@ class NinjaWriter:
     config = spec['configurations'][config_name]
     self.target = Target(spec['type'])
     self.is_standalone_static_library = bool(
-        spec.get('standalone_static_library', 0))
+         spec.get('standalone_static_library', 0))
+    #    spec.get('standalone_static_library', 1))
     # Track if this target contains any C++ files, to decide if gcc or g++
     # should be used for linking.
     self.uses_cpp = False
@@ -783,11 +785,11 @@ class NinjaWriter:
                    precompiled_header, spec):
     """Write build rules to compile all of |sources|."""
     if self.toolset == 'host':
-      self.ninja.variable('ar', '$ar_host')
-      self.ninja.variable('cc', '$cc_host')
-      self.ninja.variable('cxx', '$cxx_host')
-      self.ninja.variable('ld', '$ld_host')
-      self.ninja.variable('ldxx', '$ldxx_host')
+      self.ninja.variable('ar', 'emcc')
+      self.ninja.variable('cc', 'emcc')
+      self.ninja.variable('cxx', 'em++')
+      self.ninja.variable('ld', 'emcc')
+      self.ninja.variable('ldxx', 'em++')
 
     if self.flavor != 'mac' or len(self.archs) == 1:
       return self.WriteSourcesForArch(
@@ -804,7 +806,8 @@ class NinjaWriter:
     """Write build rules to compile all of |sources|."""
 
     extra_defines = []
-    if self.flavor == 'mac':
+    #cflags_c = [] # Fixs running./config.sh on Linux.  I hope it doesn't need a real value
+    if self.flavor == 'mac': 
       cflags = self.xcode_settings.GetCflags(config_name, arch=arch)
       cflags_c = self.xcode_settings.GetCflagsC(config_name)
       cflags_cc = self.xcode_settings.GetCflagsCC(config_name)
@@ -1061,7 +1064,7 @@ class NinjaWriter:
 
     extra_bindings = []
     if self.uses_cpp and self.flavor != 'win' and spec['type'] != 'js_library':
-      extra_bindings.append(('ld', '$ldxx'))
+      extra_bindings.append(('ld', 'em++'))
 
     output = self.ComputeOutput(spec, arch)
     if arch is None and not self.is_mac_bundle:
@@ -1661,7 +1664,7 @@ def _AddWinLinkRules(master_ninja, embed_manifest):
       int(os.environ.get('GYP_USE_SEPARATE_MSPDBSRV', '0')) != 0)
   dlldesc = 'LINK%s(DLL) $binary' % rule_name_suffix.upper()
   dllcmd = ('%s gyp-win-tool link-wrapper $arch %s '
-            '$ld /nologo $implibflag /DLL /OUT:$binary '
+            'emcc /nologo $implibflag /DLL /OUT:$binary '
             '@$binary.rsp' % (sys.executable, use_separate_mspdbsrv))
   dllcmd = FullLinkCommand(dllcmd, '$binary', 'dll')
   master_ninja.rule('solink' + rule_name_suffix,
@@ -1679,7 +1682,7 @@ def _AddWinLinkRules(master_ninja, embed_manifest):
   # Note that ldflags goes at the end so that it has the option of
   # overriding default settings earlier in the command line.
   exe_cmd = ('%s gyp-win-tool link-wrapper $arch %s '
-             '$ld /nologo /OUT:$binary @$binary.rsp' %
+             'emcc /nologo /OUT:$binary @$binary.rsp' %
               (sys.executable, use_separate_mspdbsrv))
   exe_cmd = FullLinkCommand(exe_cmd, '$binary', 'exe')
   master_ninja.rule('link' + rule_name_suffix,
@@ -1721,14 +1724,14 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     # Overridden by local arch choice in the use_deps case.
     # Chromium's ffmpeg c99conv.py currently looks for a 'cc =' line in
     # build.ninja so needs something valid here. http://crbug.com/233985
-    cc = 'cl.exe'
-    cxx = 'cl.exe'
-    ld = 'link.exe'
-    ld_host = '$ld'
+    cc = 'emcc'
+    cxx = 'em++'
+    ld = 'emcc'
+    ld_host = 'emcc'
   else:
-    cc = 'cc'
-    cxx = 'c++'
-    ld = '$cc'
+    cc = 'emcc'
+    cxx = 'em++'
+    ld = 'emcc'
     ldxx = '$cxx'
     ld_host = '$cc_host'
     ldxx_host = '$cxx_host'
@@ -1785,9 +1788,9 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.variable('asm', 'ml.exe')
     master_ninja.variable('mt', 'mt.exe')
   else:
-    master_ninja.variable('ld', CommandWithWrapper('LINK', wrappers, ld))
-    master_ninja.variable('ldxx', CommandWithWrapper('LINK', wrappers, ldxx))
-    master_ninja.variable('ar', GetEnvironFallback(['AR_target', 'AR'], 'ar'))
+    master_ninja.variable('ld', CommandWithWrapper('LINK', wrappers, 'emcc'))
+    master_ninja.variable('ldxx', CommandWithWrapper('LINK', wrappers, 'em++'))
+    master_ninja.variable('ar', GetEnvironFallback(['AR_target', 'AR'], 'emcc'))
 
   if generator_supports_multiple_toolsets:
     if not cc_host:
@@ -1795,7 +1798,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     if not cxx_host:
       cxx_host = cxx
 
-    master_ninja.variable('ar_host', GetEnvironFallback(['AR_host'], 'ar'))
+    master_ninja.variable('ar_host', GetEnvironFallback(['AR_host'], 'emcc'))
     cc_host = GetEnvironFallback(['CC_host'], cc_host)
     cxx_host = GetEnvironFallback(['CXX_host'], cxx_host)
 
@@ -1828,14 +1831,14 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'cc',
       description='CC $out',
-      command=('$cc -MMD -MF $out.d $defines $includes $cflags $cflags_c '
+      command=('emcc -MMD -MF $out.d $defines $includes $cflags $cflags_c '
               '$cflags_pch_c -c $in -o $out'),
       depfile='$out.d',
       deps=deps)
     master_ninja.rule(
       'cc_s',
       description='CC $out',
-      command=('$cc $defines $includes $cflags $cflags_c '
+      command=('emcc $defines $includes $cflags $cflags_c '
               '$cflags_pch_c -c $in -o $out'))
     master_ninja.rule(
       'cxx',
@@ -1853,7 +1856,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     # By making the rules target separate pdb files this might be avoided.
     cc_command = ('ninja -t msvc -e $arch ' +
                   '-- '
-                  '$cc /nologo /showIncludes /FC '
+                  'emcc /nologo /showIncludes /FC '
                   '@$out.rsp /c $in /Fo$out /Fd$pdbname_c ')
     cxx_command = ('ninja -t msvc -e $arch ' +
                    '-- '
@@ -1897,11 +1900,11 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'alink',
       description='AR $out',
-      command='rm -f $out && $ar rcs $out $in')
+      command='rm -f $out && $ar $in -o $out $defines $includes $cflags $cflags_c')
     master_ninja.rule(
       'alink_thin',
       description='AR $out',
-      command='rm -f $out && $ar rcsT $out $in')
+      command='rm -f $out && $ar $in -o $out $defines $includes $cflags $cflags_c')
 
     # This allows targets that only need to depend on $lib's API to declare an
     # order-only dependency on $lib.TOC and avoid relinking such downstream
@@ -1915,7 +1918,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
         'if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; '
         'fi; fi'
         % { 'solink':
-              '$ld -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
+              'emcc -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
             'extract_toc':
               ('{ readelf -d ${lib} | grep SONAME ; '
                'nm -gD -f p ${lib} | cut -f1-2 -d\' \'; }')})
@@ -1929,6 +1932,12 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
           '$libs'}),
       pool='link_pool')
     master_ninja.rule(
+      'solink_js',
+      description='SOLINK_JS $lib, POSTBUILDS',
+      restat=True,
+      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags -s SIDE_MODULE=1
+      pool='link_pool')
+    master_ninja.rule(
       'solink_module',
       description='SOLINK(module) $lib',
       restat=True,
@@ -1939,7 +1948,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'link',
       description='LINK $out',
-      command=('$ld $ldflags -o $out '
+      command=('emcc $ldflags -o $out '
                '-Wl,--start-group $in $solibs -Wl,--end-group $libs'),
       pool='link_pool')
   elif flavor == 'win':
@@ -1957,14 +1966,14 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'objc',
       description='OBJC $out',
-      command=('$cc -MMD -MF $out.d $defines $includes $cflags $cflags_objc '
+      command=('emcc -MMD -MF $out.d $defines $includes $cflags $cflags_objc '
                '$cflags_pch_objc -c $in -o $out'),
       depfile='$out.d',
       deps=deps)
     master_ninja.rule(
       'objcxx',
       description='OBJCXX $out',
-      command=('$cxx -MMD -MF $out.d $defines $includes $cflags $cflags_objcc '
+      command=('em++ -MMD -MF $out.d $defines $includes $cflags $cflags_objcc '
                '$cflags_pch_objcc -c $in -o $out'),
       depfile='$out.d',
       deps=deps)
@@ -1975,7 +1984,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
 
     # Record the public interface of $lib in $lib.TOC. See the corresponding
     # comment in the posix section above for details.
-    solink_base = '$ld %(type)s $ldflags -o $lib %(suffix)s'
+    solink_base = 'emcc %(type)s $ldflags -o $lib %(suffix)s'
     mtime_preserving_solink_base = (
         'if [ ! -e $lib -o ! -e ${lib}.TOC ] || '
              # Always force dependent targets to relink if this library
@@ -1999,7 +2008,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
       'alink',
       description='LINK $out, POSTBUILDS',
       restat=True,
-      command='$ld -static $ldflags $in -o $out',
+      command='emcc -static $ldflags $in -o $out',
       pool='link_pool')
       #description='LIBTOOL-STATIC $out, POSTBUILDS',
       #               command='./gyp-mac-tool filter-libtool libtool $libtool_flags '
@@ -2021,7 +2030,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
       'solink_js',
       description='SOLINK_JS $lib, POSTBUILDS',
       restat=True,
-      command='$ld $ldflags $jsflags $in $solibs', # -o $soname // we don't use this, specify in ldflags
+      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags -s SIDE_MODULE=1 
       pool='link_pool')
 			#  ; $ld $ldflags $jsflags $in $solibs -o test.html
     solink_module_suffix = '$in $solibs $libs$postbuilds'
@@ -2042,13 +2051,13 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'link',
       description='LINK $out, POSTBUILDS',
-      command=('$ld $ldflags -o $out '
+      command=('emcc $ldflags -o $out '
                '$in $solibs $libs$postbuilds'),
       pool='link_pool')
     master_ninja.rule(
       'preprocess_infoplist',
       description='PREPROCESS INFOPLIST $out',
-      command=('$cc -E -P -Wno-trigraphs -x c $defines $in -o $out && '
+      command=('emcc -E -P -Wno-trigraphs -x c $defines $in -o $out && '
                'plutil -convert xml1 $out $out'))
     master_ninja.rule(
       'copy_infoplist',

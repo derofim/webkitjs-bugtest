@@ -30,7 +30,7 @@ typedef unsigned char LChar;
 
 #if USE(ICU_UNICODE)
 #if TARGET_EMSCRIPTEN
-#error "Target is emscripten but attempting to include ICU related code."
+//#error "Target is emscripten but attempting to include ICU related code."
 #endif
 #include <wtf/unicode/icu/UnicodeIcu.h>
 #elif USE(WCHAR_UNICODE)

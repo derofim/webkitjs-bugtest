@@ -20,6 +20,8 @@ deps/fontconfig/src/.deps/
 /deps/fontconfig/src/.deps/
 xcuserdata
 xcuserdata/
+node_modules
+*node_modules
 ./xcuserdata
 /xcuserdata
 *.xcuserstate

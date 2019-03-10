@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 if [ "`which git`" == "" ]; then
 	echo "git command line tool is not found.  Either re-install and make sure its added to your path environment variable.";
@@ -242,6 +242,7 @@ EOF
 fi
 
 if [ ! -f "$EMSCRIPTEN/system/lib/pkgconfig/sdl.pc" ]; then
+# Cflags: -D_GNU_SOURCE=1 -D_REENTRANT
 cat <<EOF > $EMSCRIPTEN/system/lib/pkgconfig/sdl.pc
 prefix=
 exec_prefix=${prefix}

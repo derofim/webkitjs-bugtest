@@ -88,6 +88,7 @@ while (0)
   extern "C" {
 #endif
 
+#ifdef TODO https://github.com/trevorlinton/webkit.js/issues/41
 double nextafter(double x, double y) {
 	int32_t hx,hy,ix,iy;
 	u_int32_t lx,ly;
@@ -189,6 +190,7 @@ float nextafterf(float x, float y)
 	SET_FLOAT_WORD(x,hx);
 	return x;
 }
+#endif // TODO https://github.com/trevorlinton/webkit.js/issues/41
 #ifdef __cplusplus
 }
 #endif

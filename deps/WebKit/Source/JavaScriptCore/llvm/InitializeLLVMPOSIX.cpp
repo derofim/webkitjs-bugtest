@@ -37,7 +37,7 @@ typedef LLVMAPI* (*InitializerFunction)(void (*)(const char*, ...));
 
 void initializeLLVMPOSIX(const char* libraryName)
 {
-    void* library = dlopen(libraryName, RTLD_NOW);
+    webkitTrace(); void* library = dlopen(libraryName, RTLD_NOW);
     ASSERT_WITH_MESSAGE(library, "%s", dlerror());
     
     InitializerFunction initializer = bitwise_cast<InitializerFunction>(

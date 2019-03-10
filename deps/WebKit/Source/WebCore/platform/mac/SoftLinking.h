@@ -36,7 +36,7 @@
 #define SOFT_LINK_LIBRARY(lib) \
     static void* lib##Library() \
     { \
-        static void* dylib = dlopen("/usr/lib/" #lib ".dylib", RTLD_NOW); \
+        webkitTrace(); static void* dylib = dlopen("/usr/lib/" #lib ".dylib", RTLD_NOW); \
         ASSERT_WITH_MESSAGE(dylib, "%s", dlerror()); \
         return dylib; \
     }
@@ -44,7 +44,7 @@
 #define SOFT_LINK_FRAMEWORK(framework) \
     static void* framework##Library() \
     { \
-        static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
+        webkitTrace(); static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
         ASSERT_WITH_MESSAGE(frameworkLibrary, "%s", dlerror()); \
         return frameworkLibrary; \
     }
@@ -53,7 +53,7 @@
     static void* framework##Library() \
     { \
         static void* frameworkLibrary = 0; \
-        if (!frameworkLibrary) \
+        webkitTrace(); if (!frameworkLibrary) \
             frameworkLibrary = dlopen("/System/Library/PrivateFrameworks/" #framework ".framework/" #framework, RTLD_NOW); \
         ASSERT_WITH_MESSAGE(frameworkLibrary, "%s", dlerror()); \
         return frameworkLibrary; \
@@ -62,7 +62,7 @@
 #define SOFT_LINK_FRAMEWORK_OPTIONAL(framework) \
     static void* framework##Library() \
     { \
-        static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
+        webkitTrace(); static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
         return frameworkLibrary; \
     }
 
@@ -70,7 +70,7 @@
 #define SOFT_LINK_PRIVATE_FRAMEWORK_OPTIONAL(framework) \
     static void* framework##Library() \
     { \
-        static void* frameworkLibrary = dlopen("/System/Library/PrivateFrameworks/" #framework ".framework/" #framework, RTLD_NOW); \
+        webkitTrace(); static void* frameworkLibrary = dlopen("/System/Library/PrivateFrameworks/" #framework ".framework/" #framework, RTLD_NOW); \
         return frameworkLibrary; \
     }
 #endif // PLATFORM(IOS)
@@ -78,7 +78,7 @@
 #define SOFT_LINK_STAGED_FRAMEWORK(framework, unstagedLocation, version) \
     static void* framework##Library() \
     { \
-        static void* frameworkLibrary = ^{ \
+        webkitTrace(); static void* frameworkLibrary = ^{ \
             void* result = dlopen("/System/Library/" #unstagedLocation "/" #framework ".framework/Versions/" #version "/" #framework, RTLD_LAZY); \
             if (!result) \
                 result = dlopen("/System/Library/StagedFrameworks/Safari/" #framework ".framework/Versions/" #version "/" #framework, RTLD_LAZY); \
@@ -91,7 +91,7 @@
 #define SOFT_LINK_FRAMEWORK_IN_UMBRELLA(umbrella, framework) \
     static void* framework##Library() \
     { \
-        static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #umbrella ".framework/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
+        webkitTrace(); static void* frameworkLibrary = dlopen("/System/Library/Frameworks/" #umbrella ".framework/Frameworks/" #framework ".framework/" #framework, RTLD_NOW); \
         ASSERT_WITH_MESSAGE(frameworkLibrary, "%s", dlerror()); \
         return frameworkLibrary; \
     }

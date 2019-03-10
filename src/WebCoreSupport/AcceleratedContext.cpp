@@ -73,15 +73,23 @@ namespace WebCore {
 		m_nonCompositedContentLayer->setNeedsDisplay();
 
 		// The creation of the TextureMapper needs an active OpenGL context.
-		GLContext* context = m_view->glWindowContext();
+		GLContext* context = m_view->glWindowContext(m_view->window_);
+		webkitTrace();
 		context->makeContextCurrent();
+		webkitTrace();
 
+// FIX IT: TextureMapper::create ERROR: To use dlopen, you need to use Emscripten's linking support
+/*
 #if USE(TEXTURE_MAPPER) && USE(TEXTURE_MAPPER_GL)
 		m_textureMapper = TextureMapper::create(TextureMapper::OpenGLMode);
 		static_cast<TextureMapperGL*>(m_textureMapper.get())->setEnableEdgeDistanceAntialiasing(true);
+		webkitTrace();
 		toTextureMapperLayer(m_rootLayer.get())->setTextureMapper(m_textureMapper.get());
-#endif
+#endif*/
+
+		webkitTrace();
 		scheduleLayerFlush();
+		webkitTrace();
 	}
 
 	AcceleratedContext::~AcceleratedContext()
@@ -113,6 +121,7 @@ namespace WebCore {
 			return NULL;
 
 		GLContext* context = GLContext::getCurrent();
+		webkitTrace();
 
 		if (!context || !context->makeContextCurrent())
 			return NULL;
@@ -302,6 +311,7 @@ namespace WebCore {
 			return;
 
 		GLContext* context = GLContext::getCurrent();
+		webkitTrace();
 	
 		if (context && !context->makeContextCurrent())
 			return;
