@@ -170,6 +170,7 @@ namespace WebCore {
 		if(m_dirtyRegion.isEmpty()) {
       printf("m_dirtyRegion.isEmpty()\n");
 			//return;
+      return;
     }
 
 		static const double minimumFrameInterval = 1.0 / 60.0; // No more than 60 frames a second.
@@ -189,6 +190,7 @@ namespace WebCore {
 		if (!frame.contentRenderer() || !frame.view()) {
       printf("!frame.contentRenderer() || !frame.view() \n");
 			//return;
+      return;
     }
 
 		frame.view()->updateLayoutAndStyleIfNeededRecursive();
