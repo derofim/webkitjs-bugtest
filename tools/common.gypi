@@ -15,7 +15,7 @@
 		# -s EXPORTED_FUNCTIONS=@../src/Symbols.exports
     #   -s LINKABLE=1 -s NO_EXIT_RUNTIME=1 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=1  -s SIDE_MODULE=1  -s ASM_JS=1 -s WASM=0
     #  -fshort-wchar 
-		'emscripten_linktojs':'-s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s FULL_ES2=1 -std=c++11 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
+		'emscripten_linktojs':'-s NO_EXIT_RUNTIME=1  -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s FULL_ES2=1 -std=c++11 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
 		#--post-js ../src/webkit.post.js --pre-js ../src/webkit.pre.js --proxy-to-worker --proxy-to-worker -o webkit.js
 		# Ensure that Apple, and Win32 builds do not interfere with the compile, we'll assume we're linux since
 		# emscripten has a very posix unix compile interface, should be the most compatible with existing code.

@@ -126,11 +126,16 @@ namespace WebCore {
 		Vector<IntRect> rects = dirtyRegion.rects();
 		coalesceRectsIfPossible(dirtyRegion.bounds(), rects);
 
-    auto crp = cairo_create(webView->p()->backingStore->cairoSurface());
+    auto srf = webView->p()->backingStore->cairoSurface();
 
-      // >>>
-      webView->cairo_context_ = crp;
-      webView->cairo_surface_ = webView->p()->backingStore->cairoSurface();
+    auto crp = cairo_create(srf);
+
+    // >>>
+    /*if(crp)
+      webView->cairo_context_ = crp;*/
+
+    /*if(srf)
+      webView->cairo_surface_ = srf;*/
 
 		RefPtr<cairo_t> backingStoreContext = adoptRef(crp);
 		GraphicsContext gc(backingStoreContext.get());
@@ -158,8 +163,7 @@ namespace WebCore {
 
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
       printf("m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
-			//return;
-      return;
+			return;
     }
 
 		if(!m_view->m_private->backingStore) {
@@ -180,17 +184,15 @@ namespace WebCore {
 		if (timeUntilNextDisplay > 0 && !m_forcePaint) {
       printf("timeUntilNextDisplay > 0 && !m_forcePaint \n");
 			m_displayTimer.startOneShot(timeUntilNextDisplay);
-			//return;
-      return;
+			return;
 		}
 
-		m_forcePaint = false;//true;//false;
+		m_forcePaint = false;
 
 		Frame& frame = (m_view->m_private->mainFrame->coreFrame()->mainFrame());
 		if (!frame.contentRenderer() || !frame.view()) {
       printf("!frame.contentRenderer() || !frame.view() \n");
-			//return;
-      return;
+			return;
     }
 
 		frame.view()->updateLayoutAndStyleIfNeededRecursive();
@@ -272,12 +274,18 @@ namespace WebCore {
 																									 0x000000FF,	/* Bmask */
 																									 0xFF000000); /* Amask */
 			PassOwnPtr<WidgetBackingStore> newBackingStore = WebCore::WidgetBackingStoreCairo::create(surface, newSize);
-      auto crp = cairo_create(newBackingStore->cairoSurface());
+
+      auto srf = newBackingStore->cairoSurface();
+
+      auto crp = cairo_create(srf);
 			RefPtr<cairo_t> cr = adoptRef(crp);
 
       // >>>
-      m_view->cairo_context_ = crp;
-      m_view->cairo_surface_ = newBackingStore->cairoSurface();
+      /*if(crp)
+        m_view->cairo_context_ = crp;
+
+      if(srf)
+        m_view->cairo_surface_ = srf;*/
 
 			clearEverywhereInBackingStore(m_view, cr.get());
 
@@ -298,8 +306,8 @@ namespace WebCore {
 			RefPtr<cairo_t> cr = adoptRef(crp);
 
       // >>>
-      m_view->cairo_context_ = crp;
-      m_view->cairo_surface_ = m_view->m_private->backingStore->cairoSurface();
+      /*if(crp)
+        m_view->cairo_context_ = crp;*/
 
 			clipOutOldWidgetArea(cr.get(), oldWidgetSize, newSize);
 			clearEverywhereInBackingStore(m_view, cr.get());
@@ -730,8 +738,8 @@ namespace WebCore {
         RefPtr<cairo_t> cr = adoptRef(crp);
 
         // >>>
-        m_view->cairo_context_ = crp;
-        m_view->cairo_surface_ = m_view->m_private->backingStore->cairoSurface();
+        /*if(crp)
+          m_view->cairo_context_ = crp;*/
 
 				clearEverywhereInBackingStore(m_view, cr.get());
 			}
