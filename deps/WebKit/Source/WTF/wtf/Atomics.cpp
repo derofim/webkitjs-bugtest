@@ -93,6 +93,7 @@ static int64_t atomicStep(int64_t volatile* addend, int64_t step)
 
 extern "C" {
 
+#ifndef __EMSCRIPTEN__
 int64_t __sync_add_and_fetch_8(int64_t volatile* addend, int64_t value)
 {
     return atomicStep(addend, value);
@@ -102,6 +103,7 @@ int64_t __sync_sub_and_fetch_8(int64_t volatile* addend, int64_t value)
 {
     return atomicStep(addend, -value);
 }
+#endif
 
 } // extern "C"
 

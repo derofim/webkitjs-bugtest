@@ -26,14 +26,15 @@
 
 #include <EGL/egl.h>
 
+#include <SDL.h>
+
 namespace WebCore {
 
 class GLContextEGL : public GLContext {
     WTF_MAKE_NONCOPYABLE(GLContextEGL);
 public:
-    enum EGLSurfaceType { PbufferSurface, WindowSurface, PixmapSurface };
-    static PassOwnPtr<GLContextEGL> createContext(EGLNativeWindowType, GLContext* sharingContext = 0);
-    static PassOwnPtr<GLContextEGL> createWindowContext(EGLNativeWindowType, GLContext* sharingContext);
+    static PassOwnPtr<GLContextEGL> createContext(EGLNativeWindowType, GLContext* sharingContext, SDL_Window *sdl_window);
+    static PassOwnPtr<GLContextEGL> createWindowContext(EGLNativeWindowType, GLContext* sharingContext, SDL_Window *sdl_window);
 
     virtual ~GLContextEGL();
     virtual bool makeContextCurrent();
@@ -58,9 +59,6 @@ private:
 
     GLContextEGL(EGLContext, EGLSurface, EGLSurfaceType);
 
-    EGLContext m_context;
-    EGLSurface m_surface;
-    EGLSurfaceType m_type;
 #if USE(CAIRO)
     cairo_device_t* m_cairoDevice;
 #endif

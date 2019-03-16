@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
+
 if [ -d "$JAVA_HEAP_SIZE" ]; then
 export JAVA_HEAP_SIZE="2048m"
 fi
@@ -8,7 +9,8 @@ export JAVAFLAGS="-client -d32"
 export JAVA_FLAGS=$JAVAFLAGS
 fi
 
-export EMSCRIPTEN_ROOT=`em-config EMSCRIPTEN_ROOT`
+export EMSCRIPTEN_ROOT=$EMSCRIPTEN
+#echo 'EMSCRIPTEN_ROOT='.$EMSCRIPTEN
 export NINJA_ROOT=`which ninja`
  
 if [ ! "$NINJA_ROOT" ]; then

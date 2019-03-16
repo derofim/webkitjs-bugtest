@@ -782,11 +782,11 @@ class NinjaWriter:
                    precompiled_header, spec):
     """Write build rules to compile all of |sources|."""
     if self.toolset == 'host':
-      self.ninja.variable('ar', '$ar_host')
-      self.ninja.variable('cc', '$cc_host')
-      self.ninja.variable('cxx', '$cxx_host')
-      self.ninja.variable('ld', '$ld_host')
-      self.ninja.variable('ldxx', '$ldxx_host')
+      self.ninja.variable('ar', 'emcc')
+      self.ninja.variable('cc', 'emcc')
+      self.ninja.variable('cxx', 'em++')
+      self.ninja.variable('ld', 'emcc')
+      self.ninja.variable('ldxx', 'em++')
 
     if self.flavor != 'mac' or len(self.archs) == 1:
       return self.WriteSourcesForArch(
@@ -1776,9 +1776,9 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.variable('asm', 'ml.exe')
     master_ninja.variable('mt', 'mt.exe')
   else:
-    master_ninja.variable('ld', CommandWithWrapper('LINK', wrappers, ld))
-    master_ninja.variable('ldxx', CommandWithWrapper('LINK', wrappers, ldxx))
-    master_ninja.variable('ar', GetEnvironFallback(['AR_target', 'AR'], 'ar'))
+    master_ninja.variable('ld', CommandWithWrapper('LINK', wrappers, 'emcc'))
+    master_ninja.variable('ldxx', CommandWithWrapper('LINK', wrappers, 'em++'))
+    master_ninja.variable('ar', GetEnvironFallback(['AR_target', 'AR'], 'emcc'))
 
   if generator_supports_multiple_toolsets:
     if not cc_host:
@@ -1786,7 +1786,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     if not cxx_host:
       cxx_host = cxx
 
-    master_ninja.variable('ar_host', GetEnvironFallback(['AR_host'], 'ar'))
+    master_ninja.variable('ar_host', GetEnvironFallback(['AR_host'], 'emcc'))
     cc_host = GetEnvironFallback(['CC_host'], cc_host)
     cxx_host = GetEnvironFallback(['CXX_host'], cxx_host)
 
@@ -1888,11 +1888,11 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
     master_ninja.rule(
       'alink',
       description='AR $out',
-      command='rm -f $out && $ar rcs $out $in')
+      command='rm -f $out && $ar $in -o $out $defines $includes $cflags $cflags_c')
     master_ninja.rule(
       'alink_thin',
       description='AR $out',
-      command='rm -f $out && $ar rcsT $out $in')
+      command='rm -f $out && $ar $in -o $out $defines $includes $cflags $cflags_c')
 
     # This allows targets that only need to depend on $lib's API to declare an
     # order-only dependency on $lib.TOC and avoid relinking such downstream
@@ -1906,7 +1906,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
         'if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; '
         'fi; fi'
         % { 'solink':
-              '$ld -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
+              'emcc -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
             'extract_toc':
               ('{ readelf -d ${lib} | grep SONAME ; '
                'nm -gD -f p ${lib} | cut -f1-2 -d\' \'; }')})

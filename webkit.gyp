@@ -50,6 +50,8 @@
 		'sources':[
 			'<(DEPTH)/src/WebView.h',
 			'<(DEPTH)/src/WebView.cpp',
+			#'<(DEPTH)/src/GLWebView.h',
+			#'<(DEPTH)/src/GLWebView.cpp',
 			'<(DEPTH)/src/Main.cpp',
 			'<(DEPTH)/src/webkit.api.js',
 			'<(DEPTH)/src/webkit.pre.js',
@@ -353,8 +355,12 @@
 		'sources/': [['exclude','(docs/|m4/|packages/|perl/|tests/|vs/|winbuild/|CMake/|tool_|vtls/|macos/)'],],
 		'include_dirs': [
 			'<(DEPTH)/deps/zlib',
-			'<(DEPTH)/deps/curl',
-			'<(DEPTH)/deps/curl/include',
+		  '<(DEPTH)/deps/curl',
+		  '<(DEPTH)/deps/curl/include',
+		  '<(DEPTH)/deps/curl/build',
+		  '<(DEPTH)/deps/curl/build/include',
+		  '<(DEPTH)/deps/curl/build/include/curl',
+			'<(DEPTH)/deps/curl/build/lib',
 			'<(DEPTH)/deps/curl/lib',
 		],
 		'cxx':'<(emscripten_cc)',

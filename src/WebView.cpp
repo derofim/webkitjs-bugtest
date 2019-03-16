@@ -3,7 +3,7 @@
  */
 
 #include <emscripten.h>
-#include <cstdio>
+#include <emscripten/html5.h>
 
 #include "config.h"
 #include "WebView.h"
@@ -36,16 +36,46 @@
 #include "cairo.h"
 #include "cairo-gl.h"
 #include "PlatformContextCairo.h"
+
+#if USE(ACCELERATED_COMPOSITING)
+#include "GL/glew.h"
+#include "GLContext.h"
+#endif
+
 #include <SDL.h>
+
+#include <stdio.h>
+#include <string>
+
+#include <iostream>
+#include <string>
+#include <sstream>
+#include <vector>
+#include <map>
+#include <algorithm>
+#include <functional>
+#include <cmath>
 
 using namespace WebCore;
 using namespace WTF;
 
-
 namespace WebCore {
 
-	WebView::WebView(int width, int height, bool accelerated = false)
+  cairo_t *WebView::cairo_context_;
+  cairo_surface_t *WebView::cairo_surface_;
+
+	WebView::WebView(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = true) : 
+    context_(context), window_(window)
 	{
+    printf("creating WebView...\n");
+    //WebView::cairo_context_ = cairo_context;
+
+    //GLContext::setGlobalWindow(window_);
+
+    //GLContext::currentContext()->gWindow = window_;
+    GLContext::gWindow = window_;
+    //GLContext::gContext = context_;
+
 		webkitTrace();
 		WebKitJSStrategies::initialize();
 		m_private = new WebViewPrivate();
@@ -53,8 +83,20 @@ namespace WebCore {
 		Page::PageClients pageClients;
 		fillWithEmptyClients(pageClients);
 
-		if(SDL_Init(SDL_INIT_VIDEO) < 0)
-			abort();
+    // https://github.com/emscripten-core/emscripten/blob/master/tools/ports/sdl.py#L10
+		/*if(SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0) {
+      printf("Error SDL_INIT_VIDEO %s\n", SDL_GetError());
+			//abort();
+    }*/
+
+    if (!window_) {
+      printf("Unable to create window: %s\n", SDL_GetError());
+    }
+    m_private->glContext->setWindow(window_);
+
+    if (!context_) {
+      printf("Unable to create context: %s\n", SDL_GetError());
+    }
 
 		m_private->chromeClient = WebCore::ChromeClientJS::createClient(this);
 		pageClients.chromeClient = m_private->chromeClient->toChromeClient();
@@ -62,7 +104,8 @@ namespace WebCore {
 		pageClients.loaderClientForMainFrame = WebCore::FrameLoaderClientJS::createClient(m_private->mainFrame);
 		m_private->corePage = new Page(pageClients);
 		m_private->corePage->addLayoutMilestones(DidFirstVisuallyNonEmptyLayout);
-		m_private->corePage->setGroupName(L"webkit.js");
+    m_private->corePage->setGroupName("webkit.js");
+		//m_private->corePage->setGroupName(L"webkit.js");
 
 		m_private->corePage->settings().setMediaEnabled(false);
 		m_private->corePage->settings().setScreenFontSubstitutionEnabled(true);
@@ -77,7 +120,9 @@ namespace WebCore {
 		m_private->corePage->settings().setScriptEnabled(false);
 		m_private->corePage->settings().setPluginsEnabled(false);
 
+    // TODO: https://github.com/pqrkchqps/MusicBrowser/blob/03216439d1cc3dae160f440417fcb557bb72f8e4/src/webkit/glue/webpreferences.cc
 		if(accelerated) {
+		  webkitTrace();
 			m_private->accelerated = true;
 			m_private->corePage->settings().setMinimumAccelerated2dCanvasSize(1);
 			m_private->corePage->settings().setAcceleratedCompositedAnimationsEnabled(true);
@@ -88,7 +133,10 @@ namespace WebCore {
 			m_private->corePage->settings().setTiledBackingStoreEnabled(false);
 			m_private->corePage->settings().setForceCompositingMode(true);
 			m_private->corePage->settings().setApplyDeviceScaleFactorInCompositor(true);
-		} else
+      // Enable gpu-accelerated 2d canvas if requested on the command line.
+      // m_private->corePage->settings().setAccelerated2dCanvasEnabled(true);
+		} else {
+		  webkitTrace();
 			m_private->accelerated = false;
 			//m_private->corePage->settings().setAcceleratedCompositedAnimationsEnabled(false);
 			//m_private->corePage->settings().setAcceleratedDrawingEnabled(false);
@@ -96,13 +144,16 @@ namespace WebCore {
 			//m_private->corePage->settings().setAcceleratedCompositingEnabled(false);
 			//m_private->corePage->settings().setAcceleratedDrawingEnabled(false);
 			//m_private->corePage->settings().setTiledBackingStoreEnabled(false);
+    }
 
+    printf("initializeScreens...\n");
 		initializeScreens(width, height);
 
 		m_private->mainFrame->init();
 		m_private->corePage->setIsVisible(true, true);
 		m_private->corePage->setIsInWindow(true);
 
+    printf("resize...\n");
 		resize(width, height);
 
 		if(!m_private->accelerated) {
@@ -133,7 +184,7 @@ namespace WebCore {
 		return NULL;
 	}
 
-	void WebView::setHtml(char *data, int length) {
+	void WebView::setHtml(const char *data, int length) {
 		webkitTrace();
 		WebCore::MainFrame& frame = m_private->mainFrame->coreFrame()->mainFrame();
 		ASSERT(frame.isMainFrame());
@@ -154,21 +205,54 @@ namespace WebCore {
 		return m_private->size;
 	}
 
-	WebCore::GLContext *WebView::glWindowContext() {
+	WebCore::GLContext *WebView::glWindowContext(SDL_Window *sdl_window) {
 		webkitTrace();
-		if (m_private->glContext)
+		if (m_private->glContext) {
 			return m_private->glContext.get();
+    } else {
+      printf("no glWindowContext :()...%s\n", SDL_GetError());
+    }
+		webkitTrace();
 
-		m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext());
+    if (!sdl_window) {
+      printf("WebView::glWindowContext: Invalid sdl_window!!!\n");
+    }
+    GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+		m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), sdl_window);
+		if(!m_private->glContext) {
+      printf("no glContext...%s\n", SDL_GetError());
+    }
+    m_private->glContext->setWindow(window_); // TODO
+		webkitTrace();
 		return m_private->glContext.get();
 	}
 
 	void WebView::initializeScreens(int width, int height) {
 		webkitTrace();
-		if(m_private->sdl_screen)
-			SDL_FreeSurface(m_private->sdl_screen);
+		if(!m_private->sdl_screen) {
+      printf("creating sdl_screen... %s\n", SDL_GetError());
+      m_private->sdl_screen = SDL_GetWindowSurface(window_);
+			//SDL_FreeSurface(m_private->sdl_screen);
+    }
+		if(!m_private->sdl_screen) {
+      printf("invalid sdl_screen!!! %s\n", SDL_GetError());
+    }
 
 		m_private->size = FloatRect(0,0,(float)width, (float)height);
+
+/*
+#ifdef __EMSCRIPTEN__
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+#else
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+#endif*/
+
 
 		if(m_private->accelerated) {
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1);
@@ -185,27 +269,49 @@ namespace WebCore {
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
-			m_private->sdl_screen = SDL_SetVideoMode(width, height, 32, SDL_OPENGL | SDL_RESIZABLE);
+// Remember SDL_SetVideoMode()? It's completely gone. SDL 2.0 allows you to have multiple windows, so the old function didn't make sense any more.
+			m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode(width, height, 32, SDL_OPENGL );
+      if(!m_private->sdl_screen) {
+        printf("no SDL_SetVideoMode!...%s\n", SDL_GetError());
+        //SDL_FreeSurface(m_private->sdl_screen);
+      }
 
 			SDL_GL_SetSwapInterval(1);
 
-			m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext());
+      if (!window_) {
+        printf("WebView::initializeScreens: Invalid window_!!!\n");
+      }
+    GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+			m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
+      if(!m_private->glContext) {
+        printf("no glContext!...%s\n", SDL_GetError());
+      }
+      m_private->glContext->setWindow(window_); // TODO
 			ASSERT(m_private->glContext->makeContextCurrent());
 			GLContext* context = GLContext::getCurrent();
 			ASSERT(context->makeContextCurrent());
 
-			if(!m_private->acceleratedContext)
+			if(!m_private->acceleratedContext) {
+        printf("AcceleratedContext::create...\n");
 				m_private->acceleratedContext = AcceleratedContext::create(this);
+      }
+
+			if(!m_private->acceleratedContext) {
+        printf("no m_private->acceleratedContext...%s\n", SDL_GetError());
+      }
 
 			if ( !m_private->sdl_screen ) {
-				SDL_Quit();
-				exit(2);
+        printf("no m_private->sdl_screen ...%s\n", SDL_GetError());
+				//SDL_Quit();
+				//exit(2);
 			}
 		} else {
-			m_private->sdl_screen = SDL_SetVideoMode( width, height, 32, SDL_SWSURFACE | SDL_RESIZABLE);
+// Remember SDL_SetVideoMode()? It's completely gone. SDL 2.0 allows you to have multiple windows, so the old function didn't make sense any more.
+			m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode( width, height, 32, SDL_SWSURFACE );
 			if (!m_private->sdl_screen) {
-				SDL_Quit();
-				exit(2);
+        printf("no SDL_SetVideoMode...%s\n", SDL_GetError());
+				//SDL_Quit();
+				//exit(2);
 			}
 			SDL_LockSurface(m_private->sdl_screen);
 		}
@@ -216,8 +322,11 @@ namespace WebCore {
 		webkitTrace();
 		IntSize oldSize = IntSize(m_private->size.width(), m_private->size.height());
 		initializeScreens(width, height);
-		if(m_private->chromeClient) 
+		if(m_private->chromeClient) {
 			m_private->chromeClient->widgetSizeChanged(oldSize, IntSize(width,height));
+    } else {
+      printf("no chromeClient ...%s\n", SDL_GetError());
+    }
 	}
 
 	void WebView::scrollBy(int offsetX, int offsetY)

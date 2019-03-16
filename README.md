@@ -58,25 +58,111 @@ webkit.js can be built on linux, osx, or windows.
 
 **Building webkit.js step-by-step**
 
+Tested on ubuntu
+
+* Install gcc
+
+* Make sure /usr/bin/python points to /usr/bin/python2.7:
+```
+file /usr/bin/python
+# /usr/bin/python: symbolic link to /usr/bin/python3
+# if not:
+sudo rm /usr/bin/python
+sudo ln -sf /usr/bin/python2.7 /usr/bin/python
+```
+
+* Install emscripten from https://emscripten.org/docs/getting_started/downloads.html
+```
+#  check em-config
+em-config EMSCRIPTEN_ROOT
+```
+
+Check env var:
+```
+ls $EMSCRIPTEN/system
+```
+
+* Install ninja-build from https://github.com/ninja-build/ninja/wiki/Pre-built-Ninja-packages#pre-built-ninja-packages
+```
+sudo -E apt-get -y install ninja-build
+```
+
 * Clone the repo to your local drive.
 ```
 git clone https://github.com/trevorlinton/webkit.js webkitjs ; cd webkitjs
+git pull 
+git lfs pull
+gclient sync 
+# skip submodule init errors
+git submodule update --init --recursive || true
+ls deps/libjpeg_turbo
 ```
+
+* Get depot_tools
+```
+mkdir install-tools
+cd install-tools
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH=`pwd`/depot_tools:"$PATH"
+which ninja # .../webkit.js/install-tools/depot_tools/ninja
+cd ..
+```
+
+* Build curl, install and copy .h:
+
+```
+cd deps/curl
+./buildconf
+emconfigure ./configure "CFLAGS=-m32" "CXXFLAGS=-m32" "LDFLAGS=-m32"
+cd ../..
+```
+
+```
+# replace 
+#  include <sys/poll.h>
+# To:
+#  include <poll.h>
+# see https://github.com/emscripten-core/emscripten/issues/5447
+```
+```
+# 1919  cd deps/curl/
+# 1920  mkdir build
+# 1921  cd    build
+# 1922  cmake .. -GNinja -DCMAKE_USE_MBEDTLS=1 -DCMAKE_USE_OPENSSL=0 -DCURL_ZLIB=1 -DUSE_NGHTTP2=1 -DENABLE_ARES=1
+# 1923  ninja
+# 1924  ninja install
+# 1925  sudo ninja install
+# 1926  ldconfig
+# 1927  sudo ldconfig
+# 1928  cd ../..
+# 1929  history 
+#
+#sudo cp deps/curl/build/lib/curl_config.h /usr/local/lib 
+#sudo cp deps/curl/build/include/curl/curlbuild.h /usr/local/include/curl/curlbuild.h 
+#
+#cp ./deps/curl/build/lib/curl_config.h ./deps/curl/lib/curl_config.h
+#cp deps/curl/curlbuild.h ./deps/curl/build/include/curl/curlbuild.h
+export PATH=/usr/local/include:$PATH
+```
+
 * Run the setup script to grab all of the dependencies and tools.
 ```
-./setup.sh
+bash ./setup.sh
 ```
+
 * Run the configuration script to generate build and project files.
 ```
-./config.sh
+bash ./config.sh
 ```
+
 * Then to build; run this (generates the actual js file):
 ```
-./build.sh
+bash ./build.sh
 ```
+
 * OR if you want a debug version run this:
 ```
-./build.sh debug
+bash ./build.sh debug
 ```
 
 Running in the Browser
@@ -86,6 +172,11 @@ See demo.html and webkit.js in the "bin" folder, runs best in Firefox (Chrome/Sa
 Demo
 --------------
 http://trevorlinton.github.io/ 
+
+IN DEV!!!
+IN DEV!!!
+IN DEV!!!
+--------------
 
 Contributing
 --------------

@@ -42,6 +42,11 @@
 #include <cairo-gl.h>
 #endif
 
+//#include "SDL_video.h"
+#include "SDL.h"
+
+#include <cstdio>
+
 namespace WebCore {
 
 static EGLDisplay gSharedEGLDisplay = EGL_NO_DISPLAY;
@@ -54,19 +59,32 @@ static const EGLenum gGLAPI = EGL_OPENGL_API;
 
 static EGLDisplay sharedEGLDisplay()
 {
-
+// https://github.com/Nekuromento/SDL2D/blob/0c3d27dec7b7044beb5b865fa2be5e8308589e92/Engine/GFX/Window.cpp
     static bool initialized = false;
     if (!initialized) {
         initialized = true;
 #if PLATFORM(X11)
-        gSharedEGLDisplay = eglGetDisplay(GLContext::sharedX11Display());
+		    webkitTrace();
+        gSharedEGLDisplay = eglGetDisplay(GLContext::sharedX11Display());//SDL_GL_CreateContext(window_);//eglGetDisplay(GLContext::sharedX11Display());
 #elif PLATFORM(JS)
-				gSharedEGLDisplay = (unsigned *)62000; /* Emscripten hack for default display, is this the ptr or the val? */
+        webkitTrace();
+        if (gSharedEGLDisplay == EGL_NO_DISPLAY) {
+          webkitTrace();
+          // TODO
+          //gSharedEGLDisplay = SDL_GL_CreateContext(window_);
+				  //gSharedEGLDisplay = (unsigned *)62000; //SDL_GL_CreateContext(window_);/* Emscripten hack for default display, is this the ptr or the val? */
+        }
 #else
+		    webkitTrace();
         gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 #endif
-        if (gSharedEGLDisplay != EGL_NO_DISPLAY && (!eglInitialize(gSharedEGLDisplay, 0, 0) || !eglBindAPI(gGLAPI)))
+        if (gSharedEGLDisplay != EGL_NO_DISPLAY && (!eglInitialize(gSharedEGLDisplay, 0, 0) || !eglBindAPI(gGLAPI))) {
+		        webkitTrace();
             gSharedEGLDisplay = EGL_NO_DISPLAY;
+        }
+    }
+    if (!gSharedEGLDisplay) {
+      initialized = false;
     }
     return gSharedEGLDisplay;
 }
@@ -112,28 +130,51 @@ static bool getEGLConfig(EGLConfig* config, GLContextEGL::EGLSurfaceType surface
     return eglChooseConfig(sharedEGLDisplay(), attributeList, config, 1, &numberConfigsReturned) && numberConfigsReturned;
 }
 
-PassOwnPtr<GLContextEGL> GLContextEGL::createWindowContext(EGLNativeWindowType window, GLContext* sharingContext)
+PassOwnPtr<GLContextEGL> GLContextEGL::createWindowContext(EGLNativeWindowType window, GLContext* sharingContext, SDL_Window *sdl_window)
 {
+    printf("GLContextEGL::createWindowContext... \n");
+
+    if (!sdl_window) {
+      printf("Invalid window_!!! %s\n", SDL_GetError());
+    }
+
+    /*if (!gSharedEGLDisplay)
+      gSharedEGLDisplay = (unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+    if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
+      printf("Invalid gSharedEGLDisplay 1!!! %s\n", SDL_GetError());
+    }*/
     EGLContext eglSharingContext = sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
+    if (!gSharedEGLDisplay) {
+      gSharedEGLDisplay = static_cast<GLContextEGL*>(sharingContext)->m_context;
+    }
 
     EGLDisplay display = sharedEGLDisplay();
-    if (display == EGL_NO_DISPLAY)
-        return nullptr;
+    if (display == EGL_NO_DISPLAY) {
+        printf("Invalid display 1!!! %s\n", SDL_GetError());
+        //return nullptr;
+    }
 
     EGLConfig config;
-    if (!getEGLConfig(&config, WindowSurface))
-        return nullptr;
+    if (!getEGLConfig(&config, WindowSurface)) {
+        printf("Invalid getEGLConfig 1!!! %s\n", SDL_GetError());
+        //return nullptr;
+    }
 
     EGLContext context = eglCreateContext(display, config, eglSharingContext, gContextAttributes);
-    if (context == EGL_NO_CONTEXT)
-        return nullptr;
+    if (context == EGL_NO_CONTEXT) {
+        printf("Invalid context 1!!! %s\n", SDL_GetError());
+        //return nullptr;
+    }
 
     EGLSurface surface = eglCreateWindowSurface(display, config, window, 0);
-    if (surface == EGL_NO_SURFACE)
-        return nullptr;
+    if (surface == EGL_NO_SURFACE) {
+        printf("Invalid surface 1!!! %s\n", SDL_GetError());
+        //return nullptr;
+    }
 
     return adoptPtr(new GLContextEGL(context, surface, WindowSurface));
 }
+
 PassOwnPtr<GLContextEGL> GLContextEGL::createPbufferContext(EGLContext sharingContext)
 {
 
@@ -194,10 +235,27 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPixmapContext(EGLContext sharingCon
 #endif
 }
 
-PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window, GLContext* sharingContext)
+PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window, GLContext* sharingContext, SDL_Window *sdl_window)
 {
-    if (!sharedEGLDisplay())
-        return nullptr;
+    printf("GLContextEGL::createContext... \n");
+
+    if (!sdl_window) {
+      printf("createContext: Invalid window_!!!\n %s", SDL_GetError());
+    }
+
+    /*if (!gSharedEGLDisplay)
+      gSharedEGLDisplay = (unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+    if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
+      printf("Invalid gSharedEGLDisplay 2!!!\n %s", SDL_GetError());
+    }*/
+    if (!gSharedEGLDisplay) {
+      gSharedEGLDisplay = static_cast<GLContextEGL*>(sharingContext)->m_context;
+    }
+
+    if (!sharedEGLDisplay()) {
+        printf("createContext: Invalid sharedEGLDisplay!!! %s\n", SDL_GetError());
+        //return nullptr;
+    }
 
     static bool initialized = false;
     static bool success = true;
@@ -207,11 +265,13 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window,
 #endif
         initialized = true;
     }
-    if (!success)
-        return nullptr;
+    if (!success) {
+      printf("Invalid initializeOpenGLShims!!!\n %s", SDL_GetError());
+      //return nullptr;
+    }
 
     EGLContext eglSharingContext = sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
-    OwnPtr<GLContextEGL> context = window ? createWindowContext(window, sharingContext) : nullptr;
+    OwnPtr<GLContextEGL> context = window ? createWindowContext(window, sharingContext, sdl_window) : nullptr;
 #if !PLATFORM(JS)
     if (!context)
         context = createPixmapContext(eglSharingContext);
@@ -220,22 +280,31 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window,
         context = createPbufferContext(eglSharingContext);
 #else
 		if (!context)
-				context = createWindowContext(2, sharingContext); // hack for emscripten, 1=onscreen, 2=offscreen
+				context = createWindowContext(2, sharingContext, sdl_window); // hack for emscripten, 1=onscreen, 2=offscreen
 #endif
 
 		return context.release();
 }
 
 GLContextEGL::GLContextEGL(EGLContext context, EGLSurface surface, EGLSurfaceType type)
-    : m_context(context)
+    : /*m_context(context)
     , m_surface(surface)
-    , m_type(type)
+    , m_type(type)*/
 #if USE(CAIRO)
-    , m_cairoDevice(0)
+    //, 
+    m_cairoDevice(0)
 #endif
 	{
+m_context = context;
+m_surface = surface;
+m_type = type;
+
 #if PLATFORM(JS)
-	
+	// TODO
+  /*if (!window_) {
+    printf("Invalid window_!!!\n");
+  }
+  gSharedEGLDisplay = SDL_GL_CreateContext(window_);*/
 #endif
 }
 

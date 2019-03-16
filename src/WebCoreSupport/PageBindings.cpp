@@ -296,11 +296,11 @@ namespace JSC {
   void HandleSet::grow() {}
 
   void HandleSet::writeBarrier(JSC::JSValue*, JSC::JSValue const&) { notImplemented(); }
-  void Heap::reportExtraMemoryCostSlowCase(unsigned int) { notImplemented(); }
+  void Heap::reportExtraMemoryCostSlowCase(size_t) { notImplemented(); }
 
   ExecState* JSGlobalObject::globalExec() { notImplemented(); return NULL; }
 
-  void *MarkedAllocator::allocateSlowCase(unsigned int) { notImplemented(); return NULL; }
+  void *MarkedAllocator::allocateSlowCase(size_t) { notImplemented(); return NULL; }
 
   SourceProvider::SourceProvider(WTF::String const& a, WTF::TextPosition const& b) { notImplemented(); }
   SourceProvider::~SourceProvider() { notImplemented(); }
