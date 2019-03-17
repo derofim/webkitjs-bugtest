@@ -34,7 +34,7 @@
 #elif PLATFORM(EFL)
 #include <Evas.h>
 #elif PLATFORM(JS)
-#include <SDL2/SDL.h>
+#include <SDL.h>
 #endif
 
 typedef struct _cairo_surface cairo_surface_t;

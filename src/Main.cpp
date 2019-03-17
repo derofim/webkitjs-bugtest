@@ -1,12 +1,3 @@
-
-
-
-#include <SDL2/SDL.h>
-//#include <SDL.h>
-#include <SDL2/SDL_thread.h>
-#include <SDL2/SDL_syswm.h>
-#include <SDL2/SDL_video.h>
-
 #include "WebView.h"
 #include "IntSize.h"
 
@@ -22,18 +13,15 @@
 #endif
 
 #include "config.h"
-
+#include "SDL.h"
+#include "SDL_syswm.h"
 //#include <SDL2/SDL_syswm.h>
-
-//#include <SDL2/SDL.h>
 
 #include <emscripten.h>
 #include <EGL/egl.h>
 #include <GLES2/gl2.h>
 #include <emscripten/html5.h>
-
 #include "SDL_opengles2.h"
-//#include <SDL2/SDL_opengles2.h>
 
 #include <cstdio>
 #include <string>
@@ -400,13 +388,6 @@ void tick() {
 			quit = true;
 		}
 
-    if (e.type == SDL_WINDOWEVENT_RESIZED)
-		{
-			//resize(event.resize.w, event.resize.h);
-      // https://wiki.libsdl.org/SDL_WindowEvent
-      WebCore::mainView->resize(e.window.data1, e.window.data2);
-		}
-
 		else if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
 		{
 			//Get mouse position
@@ -471,7 +452,7 @@ int main(int argc, char** argv)
 	}
 
 #ifdef __EMSCRIPTEN__
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
+	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 2);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 #else
@@ -479,39 +460,11 @@ int main(int argc, char** argv)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
-
-			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1);
-			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 16);
-			SDL_GL_SetAttribute(SDL_GL_BUFFER_SIZE, 32);
-			SDL_GL_SetAttribute(SDL_GL_ACCUM_RED_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_ACCUM_GREEN_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_ACCUM_BLUE_SIZE,	8);
-			SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
-			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
-
-
-  // https://skryabiin.wordpress.com/2015/04/25/hello-world/
-  SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); 
-
-  auto sdlContext = SDL_GL_CreateContext(window);
-    SDL_GL_MakeCurrent(window, sdlContext);
-    printf("SDL_GL_MakeCurrent sdlContext...%s\n", SDL_GetError());
-
   // SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
-	//Use Vsync
-	if (SDL_GL_SetSwapInterval(1) < 0)
-	{
-		printf("Warning: Unable to set VSync via SDL_GL_SetSwapInterval! SDL Error: %s\n", SDL_GetError());
-	}
-
-	contextDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//
-  //contextDisplay = (unsigned *)62000; //(unsigned *)62000; //SDL_GL_CreateContext(window);
+  // EGLDisplay glDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	//contextDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//
+  contextDisplay = (unsigned *)62000;//SDL_GL_CreateContext(window); //(unsigned *)62000; //SDL_GL_CreateContext(window);
 	if (!contextDisplay) {
 		printf("Unable to create contextDisplay: %s\n", SDL_GetError());
 		return 1;
@@ -563,32 +516,13 @@ int main(int argc, char** argv)
         EGL_CONTEXT_CLIENT_VERSION, 2,
         EGL_NONE
     };
-
-/*
-The share list of a context is the group of all contexts which share objects with that context. 
-Objects that can be shared between contexts on the share list include vertex buffer objects, 
-program and shader objects, renderbuffer objects, and texture objects 
-(except for the texture objects named zero). 
-It is undefined whether framebuffer objects are shared by contexts on the share list. 
-The framebuffer object namespace may or may not be shared. 
-This means that using the same name for a framebuffer object in multiple contexts 
-on the share list could either result in multiple distinct framebuffer objects, 
-or in a single framebuffer object which is shared. 
-Therefore applications using OpenGL ES should avoid using 
-the same framebuffer object name in multiple contexts on the same share list.
-*/
-    EGLContext share_context = EGL_NO_CONTEXT;
-    share_context = (EGLContext)SDL_GL_GetCurrentContext();
-    if (share_context == EGL_NO_CONTEXT) {
-        printf("Could not get share_context\n");
-    }
-
-    glContext = eglCreateContext(contextDisplay, glConfig, share_context, contextAttribs);
+    
+    glContext = eglCreateContext(contextDisplay, glConfig, NULL, contextAttribs);
     if (glContext == EGL_NO_CONTEXT) {
         printf("Could not create EGL context\n");
     }
 
-    //assert(eglGetCurrentContext() == 0); // Creating a contextDisplay does not yet activate it.
+    assert(eglGetCurrentContext() == 0); // Creating a contextDisplay does not yet activate it.
     assert(eglGetError() == EGL_SUCCESS);
 
     // EGLNativeWindowType dummyWindow;
@@ -609,7 +543,7 @@ the same framebuffer object name in multiple contexts on the same share list.
     assert(ret == EGL_TRUE);
 
     SDL_GL_MakeCurrent(window, contextDisplay);
-    printf("(makes warning) SDL_GL_MakeCurrent...%s\n", SDL_GetError());
+    printf("SDL_GL_MakeCurrent...%s\n", SDL_GetError());
 
     EGLint ewidth, eheight;
     eglQuerySurface(contextDisplay, glSurface, EGL_WIDTH, &ewidth);

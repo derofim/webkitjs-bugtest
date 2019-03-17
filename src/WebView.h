@@ -16,8 +16,7 @@
 #elif USE(SKIA)
 #endif
 
-#include <SDL2/SDL.h>
-#include <SDL2/SDL_thread.h>
+#include "SDL.h"
 
 #if USE(ACCELERATED_COMPOSITING)
 //#include "GL/glew.h"
@@ -101,7 +100,7 @@ namespace WebCore {
 		WebViewPrivate* m_private;
   public:
   // TODO:
-		//void handleSDLEvent(const SDL_Event& event);
+		void handleSDLEvent(const SDL_Event& event);
     SDL_Window *window_;
     SDL_GLContext& context_;
     //static cairo_t *cairo_context_;

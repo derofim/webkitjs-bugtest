@@ -42,12 +42,7 @@
 #include "GLContext.h"
 #endif
 
-//#include <SDL.h>
-#include <SDL2/SDL.h>
-//#include <SDL.h>
-#include <SDL2/SDL_thread.h>
-#include <SDL2/SDL_syswm.h>
-#include <SDL2/SDL_video.h>
+#include <SDL.h>
 
 #include <stdio.h>
 #include <string>
@@ -103,15 +98,8 @@ namespace WebCore {
       printf("Unable to create window: %s\n", SDL_GetError());
     }
 #if USE(ACCELERATED_COMPOSITING)
-    if(m_private->glContext)
-      m_private->glContext->setWindow(window_);
-    else
-    {
-      printf("(makes warning) !m_private->glContext......: %s\n", SDL_GetError());
-    }
-    
+    m_private->glContext->setWindow(window_);
 #endif
-
     if (!context_) {
       printf("Unable to create context: %s\n", SDL_GetError());
     }
@@ -413,16 +401,14 @@ namespace WebCore {
 		coreFrame->view()->scrollBy(IntSize(offsetX, offsetY));
 	}
 
-	/*void WebView::handleSDLEvent(const SDL_Event& event)
+	void WebView::handleSDLEvent(const SDL_Event& event)
 	{
 		// Note: do not add a trace or printf here, this funciton executes quite
 		// a few times that it will cause the browser to slow down to a crawl
 		// to finish writing console messages.
 		switch (event.type) {
-			case SDL_WINDOWEVENT_RESIZED:
-			//resize(event.resize.w, event.resize.h);
-      // https://wiki.libsdl.org/SDL_WindowEvent
-      resize(event.window.data1, event.window.data2);
+			case SDL_VIDEORESIZE:
+			resize(event.resize.w, event.resize.h);
 			break;
 			case SDL_VIDEOEXPOSE:
 			break;
@@ -444,8 +430,7 @@ namespace WebCore {
 			break;
 		}
 
-	}*/
-
+	}
 	void WebView::scalefactor(float t) {
 		webkitTrace();
 //		m_private->corePage->setDeviceScaleFactor(t);
