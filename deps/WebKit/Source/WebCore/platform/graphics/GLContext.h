@@ -43,7 +43,7 @@ typedef struct _cairo_device cairo_device_t;
 typedef struct _XDisplay Display;
 #endif
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 namespace WebCore {
 
