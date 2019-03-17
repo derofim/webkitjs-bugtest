@@ -25,7 +25,9 @@
     #
     # 
 #define JS_EXPORT_PRIVATE
-#define WTF_EXPORT_PRIVATE
+#define WTF_EXPORT_PRIVATE 
+# ASSERTIONS == 2 gives even more runtime checks
+		#'emscripten_cflags':'-s ALIASING_FUNCTION_POINTERS=0 -s WARN_UNALIGNED=1 -s SIMD=1 -s ASSERTIONS=2 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1',
 		'emscripten_cflags':'-s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1',
 		'emscripten_linktojs':'<(emscripten_cflags) -std=c++11 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
 		#--post-js ../src/webkit.post.js --pre-js ../src/webkit.pre.js --proxy-to-worker --proxy-to-worker -o webkit.js
@@ -34,7 +36,8 @@
 		# -fshort-wchar is needed, emscripten uses a 4, not 8 wchar (32 vs. 64 bit). 
 		#'cflags':'-U__APPLE__ -U__WIN32__ -Ulinux -Wno-warn-absolute-paths -Werror -fshort-wchar -isysroot <(emscripten_sysroot)',
     #  -fshort-wchar 
-    'cflags':'<(emscripten_cflags) -DHAVE_ICU=1 -DJS_EXPORT_PRIVATE="" -DWTF_PLATFORM_JS=1 -DDEBUG=1 -m32 -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1  -U__APPLE__ -U__WIN32__ -DPFNGLCLIPPLANEXIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG -DPFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC -DPFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG=PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC -Ulinux -Wno-error -Wno-warn-absolute-paths -Wno-expansion-to-defined -Wno-logical-not-parentheses -Wno-inconsistent-missing-override -isysroot <(emscripten_sysroot)',
+    # -DPFNGLCLIPPLANEXIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG -DPFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC -DPFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG=PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC 
+    'cflags':'<(emscripten_cflags) -DHAVE_ICU=1 -DJS_EXPORT_PRIVATE="" -DWTF_PLATFORM_JS=1 -DDEBUG=1 -m32 -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1  -U__APPLE__ -U__WIN32__ -Ulinux -Wno-error -Wno-warn-absolute-paths -Wno-expansion-to-defined -Wno-logical-not-parentheses -Wno-inconsistent-missing-override -isysroot <(emscripten_sysroot)',
 		# -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1 
     # -fwchar-type=short -fno-signed-wchar
     # -m32 https://github.com/trevorlinton/webkit.js/issues/40
@@ -77,7 +80,12 @@
 				# Using -Oz instead of -O3 here creates larger file sizes (?..) its unclear the optimal settings but
 				#		this should be close.
 				#
-				'jsflags+':['<(emscripten_linktojs) -s OUTLINING_LIMIT=100000 -s TOTAL_MEMORY=100663296 -O3 --llvm-opts 3 --llvm-lto 3 -g0'], # -s INLINING_LIMIT=1 -s FORCE_ALIGNED_MEMORY=1
+        # SAFE_HEAP can be used to reveal memory alignment issues.
+        # -s DISABLE_EXCEPTION_CATCHING=0
+        # ALIASING_FUNCTION_POINTERS=0 make impossible for a function pointer to be called with the wrong type without raising an error:
+        # -s UNALIGNED_MEMORY=1 forced unaligned memory not supported in fastcomp
+				#'jsflags+':['<(emscripten_linktojs) -s OUTLINING_LIMIT=100000 -s TOTAL_MEMORY=100663296 -O3 --llvm-opts 3 --llvm-lto 3 -g0'], # -s INLINING_LIMIT=1 -s FORCE_ALIGNED_MEMORY=1
+			  'jsflags+':['<(emscripten_linktojs) -s TOTAL_MEMORY=100663296 -O2 -g0 -s SAFE_HEAP=1'], # -s INLINING_LIMIT=1 -s FORCE_ALIGNED_MEMORY=1
 			},
 			'Debug': {
 				'defines+': ['DEBUG','TARGET_EMSCRIPTEN','__EMSCRIPTEN__'],
