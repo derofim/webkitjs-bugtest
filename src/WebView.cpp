@@ -61,10 +61,10 @@ using namespace WTF;
 
 namespace WebCore {
 
-  cairo_t *WebView::cairo_context_;
-  cairo_surface_t *WebView::cairo_surface_;
+  //cairo_t *WebView::cairo_context_;
+  //cairo_surface_t *WebView::cairo_surface_;
 
-	WebView::WebView(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = true) : 
+	WebView::WebView(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = false) : 
     context_(context), window_(window)
 	{
     printf("creating WebView...\n");
@@ -72,9 +72,11 @@ namespace WebCore {
 
     //GLContext::setGlobalWindow(window_);
 
+#if USE(ACCELERATED_COMPOSITING)
     //GLContext::currentContext()->gWindow = window_;
     GLContext::gWindow = window_;
     //GLContext::gContext = context_;
+#endif
 
 		webkitTrace();
 		WebKitJSStrategies::initialize();
@@ -92,8 +94,9 @@ namespace WebCore {
     if (!window_) {
       printf("Unable to create window: %s\n", SDL_GetError());
     }
+#if USE(ACCELERATED_COMPOSITING)
     m_private->glContext->setWindow(window_);
-
+#endif
     if (!context_) {
       printf("Unable to create context: %s\n", SDL_GetError());
     }
@@ -147,6 +150,7 @@ namespace WebCore {
     }
 
     printf("initializeScreens...\n");
+    printf("WebView: width = %d height = %d \n", width, height);
 		initializeScreens(width, height);
 
 		m_private->mainFrame->init();
@@ -205,33 +209,57 @@ namespace WebCore {
 		return m_private->size;
 	}
 
+#if USE(ACCELERATED_COMPOSITING)
 	WebCore::GLContext *WebView::glWindowContext(SDL_Window *sdl_window) {
 		webkitTrace();
+
 		if (m_private->glContext) {
 			return m_private->glContext.get();
     } else {
       printf("no glWindowContext :()...%s\n", SDL_GetError());
     }
+
 		webkitTrace();
 
     if (!sdl_window) {
       printf("WebView::glWindowContext: Invalid sdl_window!!!\n");
     }
-    GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
-		m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), sdl_window);
+
+    //->>>>>>>
+    if(context_) {
+      GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+    } else {
+		  webkitTrace();
+      printf("!context_ !\n");
+    }
+
+    //->>>>>>>
+		//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), sdl_window);
+    m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), sdl_window);
+    
 		if(!m_private->glContext) {
       printf("no glContext...%s\n", SDL_GetError());
     }
-    m_private->glContext->setWindow(window_); // TODO
+
+    m_private->glContext->setWindow(sdl_window); // TODO
 		webkitTrace();
 		return m_private->glContext.get();
 	}
+#endif
 
 	void WebView::initializeScreens(int width, int height) {
+    printf("initializeScreens: width = %d height = %d \n", width, height);
+
 		webkitTrace();
+
+    if (!window_) {
+      printf("WebView::initializeScreens: Invalid window_!!!\n");
+    }
+
 		if(!m_private->sdl_screen) {
       printf("creating sdl_screen... %s\n", SDL_GetError());
-      m_private->sdl_screen = SDL_GetWindowSurface(window_);
+      //m_private->sdl_screen = SDL_GetWindowSurface(window_);
+      m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode(width, height, 32, SDL_OPENGL );
 			//SDL_FreeSurface(m_private->sdl_screen);
     }
 		if(!m_private->sdl_screen) {
@@ -270,7 +298,11 @@ namespace WebCore {
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
 // Remember SDL_SetVideoMode()? It's completely gone. SDL 2.0 allows you to have multiple windows, so the old function didn't make sense any more.
-			m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode(width, height, 32, SDL_OPENGL );
+			//m_private->sdl_screen = SDL_GetWindowSurface(window_);
+      printf("SDL_SetVideoMode 1: width = %d height = %d \n", width, height);
+
+      //->>>>>>>
+      m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode(width, height, 32, SDL_OPENGL );
       if(!m_private->sdl_screen) {
         printf("no SDL_SetVideoMode!...%s\n", SDL_GetError());
         //SDL_FreeSurface(m_private->sdl_screen);
@@ -281,8 +313,19 @@ namespace WebCore {
       if (!window_) {
         printf("WebView::initializeScreens: Invalid window_!!!\n");
       }
-    GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
-			m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
+
+    //->>>>>>>
+    //->>>>>>>
+    if(context_) {
+      GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+    } else {
+		  webkitTrace();
+      printf("!context_ !\n");
+    }
+
+#if USE(ACCELERATED_COMPOSITING)
+			//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
+			m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), window_);
       if(!m_private->glContext) {
         printf("no glContext!...%s\n", SDL_GetError());
       }
@@ -290,15 +333,19 @@ namespace WebCore {
 			ASSERT(m_private->glContext->makeContextCurrent());
 			GLContext* context = GLContext::getCurrent();
 			ASSERT(context->makeContextCurrent());
+#endif
 
+#if USE(ACCELERATED_COMPOSITING)
 			if(!m_private->acceleratedContext) {
         printf("AcceleratedContext::create...\n");
 				m_private->acceleratedContext = AcceleratedContext::create(this);
       }
-
 			if(!m_private->acceleratedContext) {
         printf("no m_private->acceleratedContext...%s\n", SDL_GetError());
       }
+      // >>>>>>>>.
+      m_private->acceleratedContext->initialize();
+#endif
 
 			if ( !m_private->sdl_screen ) {
         printf("no m_private->sdl_screen ...%s\n", SDL_GetError());
@@ -307,7 +354,9 @@ namespace WebCore {
 			}
 		} else {
 // Remember SDL_SetVideoMode()? It's completely gone. SDL 2.0 allows you to have multiple windows, so the old function didn't make sense any more.
-			m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode( width, height, 32, SDL_SWSURFACE );
+			//m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode( width, height, 32, SDL_SWSURFACE );
+      printf("SDL_SetVideoMode 2: width = %d height = %d \n", width, height);
+      m_private->sdl_screen = SDL_GetWindowSurface(window_);//SDL_SetVideoMode(width, height, 32, SDL_OPENGL );
 			if (!m_private->sdl_screen) {
         printf("no SDL_SetVideoMode...%s\n", SDL_GetError());
 				//SDL_Quit();
@@ -319,6 +368,7 @@ namespace WebCore {
 
 	void WebView::resize(int width, int height)
 	{
+    printf("SDL_SetViresizedeoMode: width = %d height = %d \n", width, height);
 		webkitTrace();
 		IntSize oldSize = IntSize(m_private->size.width(), m_private->size.height());
 		initializeScreens(width, height);

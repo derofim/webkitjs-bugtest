@@ -38,7 +38,7 @@ static PassRefPtr<cairo_surface_t> createSurfaceForBackingStore(PlatformWidget w
 	webkitTrace();
 
   // TODO >>>>
-	/*if(widget) {
+	if(widget) {
 	webkitTrace();
 		SDL_Surface *sdl_surface = (SDL_Surface *)widget;
 		return adoptRef(cairo_image_surface_create_for_data((unsigned char*)sdl_surface->pixels,
@@ -46,7 +46,7 @@ static PassRefPtr<cairo_surface_t> createSurfaceForBackingStore(PlatformWidget w
 																			sdl_surface->w,
 																			sdl_surface->h,
 																			sdl_surface->pitch));
-	} else */
+	} else
   {
 	webkitTrace();
 		UNUSED_PARAM(widget);

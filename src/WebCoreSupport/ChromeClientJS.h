@@ -4,6 +4,8 @@
 #ifndef all_ChromeClientJS_h
 #define all_ChromeClientJS_h
 
+#include "config.h"
+//#include "WebPreferences.h"
 #include "ChromeClient.h"
 #include "AcceleratedContext.h"
 #include "WebView.h"

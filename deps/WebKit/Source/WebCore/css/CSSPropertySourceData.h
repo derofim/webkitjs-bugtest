@@ -93,9 +93,10 @@ struct CSSRuleSourceData : public RefCounted<CSSRuleSourceData> {
         HOST_RULE,
         VIEWPORT_RULE,
         SUPPORTS_RULE,
-#if ENABLE(CSS_SHADERS)
+        // todo: fix grammar
+//#if ENABLE(CSS_SHADERS)
         FILTER_RULE
-#endif
+//#endif
     };
 
     static PassRefPtr<CSSRuleSourceData> create(Type type)

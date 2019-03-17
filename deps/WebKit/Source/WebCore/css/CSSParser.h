@@ -67,12 +67,12 @@ class StyleKeyframe;
 class StyleSheetContents;
 class StyledElement;
 
-#if ENABLE(CSS_SHADERS)
+//#if ENABLE(CSS_SHADERS)
 class WebKitCSSArrayFunctionValue;
 class WebKitCSSMatFunctionValue;
 class WebKitCSSMixFunctionValue;
 class WebKitCSSShaderValue;
-#endif
+//#endif
 
 class CSSParser {
     friend inline int cssyylex(void*, CSSParser*);
@@ -337,9 +337,9 @@ public:
 #if ENABLE(SHADOW_DOM)
     PassRefPtr<StyleRuleBase> createHostRule(RuleList*);
 #endif
-#if ENABLE(CSS_SHADERS)
+//#if ENABLE(CSS_SHADERS)
     PassRefPtr<StyleRuleBase> createFilterRule(const CSSParserString&);
-#endif
+//#endif
 
     void startDeclarationsForMarginBox();
     void endDeclarationsForMarginBox();
@@ -388,9 +388,9 @@ public:
     bool m_logErrors;
     bool m_ignoreErrorsInDeclaration;
 
-#if ENABLE(CSS_SHADERS)
+//#if ENABLE(CSS_SHADERS)
     bool m_inFilterRule;
-#endif
+//#endif
 
     AtomicString m_defaultNamespace;
 

@@ -72,30 +72,40 @@ static bool isRobustnessExtSupported(EGLDisplay display)
 
 EGLOffScreenContext::EGLOffScreenContext()
     : GLPlatformContext()
-    , m_display(0)
+    //, m_display(0)
 {
+  m_display = eglGetCurrentDisplay();
 }
 
 bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext sharedContext)
 {
-    if (!surface)
+    printf("EGLOffScreenContext::initialize...\n");
+
+    if (!surface) {
+        printf("EGLOffScreenContext::initialize !surface!!!\n");
         return false;
+    }
 
     if (!eglBindAPI(eglAPIVersion)) {
+        printf("EGLOffScreenContext::initialize !eglBindAPI!!!\n");
         LOG_ERROR("Failed to set EGL API(%d).", eglGetError());
         return false;
     }
 
-    m_display = surface->sharedDisplay();
-    if (!m_display)
+    m_display = eglGetCurrentDisplay();//surface->sharedDisplay();
+    if (!m_display) {
+        printf("EGLOffScreenContext::initialize !m_display!!!\n");
         return false;
+    }
 
     EGLConfig config = surface->configuration();
-    if (!config)
+    if (!config) {
+        printf("EGLOffScreenContext::initialize !EGLConfig!!!\n");
         return false;
+    }
 
     if (isRobustnessExtSupported(m_display))
-        m_contextHandle = eglCreateContext(m_display, config, sharedContext, contextRobustnessAttributes);
+        m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextRobustnessAttributes);
 
     if (m_contextHandle != EGL_NO_CONTEXT) {
         // The EGL_EXT_create_context_robustness spec requires that a context created with
@@ -109,10 +119,12 @@ bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext
     }
 
     if (m_contextHandle == EGL_NO_CONTEXT)
-        m_contextHandle = eglCreateContext(m_display, config, sharedContext, contextAttributes);
+        m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextAttributes);
 
     if (m_contextHandle != EGL_NO_CONTEXT)
         return true;
+
+    printf("!m_contextHandle!!!!!!!!!\n");
 
     return false;
 }
@@ -149,8 +161,10 @@ void EGLOffScreenContext::platformReleaseCurrent()
 
 void EGLOffScreenContext::freeResources()
 {
-    if (m_contextHandle == EGL_NO_CONTEXT)
+    if (m_contextHandle == EGL_NO_CONTEXT) {
+        printf("!m_contextHandle!!!\n");
         return;
+    }
 
     eglDestroyContext(m_display, m_contextHandle);
     m_contextHandle = EGL_NO_CONTEXT;

@@ -31,6 +31,7 @@ class GraphicsLayer;
 
 void TextureMapperTile::updateContents(TextureMapper* textureMapper, Image* image, const IntRect& dirtyRect, BitmapTexture::UpdateContentsFlag updateContentsFlag)
 {
+    printf("TextureMapperTile::updateContents...\n");
     IntRect targetRect = enclosingIntRect(m_rect);
     targetRect.intersect(dirtyRect);
     if (targetRect.isEmpty())
@@ -52,6 +53,7 @@ void TextureMapperTile::updateContents(TextureMapper* textureMapper, Image* imag
 
 void TextureMapperTile::updateContents(TextureMapper* textureMapper, GraphicsLayer* sourceLayer, const IntRect& dirtyRect, BitmapTexture::UpdateContentsFlag updateContentsFlag)
 {
+    printf("TextureMapperTile::updateContents 2...\n");
     IntRect targetRect = enclosingIntRect(m_rect);
     targetRect.intersect(dirtyRect);
     if (targetRect.isEmpty())
@@ -71,6 +73,7 @@ void TextureMapperTile::updateContents(TextureMapper* textureMapper, GraphicsLay
 
 void TextureMapperTile::paint(TextureMapper* textureMapper, const TransformationMatrix& transform, float opacity, const unsigned exposedEdges)
 {
+    printf("TextureMapperTile::paint...\n");
     if (texture().get())
         textureMapper->drawTexture(*texture().get(), rect(), transform, opacity, exposedEdges);
 }

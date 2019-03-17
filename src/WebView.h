@@ -2,7 +2,6 @@
 #define WEBKIT_WEBVIEW_H
 
 #include "config.h"
-
 #include "Page.h"
 #include "Frame.h"
 #include "FrameLoader.h"
@@ -30,7 +29,9 @@ namespace WebCore {
 	class ChromeClientJS;
 	class FrameLoaderClientJS;
 	class WebFrameJS;
+#if USE(ACCELERATED_COMPOSITING)
   class GLContext;
+#endif
 }
 
 namespace WebCore {
@@ -102,8 +103,8 @@ namespace WebCore {
 		void handleSDLEvent(const SDL_Event& event);
     SDL_Window *window_;
     SDL_GLContext& context_;
-    static cairo_t *cairo_context_;
-    static cairo_surface_t *cairo_surface_;
+    //static cairo_t *cairo_context_;
+    //static cairo_surface_t *cairo_surface_;
 	};
 }
 

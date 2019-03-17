@@ -1,20 +1,25 @@
 #include "WebView.h"
 #include "IntSize.h"
-#include <emscripten.h>
 
 #ifdef DEBUG
 #include "Logging.h"
 #include <wtf/text/WTFString.h>
 #endif
 
+#ifdef CAIRO_TEST
 #include "cairo.h"
 #include "cairo-gl.h"
 #include "PlatformContextCairo.h"
+#endif
 
 #include "config.h"
 #include "SDL.h"
+#include "SDL_syswm.h"
+//#include <SDL2/SDL_syswm.h>
 
 #include <emscripten.h>
+#include <EGL/egl.h>
+#include <GLES2/gl2.h>
 #include <emscripten/html5.h>
 #include "SDL_opengles2.h"
 
@@ -57,7 +62,11 @@ static GLint uniformTex;
 static float zoom = 1.0;
 
 static SDL_Window *window;
-static SDL_GLContext context;
+static SDL_GLContext contextDisplay;
+    EGLConfig   glConfig;
+    EGLContext  glContext;
+    EGLSurface  glSurface;
+    EGLint      numConfigs;
 
 //Main loop flag
 static bool quit = false;
@@ -67,6 +76,13 @@ static SDL_Event e;
 
 static GLuint vertexPosObject;
 
+bool makeCurrent() {
+  SDL_GL_MakeCurrent(window, nullptr);
+
+  return !SDL_GL_MakeCurrent(window, contextDisplay);
+}
+
+#ifdef CAIRO_TEST
 //static cairo_device_t* cairo_device;
 
 /*static cairo_surface_t* cairo_surface;
@@ -75,16 +91,10 @@ static cairo_t *cairo_context;*/
 
 static GLuint cairo_texture = 0;
 
-bool makeCurrent() {
-  SDL_GL_MakeCurrent(window, nullptr);
-
-  return !SDL_GL_MakeCurrent(window, context);
-}
-
 bool makeCairoCurrent() {
   SDL_GL_MakeCurrent(window, nullptr);
 
-  return !SDL_GL_MakeCurrent(window, context);
+  return !SDL_GL_MakeCurrent(window, contextDisplay);
 }
 
 // https://www.cairographics.org/samples/
@@ -125,6 +135,7 @@ inline void cairo_draw(cairo_surface_t* surface) {
 
 	if(s >= 2.0) s = 1.0;
 }
+#endif
 
 GLuint LoadShader(GLenum type, const char *shaderSrc)
 {
@@ -218,7 +229,9 @@ int Init()
 		return GL_FALSE;
 	}
 
+#ifdef CAIRO_TEST
     glGenTextures(1, &cairo_texture);
+#endif
 
 	// No clientside arrays, so do this in a webgl-friendly manner
 	glGenBuffers(1, &vertexPosObject);
@@ -232,7 +245,7 @@ int Init()
 	return GL_TRUE;
 }
 
-#define DRAW_TEST
+//#define DRAW_TEST
 
 #ifdef DRAW_TEST
 ///
@@ -241,6 +254,10 @@ int Init()
 void Draw()
 {
 
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
+
+#ifdef CAIRO_TEST
   if(makeCairoCurrent()) {
     //cairo_draw(cairo_surface);
 
@@ -313,11 +330,25 @@ void Draw()
   } else {
     printf("!makeCurrent \n");
   }
+#endif
+
 }
 #endif // DRAW_TEST
 
+extern "C" {
+	void setHtml(const char *html) { WebCore::mainView->setHtml(html,strlen(html)); }
+	void setTransparent(bool transparent) { WebCore::mainView->setTransparent(transparent); }
+	void scrollBy(int x, int y) { WebCore::mainView->scrollBy(x,y); }
+	void resize(int w, int h) { WebCore::mainView->resize(w,h); }
+	void scalefactor(float sf) { WebCore::mainView->scalefactor(sf); }
+	void createWebKit(SDL_Window *window, SDL_GLContext& contextDisplay, int width, int height, bool accel) { WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, accel); }
+}
+
 void tick() {
-  if(!WebCore::mainView) return;
+  if(!WebCore::mainView) {
+    printf("!webview!\n");
+    return;
+  }
 
 #ifdef __EMSCRIPTEN__
 	if (quit) emscripten_cancel_main_loop();
@@ -325,10 +356,33 @@ void tick() {
 	while (SDL_PollEvent(&e) != 0)
 	{
 
-    WebCore::mainView->handleSDLEvent(e);
+    //WebCore::mainView->handleSDLEvent(e);
+  /*  
+  resize(width + 1, height + 1);
+  scrollBy(1,1);
+  scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());*/
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);
+ 
+ 
+ 
+  //////// eglSwapBuffers(contextDisplay, glSurface);
 
+
+
+/*
 		//Update screen
 		SDL_GL_SwapWindow(window);
+
+
+  resize(width + 1, height + 1);
+  scrollBy(1,1);
+  scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);*/
+
 		if (e.type == SDL_QUIT)
 		{
 			quit = true;
@@ -365,15 +419,6 @@ void tick() {
 #endif // DRAW_TEST
 }
 
-extern "C" {
-	void setHtml(const char *html) { WebCore::mainView->setHtml(html,strlen(html)); }
-	void setTransparent(bool transparent) { WebCore::mainView->setTransparent(transparent); }
-	void scrollBy(int x, int y) { WebCore::mainView->scrollBy(x,y); }
-	void resize(int w, int h) { WebCore::mainView->resize(w,h); }
-	void scalefactor(float sf) { WebCore::mainView->scalefactor(sf); }
-	void createWebKit(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accel) { WebCore::mainView = new WebCore::WebView(window, context, width, height, accel); }
-}
-
 int main(int argc, char** argv)
 {
 	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
@@ -404,11 +449,94 @@ int main(int argc, char** argv)
 #else
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
-	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 #endif
-  SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+  // SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
-	context = SDL_GL_CreateContext(window);
+  // EGLDisplay glDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	contextDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//SDL_GL_CreateContext(window); //(unsigned *)62000; //SDL_GL_CreateContext(window);
+	if (!contextDisplay) {
+		printf("Unable to create contextDisplay: %s\n", SDL_GetError());
+		return 1;
+	}
+
+  // https://github.com/emscripten-core/emscripten/blob/aae300219122ab62a50f2bcfeca5ba0be2e1040d/site/source/docs/porting/multimedia_and_graphics/EGL-Support-in-Emscripten.rst
+  // https://github.com/emscripten-core/emscripten/blob/5187ea263120ff57424a184c1bc73259e24dc9a9/tests/test_egl.c
+  // https://gist.github.com/EXL/1aaa9d273652addd5b33f9504c8180c7
+  EGLint major = 2, minor = 1;
+  EGLBoolean ret = eglInitialize(contextDisplay, &major, &minor);
+  assert(eglGetError() == EGL_SUCCESS);
+  assert(ret == EGL_TRUE);
+  assert(major * 10000 + minor >= 10004);
+
+    ret = eglGetConfigs(contextDisplay, NULL, 0, &numConfigs);
+    assert(eglGetError() == EGL_SUCCESS);
+    assert(ret == EGL_TRUE);
+
+    EGLint egl_config_attr[] = {
+        EGL_RED_SIZE, 8,
+        EGL_GREEN_SIZE, 8,
+        EGL_BLUE_SIZE, 8,
+        EGL_ALPHA_SIZE, 8,
+        EGL_STENCIL_SIZE, 8,
+        EGL_DEPTH_SIZE, 16,
+        EGL_BUFFER_SIZE, 32,
+        EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
+        EGL_SAMPLES, 1,
+        EGL_SAMPLE_BUFFERS, 2,
+        EGL_NONE
+    };
+    //EGLint egl_config_attr[] = {
+    //    EGL_BUFFER_SIZE,                16,
+    //    EGL_DEPTH_SIZE,                 16,
+    //    EGL_STENCIL_SIZE,                0,
+    //    EGL_SURFACE_TYPE,   EGL_WINDOW_BIT,
+    //    EGL_NONE
+    //};
+    eglChooseConfig(contextDisplay, egl_config_attr, &glConfig, 1, &numConfigs);
+    /*SDL_SysWMinfo sysInfo;
+    SDL_VERSION(&sysInfo.version); // Set SDL version
+    if ( !SDL_GetWindowWMInfo(window, &sysInfo) ) { 
+      printf("Unable to SDL_GetWindowWMInfo: %s\n", SDL_GetError());
+      return 1;
+    }*/
+
+    EGLint contextAttribs[] =
+    {
+        EGL_CONTEXT_CLIENT_VERSION, 2,
+        EGL_NONE
+    };
+    glContext = eglCreateContext(contextDisplay, glConfig, NULL, contextAttribs);
+
+    assert(eglGetCurrentContext() == 0); // Creating a contextDisplay does not yet activate it.
+    assert(eglGetError() == EGL_SUCCESS);
+
+    // EGLNativeWindowType dummyWindow;
+    /*glSurface = eglCreateWindowSurface(contextDisplay, glConfig,
+                                          dummyWindow, 0);*/
+    /*glSurface = eglCreateWindowSurface(contextDisplay, glConfig,
+                                       (EGLNativeWindowType)sysInfo.info.x11.window, 0); // X11?*/
+    // https://github.com/spurious/SDL-mirror/blob/7a03352cafcc855499bc459e1e58a446e38e7236/src/video/emscripten/SDL_emscriptenvideo.c#L239
+    glSurface =  eglCreateWindowSurface(contextDisplay, glConfig, 0, 0);
+
+    // https://github.com/juj/SDL-emscripten/blob/master/src/video/SDL_egl.c#L746
+    ret = eglMakeCurrent(contextDisplay, glSurface, glSurface, glContext);
+    assert(eglGetError() == EGL_SUCCESS);
+    assert(ret == EGL_TRUE);
+
+    SDL_GL_MakeCurrent(window, contextDisplay);
+
+    eglSwapInterval(contextDisplay, 1);
+    glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
+    glClearDepthf(1.0f);
+
+    EGLint width, height;
+    eglQuerySurface(contextDisplay, glSurface, EGL_WIDTH, &width);
+    eglQuerySurface(contextDisplay, glSurface, EGL_HEIGHT, &height);
+
+    printf("eglQuerySurface (%d, %d)\n", width, height);
+
+  // SDL_Surface* sdl_screen
 
 #ifndef __EMSCRIPTEN__
 	//Initialize GLEW
@@ -430,6 +558,7 @@ int main(int argc, char** argv)
 
 #ifdef DRAW_TEST
 
+#ifdef CAIRO_TEST
     // TODO: surface creation error handling
     // https://github.com/acomminos/scrap-engine/blob/f9984bcf67fd83644d93e385215a3d741dfcc2ec/src/scrap/gl/cairo_renderer.cc
     WebView::cairo_surface_ = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, width, height);
@@ -438,7 +567,7 @@ int main(int argc, char** argv)
   // https://github.com/cubicool/cairo-gl-sdl2/blob/master/src/common/SDL2.hpp
   cairo_device = cairo_egl_device_create(
 		(unsigned *)62000, //window.getDisplay(),
-		reinterpret_cast<EGLContext>(context)
+		reinterpret_cast<EGLContext>(contextDisplay)
 	);
 	if(!cairo_device) {
 		std::cout << "Couldn't create device; fatal." << std::endl;
@@ -472,27 +601,44 @@ int main(int argc, char** argv)
 
 		return 4;
 	}*/
+#endif // CAIRO_TEST
+
 #endif // DRAW_TEST
 
+
+
 	printf("createWebKit... \n");
-  createWebKit(window, context, width, height, true);
+  createWebKit(window, contextDisplay, width, height, true);
+
+  /*
+  //WebView->setViewWindow(scr);
   //setHtml(std::string("<html><body style='background-color:red;height:500px;width:500px'></body></html>").c_str());
-  setHtml(std::string(R"raw(<html><body style='background-color:blue;height:100%;width:100%'></body></html>)raw").c_str());
-  //WebCore::mainView = new WebCore::WebView(window, context, width, height, /*accel*/ true);
+  resize(width + 1, height + 1);
+  scrollBy(1,1);
+  scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);
+  eglSwapBuffers(contextDisplay, glSurface);
+  */
 
 #ifdef __EMSCRIPTEN__
+	printf("emscripten_set_main_loop... \n");
 	emscripten_set_main_loop(tick, 0, 1);
 #else
+	printf("main_loop... \n");
 	while (!quit) 
 	{
 		tick();
 	}
 #endif
 
+#ifdef CAIRO_TEST
 	cairo_surface_destroy(WebView::cairo_surface_);
   glDeleteTextures(1, &cairo_texture);
   glDeleteBuffers(1, &vertexPosObject);
   cairo_destroy(WebView::cairo_context_);
+#endif
 
 	SDL_DestroyWindow(window);
 	window = NULL;

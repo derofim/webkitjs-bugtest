@@ -28,17 +28,20 @@ namespace WebCore {
 
 void TextureMapperSurfaceBackingStore::setGraphicsSurface(PassRefPtr<GraphicsSurface> surface)
 {
+    printf("TextureMapperSurfaceBackingStore::setGraphicsSurface...\n");
     m_graphicsSurface = surface;
 }
 
 void TextureMapperSurfaceBackingStore::swapBuffersIfNeeded(uint32_t)
 {
+    printf("TextureMapperSurfaceBackingStore::swapBuffersIfNeeded...\n");
     if (m_graphicsSurface)
         m_graphicsSurface->swapBuffers();
 }
 
 PassRefPtr<BitmapTexture> TextureMapperSurfaceBackingStore::texture() const
 {
+    printf("TextureMapperSurfaceBackingStore::texture...\n");
     // FIXME: Instead of just returning an empty texture, we should wrap the texture contents into a BitmapTexture.
     RefPtr<BitmapTexture> emptyTexture;
     return emptyTexture;
@@ -46,6 +49,7 @@ PassRefPtr<BitmapTexture> TextureMapperSurfaceBackingStore::texture() const
 
 void TextureMapperSurfaceBackingStore::paintToTextureMapper(TextureMapper* textureMapper, const FloatRect& targetRect, const TransformationMatrix& transform, float opacity)
 {
+    printf("TextureMapperSurfaceBackingStore::paintToTextureMapper...\n");
     if (m_graphicsSurface)
         m_graphicsSurface->paintToTextureMapper(textureMapper, targetRect, transform, opacity);
 }

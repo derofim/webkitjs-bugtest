@@ -167,8 +167,13 @@ void GLTransportSurface::updateTransformationMatrix()
 
 void GLTransportSurface::initializeShaderProgram()
 {
+      printf("GLTransportSurface::initializeShaderProgram() 1...\n");
+      //webkitTrace();
 		if (!m_context3D)
         m_context3D = GraphicsContext3D::createForCurrentGLContext();
+
+      printf("GLTransportSurface::initializeShaderProgram() 2...\n");
+      //webkitTrace();
 
     vertexArrayObjectSupported = m_context3D->getExtensions()->supports("GL_OES_vertex_array_object");
 

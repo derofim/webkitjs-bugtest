@@ -17,6 +17,8 @@
 
 #include <emscripten.h>
 
+#include <iostream>
+
 using namespace WebCore;
 
 namespace WebCore {
@@ -58,6 +60,7 @@ namespace WebCore {
 
 	static void repaintEverythingSoonTimeout(ChromeClientJS* client)
 	{
+    printf("repaintEverythingSoonTimeout...\n");
 		webkitTrace();
 		client->paint(0);
 	}
@@ -104,10 +107,12 @@ namespace WebCore {
 	}
 
 	void ChromeClientJS::forceRepaint() {
+#if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
       printf("forceRepaint: m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
 			return;
     }
+#endif
 
 		m_dirtyRegion.unite(IntRect(IntPoint(), m_view->m_private->backingStore->size()));
 		m_forcePaint = true;
@@ -129,6 +134,11 @@ namespace WebCore {
     auto srf = webView->p()->backingStore->cairoSurface();
 
     auto crp = cairo_create(srf);
+
+        if(!srf)
+          printf("!srf !!!\n");
+        if(!crp)
+          printf("!crp !!!\n");
 
     // >>>
     /*if(crp)
@@ -161,10 +171,12 @@ namespace WebCore {
 	{
 		webkitTrace();
 
+#if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
       printf("m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled() \n");
 			return;
     }
+#endif
 
 		if(!m_view->m_private->backingStore) {
       printf("!m_view->m_private->backingStore \n");
@@ -246,10 +258,12 @@ namespace WebCore {
 				frame.view()->layout();
 		}
 
+#if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
 			m_view->m_private->acceleratedContext->resizeRootLayer(newSize);
 			return;
 		}
+#endif
 
 		if (m_view->m_private->backingStore && oldWidgetSize == newSize)
 			return;
@@ -273,12 +287,21 @@ namespace WebCore {
 																									 0x0000FF00,	/* Gmask */
 																									 0x000000FF,	/* Bmask */
 																									 0xFF000000); /* Amask */
+
+      // m_view->sdl_screen = surface; // <<<<<<<<<<<<<<<<<<<<,
+
 			PassOwnPtr<WidgetBackingStore> newBackingStore = WebCore::WidgetBackingStoreCairo::create(surface, newSize);
 
       auto srf = newBackingStore->cairoSurface();
 
       auto crp = cairo_create(srf);
 			RefPtr<cairo_t> cr = adoptRef(crp);
+
+
+        if(!cr)
+          printf("!cr !!!\n");
+        if(!crp)
+          printf("!crp !!!\n");
 
       // >>>
       /*if(crp)
@@ -304,6 +327,11 @@ namespace WebCore {
 			// We should clear any old data outside of the old widget region.
       auto crp = cairo_create(m_view->m_private->backingStore->cairoSurface());
 			RefPtr<cairo_t> cr = adoptRef(crp);
+
+        if(!cr)
+          printf("!cr !!!\n");
+        if(!crp)
+          printf("!crp !!!\n");
 
       // >>>
       /*if(crp)
@@ -539,10 +567,12 @@ namespace WebCore {
 	{
 		webkitTrace();
 
+#if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
 			m_view->m_private->acceleratedContext->setNonCompositedContentsNeedDisplay(updateRect);
 			return;
 		}
+#endif
 
 		if (updateRect.isEmpty()) {
       webkitTrace();
@@ -562,12 +592,14 @@ namespace WebCore {
 	{
 		webkitTrace();
 
+#if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
 			ASSERT(!rectToScroll.isEmpty());
 			ASSERT(delta.width() || delta.height());
 			m_view->m_private->acceleratedContext->scrollNonCompositedContents(rectToScroll, delta);
 			return;
 		}
+#endif
 
 		m_rectsToScroll.append(rectToScroll);
 		m_scrollOffsets.append(delta);
@@ -715,20 +747,25 @@ namespace WebCore {
 	void ChromeClientJS::attachRootGraphicsLayer(Frame* frame, GraphicsLayer* rootLayer)
 	{
 		webkitTrace();
+#if USE(ACCELERATED_COMPOSITING)
 		if(m_view->m_private->acceleratedContext) {
+
 			bool turningOffCompositing = !rootLayer && m_view->m_private->acceleratedContext->enabled();
 			bool turningOnCompositing = rootLayer && !m_view->m_private->acceleratedContext->enabled();
       //bool turningOnCompositing = true;
 
+      printf("m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer) .......\n");
 			m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer);
 
 			if (turningOnCompositing) {
+        printf("turningOnCompositing .......\n");
 		    webkitTrace();
 				m_displayTimer.stop();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(0, IntSize(1, 1));
 			}
 
       if (turningOffCompositing) {
+        printf("turningOffCompositing .......\n");
         webkitTrace();
 				m_view->m_private->backingStore = WidgetBackingStoreCairo::create(m_view->m_private->sdl_screen, roundedIntSize(m_view->positionAndSize().size()));
 				
@@ -737,31 +774,45 @@ namespace WebCore {
         auto crp = cairo_create(m_view->m_private->backingStore->cairoSurface());
         RefPtr<cairo_t> cr = adoptRef(crp);
 
+        if(!cr)
+          printf("!cr !!!\n");
+        if(!crp)
+          printf("!crp !!!\n");
+
         // >>>
         /*if(crp)
           m_view->cairo_context_ = crp;*/
 
 				clearEverywhereInBackingStore(m_view, cr.get());
 			}
-		}
+		} else {
+      printf("!m_view->m_private->acceleratedContext !!!!!!!!!!!!!!\n");
+    }
+#endif
 	}
 
 	void ChromeClientJS::setNeedsOneShotDrawingSynchronization()
 	{
 		webkitTrace();
+#if USE(ACCELERATED_COMPOSITING)
 		if(m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled())
 			m_view->m_private->acceleratedContext->scheduleLayerFlush();
+#endif
 	}
 
 	void ChromeClientJS::scheduleCompositingLayerFlush()
 	{
 		webkitTrace();
+#if USE(ACCELERATED_COMPOSITING)
 		if(m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled())
 			m_view->m_private->acceleratedContext->scheduleLayerFlush();
+#endif
 	}
 
+#if USE(ACCELERATED_COMPOSITING)
 	ChromeClient::CompositingTriggerFlags ChromeClientJS::allowedCompositingTriggers() const
 	{
 		return AllTriggers;
 	}
+#endif
 }

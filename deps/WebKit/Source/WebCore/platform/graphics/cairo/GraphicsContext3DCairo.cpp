@@ -100,7 +100,7 @@ GraphicsContext3D::GraphicsContext3D(GraphicsContext3D::Attributes attributes, H
     , m_multisampleColorBuffer(0)
     , m_private(GraphicsContext3DPrivate::create(this, renderStyle))
 {
-
+    printf("cairo GraphicsContext3D::GraphicsContext3D");
 
     makeContextCurrent();
 

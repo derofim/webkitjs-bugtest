@@ -15,7 +15,15 @@
 		# -s EXPORTED_FUNCTIONS=@../src/Symbols.exports
     #   -s LINKABLE=1 -s NO_EXIT_RUNTIME=1 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=1  -s SIDE_MODULE=1  -s ASM_JS=1 -s WASM=0
     #  -fshort-wchar 
-		'emscripten_linktojs':'-s NO_EXIT_RUNTIME=1  -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s FULL_ES2=1 -std=c++11 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
+    #  -s FULL_ES2=1
+    # (Remember WebGL2 = GL ES 3).
+    # -s USE_WEBGL2=1 -s FULL_ES3=1
+    # -s ASYNCIFY=1  allows you to use some asynchronous function in C https://emscripten.org/docs/porting/asyncify.html
+    # -s EMULATE_FUNCTION_POINTER_CASTS=1 , Emscripten emits code to emulate function pointer casts at runtime,
+    # -s EMULATE_FUNCTION_POINTER_CASTS=1 
+    # !!! EMULATE_FUNCTION_POINTER_CASTS can add significant runtime overhead, so it is not recommended, but is be worth trying in dev. !!!
+    #
+		'emscripten_linktojs':'-s ASSERTIONS=1 -s FULL_ES2=1 -s NO_EXIT_RUNTIME=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
 		#--post-js ../src/webkit.post.js --pre-js ../src/webkit.pre.js --proxy-to-worker --proxy-to-worker -o webkit.js
 		# Ensure that Apple, and Win32 builds do not interfere with the compile, we'll assume we're linux since
 		# emscripten has a very posix unix compile interface, should be the most compatible with existing code.

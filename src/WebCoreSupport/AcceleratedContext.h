@@ -19,7 +19,10 @@
 #ifndef AcceleratedContext_h
 #define AcceleratedContext_h
 
+#include "config.h"
+//#include "WebPreferences.h"
 
+#if USE(ACCELERATED_COMPOSITING)
 #include "GraphicsLayer.h"
 #include "GraphicsLayerClient.h"
 #include "IntRect.h"
@@ -91,5 +94,6 @@ class AcceleratedContext : public WebCore::GraphicsLayerClient {
 };
 
 }
+#endif
 
 #endif // AcceleratedContext_h

@@ -137,7 +137,10 @@ public:
 #if ENABLE(CSS_FILTERS)
         , filterInfo(0)
 #endif
-    { }
+    {
+      printf("TextureMapperGLData...\n");
+      webkitTrace();
+    }
 
     ~TextureMapperGLData();
     Platform3DObject getStaticVBO(GC3Denum target, GC3Dsizeiptr, const void* data);
@@ -268,17 +271,25 @@ TextureMapperGL::TextureMapperGL()
     : TextureMapper(OpenGLMode)
     , m_enableEdgeDistanceAntialiasing(false)
 {
+    printf("TextureMapperGL 1...\n");
+    webkitTrace();
     m_context3D = GraphicsContext3D::createForCurrentGLContext();
+    printf("TextureMapperGL 2...\n");
+    webkitTrace();
     m_data = new TextureMapperGLData(m_context3D.get());
+      printf("GLTransportSurface::initializeShaderProgram() 3...\n");
+      webkitTrace();
 }
 
 TextureMapperGL::ClipStack& TextureMapperGL::clipStack()
 {
+    printf("TextureMapperGL clipStack...\n");
     return data().currentSurface ? toBitmapTextureGL(data().currentSurface.get())->m_clipStack : m_clipStack;
 }
 
 void TextureMapperGL::beginPainting(PaintFlags flags)
 {
+    printf("TextureMapperGL beginPainting...\n");
     m_context3D->getIntegerv(GraphicsContext3D::CURRENT_PROGRAM, &data().previousProgram);
     data().previousScissorState = m_context3D->isEnabled(GraphicsContext3D::SCISSOR_TEST);
     data().previousDepthState = m_context3D->isEnabled(GraphicsContext3D::DEPTH_TEST);
@@ -296,6 +307,7 @@ void TextureMapperGL::beginPainting(PaintFlags flags)
 
 void TextureMapperGL::endPainting()
 {
+    printf("TextureMapperGL endPainting...\n");
     if (data().didModifyStencil) {
         m_context3D->clearStencil(1);
         m_context3D->clear(GraphicsContext3D::STENCIL_BUFFER_BIT);
@@ -316,6 +328,7 @@ void TextureMapperGL::endPainting()
 
 void TextureMapperGL::drawBorder(const Color& color, float width, const FloatRect& targetRect, const TransformationMatrix& modelViewMatrix)
 {
+    printf("TextureMapperGL drawBorder...\n");
     if (clipStack().isCurrentScissorBoxEmpty())
         return;
 
@@ -333,6 +346,7 @@ void TextureMapperGL::drawBorder(const Color& color, float width, const FloatRec
 // FIXME: drawNumber() should save a number texture-atlas and re-use whenever possible.
 void TextureMapperGL::drawNumber(int number, const Color& color, const FloatPoint& targetPoint, const TransformationMatrix& modelViewMatrix)
 {
+    printf("TextureMapperGL drawNumber...\n");
     int pointSize = 8;
 
 #if USE(CAIRO)
@@ -382,6 +396,7 @@ void TextureMapperGL::drawNumber(int number, const Color& color, const FloatPoin
 
 static TextureMapperShaderProgram::Options optionsForFilterType(FilterOperation::OperationType type, unsigned pass)
 {
+    printf("TextureMapperGL optionsForFilterType...\n");
     switch (type) {
     case FilterOperation::GRAYSCALE:
         return TextureMapperShaderProgram::Texture | TextureMapperShaderProgram::GrayscaleFilter;
@@ -412,6 +427,7 @@ static TextureMapperShaderProgram::Options optionsForFilterType(FilterOperation:
 
 static unsigned getPassesRequiredForFilter(FilterOperation::OperationType type)
 {
+    printf("TextureMapperGL getPassesRequiredForFilter...\n");
     switch (type) {
     case FilterOperation::GRAYSCALE:
     case FilterOperation::SEPIA:
@@ -441,11 +457,13 @@ static const float GaussianKernelStep = 0.2;
 
 static inline float gauss(float x)
 {
+    printf("TextureMapperGL gauss...\n");
     return exp(-(x * x) / 2.);
 }
 
 static float* gaussianKernel()
 {
+    printf("TextureMapperGL gaussianKernel...\n");
     static bool prepared = false;
     static float kernel[GaussianKernelHalfWidth] = {0, };
 
@@ -470,6 +488,7 @@ static float* gaussianKernel()
 
 static void prepareFilterProgram(TextureMapperShaderProgram* program, const FilterOperation& operation, unsigned pass, const IntSize& size, GC3Duint contentTexture)
 {
+    printf("TextureMapperGL prepareFilterProgram...\n");
     RefPtr<GraphicsContext3D> context = program->context();
     context->useProgram(program->programID());
 
@@ -531,6 +550,7 @@ static void prepareFilterProgram(TextureMapperShaderProgram* program, const Filt
 
 void TextureMapperGL::drawTexture(const BitmapTexture& texture, const FloatRect& targetRect, const TransformationMatrix& matrix, float opacity, unsigned exposedEdges)
 {
+    printf("TextureMapperGL drawTexture...\n");
     if (!texture.isValid())
         return;
 
@@ -547,6 +567,7 @@ void TextureMapperGL::drawTexture(const BitmapTexture& texture, const FloatRect&
 
 void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const IntSize& textureSize, const FloatRect& targetRect, const TransformationMatrix& modelViewMatrix, float opacity, unsigned exposedEdges)
 {
+    printf("TextureMapperGL drawTexture Platform3DObject...\n");
     bool useRect = flags & ShouldUseARBTextureRect;
     bool useAntialiasing = m_enableEdgeDistanceAntialiasing
         && exposedEdges == AllEdges
@@ -591,6 +612,7 @@ void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const I
 
 void TextureMapperGL::drawSolidColor(const FloatRect& rect, const TransformationMatrix& matrix, const Color& color)
 {
+    printf("TextureMapperGL drawSolidColor...\n");
     Flags flags = 0;
     TextureMapperShaderProgram::Options options = TextureMapperShaderProgram::SolidColor;
     if (!matrix.mapQuad(rect).isRectilinear()) {
@@ -612,6 +634,7 @@ void TextureMapperGL::drawSolidColor(const FloatRect& rect, const Transformation
 
 void TextureMapperGL::drawEdgeTriangles(TextureMapperShaderProgram* program)
 {
+    printf("TextureMapperGL drawEdgeTriangles...\n");
     const GC3Dfloat left = 0;
     const GC3Dfloat top = 0;
     const GC3Dfloat right = 1;
@@ -642,6 +665,7 @@ void TextureMapperGL::drawEdgeTriangles(TextureMapperShaderProgram* program)
 
 void TextureMapperGL::drawUnitRect(TextureMapperShaderProgram* program, GC3Denum drawingMode)
 {
+    printf("TextureMapperGL drawUnitRect...\n");
     static const GC3Dfloat unitRect[] = { 0, 0, 1, 0, 1, 1, 0, 1 };
     Platform3DObject vbo = data().getStaticVBO(GraphicsContext3D::ARRAY_BUFFER, sizeof(GC3Dfloat) * 8, unitRect);
     m_context3D->bindBuffer(GraphicsContext3D::ARRAY_BUFFER, vbo);
@@ -652,6 +676,7 @@ void TextureMapperGL::drawUnitRect(TextureMapperShaderProgram* program, GC3Denum
 
 void TextureMapperGL::draw(const FloatRect& rect, const TransformationMatrix& modelViewMatrix, TextureMapperShaderProgram* shaderProgram, GC3Denum drawingMode, Flags flags)
 {
+    printf("TextureMapperGL draw...\n");
     TransformationMatrix matrix =
         TransformationMatrix(modelViewMatrix).multiply(TransformationMatrix::rectToRect(FloatRect(0, 0, 1, 1), rect));
 
@@ -682,6 +707,7 @@ void TextureMapperGL::draw(const FloatRect& rect, const TransformationMatrix& mo
 
 void TextureMapperGL::drawTexturedQuadWithProgram(TextureMapperShaderProgram* program, uint32_t texture, Flags flags, const IntSize& size, const FloatRect& rect, const TransformationMatrix& modelViewMatrix, float opacity)
 {
+    printf("TextureMapperGL drawTexturedQuadWithProgram...\n");
     m_context3D->useProgram(program->programID());
     m_context3D->activeTexture(GraphicsContext3D::TEXTURE0);
     GC3Denum target = flags & ShouldUseARBTextureRect ? GC3Denum(Extensions3D::TEXTURE_RECTANGLE_ARB) : GC3Denum(GraphicsContext3D::TEXTURE_2D);
@@ -719,6 +745,7 @@ BitmapTextureGL::BitmapTextureGL(TextureMapperGL* textureMapper)
     , m_shouldClear(true)
     , m_context3D(textureMapper->graphicsContext3D())
 {
+    printf("BitmapTextureGL...\n");
 }
 
 bool BitmapTextureGL::canReuseWith(const IntSize& contentsSize, Flags)
@@ -734,6 +761,7 @@ bool BitmapTextureGL::canReuseWith(const IntSize& contentsSize, Flags)
 
 static void swizzleBGRAToRGBA(uint32_t* data, const IntRect& rect, int stride = 0)
 {
+    printf("swizzleBGRAToRGBA...\n");
     stride = stride ? stride : rect.width();
     for (int y = rect.y(); y < rect.maxY(); ++y) {
         uint32_t* p = data + y * stride;
@@ -756,16 +784,20 @@ static bool driverSupportsExternalTextureBGRA(GraphicsContext3D* context)
 
 static bool driverSupportsSubImage(GraphicsContext3D* context)
 {
+    printf("driverSupportsSubImage...\n");
     if (context->isGLES2Compliant()) {
+        printf("isGLES2Compliant...\n");
         static bool supportsSubImage = context->getExtensions()->supports("GL_EXT_unpack_subimage");
         return supportsSubImage;
     }
+    printf("!isGLES2Compliant...\n");
 
     return true;
 }
 
 void BitmapTextureGL::didReset()
 {
+    printf("BitmapTextureGL::didReset...\n");
     if (!m_id)
         m_id = m_context3D->createTexture();
 
@@ -795,6 +827,7 @@ void BitmapTextureGL::didReset()
 
 void BitmapTextureGL::updateContentsNoSwizzle(const void* srcData, const IntRect& targetRect, const IntPoint& sourceOffset, int bytesPerLine, unsigned bytesPerPixel, Platform3DObject glFormat)
 {
+    printf("BitmapTextureGL::updateContentsNoSwizzle...\n");
     m_context3D->bindTexture(GraphicsContext3D::TEXTURE_2D, m_id);
     if (driverSupportsSubImage(m_context3D.get())) { // For ES drivers that don't support sub-images.
         // Use the OpenGL sub-image extension, now that we know it's available.
@@ -814,6 +847,7 @@ void BitmapTextureGL::updateContentsNoSwizzle(const void* srcData, const IntRect
 
 void BitmapTextureGL::updateContents(const void* srcData, const IntRect& targetRect, const IntPoint& sourceOffset, int bytesPerLine, UpdateContentsFlag updateContentsFlag)
 {
+    printf("BitmapTextureGL::updateContents...\n");
     Platform3DObject glFormat = GraphicsContext3D::RGBA;
     m_context3D->bindTexture(GraphicsContext3D::TEXTURE_2D, m_id);
 
@@ -854,6 +888,7 @@ void BitmapTextureGL::updateContents(const void* srcData, const IntRect& targetR
 
 void BitmapTextureGL::updateContents(Image* image, const IntRect& targetRect, const IntPoint& offset, UpdateContentsFlag updateContentsFlag)
 {
+    printf("BitmapTextureGL::updateContents 2...\n");
     if (!image)
         return;
     NativeImagePtr frameImage = image->nativeImageForCurrentFrame();
@@ -875,11 +910,13 @@ void BitmapTextureGL::updateContents(Image* image, const IntRect& targetRect, co
 #if ENABLE(CSS_SHADERS)
 void TextureMapperGL::removeCachedCustomFilterProgram(CustomFilterProgram* program)
 {
+    printf("TextureMapperGL::removeCachedCustomFilterProgram...\n");
     m_customFilterPrograms.remove(program->programInfo());
 }
 
 bool TextureMapperGL::drawUsingCustomFilter(BitmapTexture& target, const BitmapTexture& source, const FilterOperation& filter)
 {
+    printf("TextureMapperGL::drawUsingCustomFilter...\n");
     RefPtr<CustomFilterRenderer> renderer;
     switch (filter.type()) {
     case FilterOperation::CUSTOM: {
@@ -934,6 +971,7 @@ bool TextureMapperGL::drawUsingCustomFilter(BitmapTexture& target, const BitmapT
 #if ENABLE(CSS_FILTERS)
 void TextureMapperGL::drawFiltered(const BitmapTexture& sampler, const BitmapTexture* contentTexture, const FilterOperation& filter, int pass)
 {
+    printf("TextureMapperGL::drawFiltered...\n");
     // For standard filters, we always draw the whole texture without transformations.
     TextureMapperShaderProgram::Options options = optionsForFilterType(filter.type(), pass);
     RefPtr<TextureMapperShaderProgram> program = data().sharedGLData().getShaderProgram(options);
@@ -946,6 +984,7 @@ void TextureMapperGL::drawFiltered(const BitmapTexture& sampler, const BitmapTex
 
 static bool isCustomFilter(FilterOperation::OperationType type)
 {
+    printf("TextureMapperGL::isCustomFilter...\n");
 #if ENABLE(CSS_SHADERS)
     return type == FilterOperation::CUSTOM || type == FilterOperation::VALIDATED_CUSTOM;
 #else
@@ -955,6 +994,7 @@ static bool isCustomFilter(FilterOperation::OperationType type)
 
 PassRefPtr<BitmapTexture> BitmapTextureGL::applyFilters(TextureMapper* textureMapper, const FilterOperations& filters)
 {
+    printf("BitmapTextureGL::applyFilters...\n");
     if (filters.isEmpty())
         return this;
 
@@ -1009,6 +1049,7 @@ PassRefPtr<BitmapTexture> BitmapTextureGL::applyFilters(TextureMapper* textureMa
 
 static inline TransformationMatrix createProjectionMatrix(const IntSize& size, bool mirrored)
 {
+    printf("TransformationMatrix::createProjectionMatrix...\n");
     const float nearValue = 9999999;
     const float farValue = -99999;
 
@@ -1020,6 +1061,7 @@ static inline TransformationMatrix createProjectionMatrix(const IntSize& size, b
 
 void BitmapTextureGL::initializeStencil()
 {
+    printf("BitmapTextureGL::initializeStencil...\n");
     if (m_rbo)
         return;
 
@@ -1038,6 +1080,7 @@ void BitmapTextureGL::initializeStencil()
 
 void BitmapTextureGL::initializeDepthBuffer()
 {
+    printf("BitmapTextureGL::initializeDepthBuffer...\n");
     if (m_depthBufferObject)
         return;
 
@@ -1050,6 +1093,7 @@ void BitmapTextureGL::initializeDepthBuffer()
 
 void BitmapTextureGL::clearIfNeeded()
 {
+    printf("BitmapTextureGL::clearIfNeeded...\n");
     if (!m_shouldClear)
         return;
 
@@ -1062,6 +1106,7 @@ void BitmapTextureGL::clearIfNeeded()
 
 void BitmapTextureGL::createFboIfNeeded()
 {
+    printf("BitmapTextureGL::createFboIfNeeded...\n");
     if (m_fbo)
         return;
 
@@ -1073,6 +1118,7 @@ void BitmapTextureGL::createFboIfNeeded()
 
 void BitmapTextureGL::bind(TextureMapperGL* textureMapper)
 {
+    printf("BitmapTextureGL::bind...\n");
     m_context3D->bindTexture(GraphicsContext3D::TEXTURE_2D, 0);
     createFboIfNeeded();
     m_context3D->bindFramebuffer(GraphicsContext3D::FRAMEBUFFER, m_fbo);
@@ -1114,6 +1160,7 @@ TextureMapperGL::~TextureMapperGL()
 
 void TextureMapperGL::bindDefaultSurface()
 {
+    printf("TextureMapperGL::bindDefaultSurface...\n");
     m_context3D->bindFramebuffer(GraphicsContext3D::FRAMEBUFFER, data().targetFrameBuffer);
     IntSize viewportSize(data().viewport[2], data().viewport[3]);
     data().projectionMatrix = createProjectionMatrix(viewportSize, data().PaintFlags & PaintingMirrored);
@@ -1124,6 +1171,7 @@ void TextureMapperGL::bindDefaultSurface()
 
 void TextureMapperGL::bindSurface(BitmapTexture *surface)
 {
+    printf("TextureMapperGL::bindSurface...\n");
     if (!surface) {
         bindDefaultSurface();
         return;
@@ -1135,6 +1183,7 @@ void TextureMapperGL::bindSurface(BitmapTexture *surface)
 
 bool TextureMapperGL::beginScissorClip(const TransformationMatrix& modelViewMatrix, const FloatRect& targetRect)
 {
+    printf("TextureMapperGL::beginScissorClip...\n");
     // 3D transforms are currently not supported in scissor clipping
     // resulting in cropped surfaces when z>0.
     if (!modelViewMatrix.isAffine())
@@ -1154,6 +1203,7 @@ bool TextureMapperGL::beginScissorClip(const TransformationMatrix& modelViewMatr
 
 void TextureMapperGL::beginClip(const TransformationMatrix& modelViewMatrix, const FloatRect& targetRect)
 {
+    printf("TextureMapperGL::beginClip...\n");
     clipStack().push();
     if (beginScissorClip(modelViewMatrix, targetRect))
         return;
@@ -1205,23 +1255,27 @@ void TextureMapperGL::beginClip(const TransformationMatrix& modelViewMatrix, con
 
 void TextureMapperGL::endClip()
 {
+    printf("TextureMapperGL::endClip...\n");
     clipStack().pop();
     clipStack().applyIfNeeded(m_context3D.get());
 }
 
 IntRect TextureMapperGL::clipBounds()
 {
+    printf("TextureMapperGL::clipBounds...\n");
     return clipStack().current().scissorBox;
 }
 
 PassRefPtr<BitmapTexture> TextureMapperGL::createTexture()
 {
+    printf("TextureMapperGL::createTexture...\n");
     BitmapTextureGL* texture = new BitmapTextureGL(this);
     return adoptRef(texture);
 }
 
 PassOwnPtr<TextureMapper> TextureMapper::platformCreateAccelerated()
 {
+    printf("TextureMapperGL::platformCreateAccelerated...\n");
     return TextureMapperGL::create();
 }
 
