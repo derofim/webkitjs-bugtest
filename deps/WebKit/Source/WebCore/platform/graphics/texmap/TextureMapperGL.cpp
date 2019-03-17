@@ -120,6 +120,9 @@ public:
 
     SharedGLData& sharedGLData() const
     {
+        if(!sharedData) {
+          printf("!sharedData\n");
+        }
         return *sharedData;
     }
 
@@ -605,8 +608,14 @@ void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const I
     if (useAntialiasing || opacity < 1)
         flags |= ShouldBlend;
 
+    printf("TextureMapperGL drawTexture Platform3DObject 3.1 ..\n");
     RefPtr<TextureMapperShaderProgram> program;
-    program = data().sharedGLData().getShaderProgram(options);
+    printf("TextureMapperGL drawTexture Platform3DObject 3.2 ..\n");
+    auto& data1 = data();
+    printf("TextureMapperGL drawTexture Platform3DObject 3.3 ..\n");
+    auto& sharedGLData1 = data1.sharedGLData();
+    printf("TextureMapperGL drawTexture Platform3DObject 3.4 ..\n");
+    program = sharedGLData1.getShaderProgram(options);
 
     printf("TextureMapperGL drawTexture Platform3DObject 4...\n");
 #if ENABLE(CSS_FILTERS)
