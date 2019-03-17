@@ -704,13 +704,14 @@ void TextureMapperGL::drawEdgeTriangles(TextureMapperShaderProgram* program)
 
 void TextureMapperGL::drawUnitRect(TextureMapperShaderProgram* program, GC3Denum drawingMode)
 {
-    printf("TextureMapperGL drawUnitRect...\n");
+    printf("TextureMapperGL drawUnitRect 1...\n");
     static const GC3Dfloat unitRect[] = { 0, 0, 1, 0, 1, 1, 0, 1 };
     Platform3DObject vbo = data().getStaticVBO(GraphicsContext3D::ARRAY_BUFFER, sizeof(GC3Dfloat) * 8, unitRect);
     m_context3D->bindBuffer(GraphicsContext3D::ARRAY_BUFFER, vbo);
     m_context3D->vertexAttribPointer(program->vertexLocation(), 2, GraphicsContext3D::FLOAT, false, 0, 0);
     m_context3D->drawArrays(drawingMode, 0, 4);
     m_context3D->bindBuffer(GraphicsContext3D::ARRAY_BUFFER, 0);
+    printf("TextureMapperGL drawUnitRect 2...\n");
 }
 
 void TextureMapperGL::draw(const FloatRect& rect, const TransformationMatrix& modelViewMatrix, TextureMapperShaderProgram* shaderProgram, GC3Denum drawingMode, Flags flags)

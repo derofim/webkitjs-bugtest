@@ -604,9 +604,9 @@ the same framebuffer object name in multiple contexts on the same share list.
     assert(eglGetError() == EGL_SUCCESS);
     assert(ret == EGL_TRUE);
 
-    eglSwapInterval(contextDisplay, 1);
+    /*eglSwapInterval(contextDisplay, 1);
     assert(eglGetError() == EGL_SUCCESS);
-    assert(ret == EGL_TRUE);
+    assert(ret == EGL_TRUE);*/
 
     SDL_GL_MakeCurrent(window, contextDisplay);
     printf("(makes warning) SDL_GL_MakeCurrent...%s\n", SDL_GetError());
@@ -616,7 +616,7 @@ the same framebuffer object name in multiple contexts on the same share list.
     eglQuerySurface(contextDisplay, glSurface, EGL_HEIGHT, &eheight);
 
     printf("eglQuerySurface (%d, %d)\n", ewidth, eheight);
-
+/*
     eglSwapInterval(contextDisplay, 1);
     glClearColor(1.0f, 0.0f, 0.0f, 0.5f);
     glClearDepthf(1.0f);
@@ -629,10 +629,14 @@ the same framebuffer object name in multiple contexts on the same share list.
     //emulateGLUperspective(45.0f, (float) ewidth / (float) eheight, 0.1f, 100.0f);
     glViewport(0, 0, ewidth, eheight);
     //glMatrixMode(GL_MODELVIEW);
-    //glLoadIdentity();
+    //glLoadIdentity();*/
 
   // SDL_Surface* sdl_screen
 
+// TODO>>>
+    SDL_GL_MakeCurrent(window, sdlContext);
+    printf("SDL_GL_MakeCurrent sdlContext...%s\n", SDL_GetError());
+    
 #ifndef __EMSCRIPTEN__
 	//Initialize GLEW
 	glewExperimental = GL_TRUE;
@@ -644,10 +648,10 @@ the same framebuffer object name in multiple contexts on the same share list.
 #endif
 
 	//Use Vsync
-	if (SDL_GL_SetSwapInterval(1) < 0)
+	/*if (SDL_GL_SetSwapInterval(1) < 0)
 	{
 		printf("Warning: Unable to set VSync! SDL Error: %s\n", SDL_GetError());
-	}
+	}*/
 
 #ifdef DRAW_TEST
 	Init();
