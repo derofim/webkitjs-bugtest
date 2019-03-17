@@ -249,7 +249,7 @@
 	# Enabling opengles requires egl as well. Note always specify
 	# OPENGL_ES_2 and OPENGL otherwise we won't compile.
 	# Accelerated compositing needs opengl, i believe.
-      'WTF_USE_OPENGL=0',
+      'WTF_USE_OPENGL=1',
       'WTF_USE_OPENGL_ES_2=1',
       'WTF_USE_EGL=1',
 	'WTF_USE_ACCELERATED_COMPOSITING=1',

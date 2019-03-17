@@ -126,7 +126,7 @@ PassRefPtr<GraphicsContext3D> GraphicsContext3D::createForCurrentGLContext()
     auto atts = Attributes();
     printf("GraphicsContext3D::createForCurrentGLContext 1.1...\n");
     webkitTrace();
-    autp pt = new GraphicsContext3D(atts, 0, GraphicsContext3D::RenderToCurrentGLContext);
+    auto pt = new GraphicsContext3D(atts, 0, GraphicsContext3D::RenderToCurrentGLContext);
     printf("GraphicsContext3D::createForCurrentGLContext 2...\n");
     webkitTrace();
     RefPtr<GraphicsContext3D> context = adoptRef(pt);
