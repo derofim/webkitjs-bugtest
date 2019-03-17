@@ -72,7 +72,8 @@ static EGLDisplay sharedEGLDisplay()
           webkitTrace();
           // TODO
           //gSharedEGLDisplay = SDL_GL_CreateContext(window_);
-				  gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(window_);/* Emscripten hack for default display, is this the ptr or the val? */
+				  //gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(window_);/* Emscripten hack for default display, is this the ptr or the val? */
+          gSharedEGLDisplay = eglGetCurrentDisplay();
         }
 #else
 		    webkitTrace();
@@ -140,17 +141,20 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createWindowContext(EGLNativeWindowType w
     }
 
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
-      gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      //gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      gSharedEGLDisplay = eglGetCurrentDisplay();
     }
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
       printf("Invalid gSharedEGLDisplay 1!!! %s\n", SDL_GetError());
     }
-    EGLContext eglSharingContext = eglGetCurrentContext();//sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
+    //EGLContext eglSharingContext = eglGetCurrentContext();//sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
+    EGLContext eglSharingContext = sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
       gSharedEGLDisplay = static_cast<GLContextEGL*>(sharingContext)->m_context;
     }
 
-    EGLDisplay display = eglGetCurrentDisplay();//sharedEGLDisplay();
+    //EGLDisplay display = eglGetCurrentDisplay();//sharedEGLDisplay();
+    EGLDisplay display = sharedEGLDisplay();
     if (display == EGL_NO_DISPLAY) {
         printf("Invalid display 1!!! %s\n", SDL_GetError());
         //return nullptr;
@@ -163,12 +167,15 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createWindowContext(EGLNativeWindowType w
     }
 
     EGLContext context = eglGetCurrentContext();//eglCreateContext(display, config, eglSharingContext, gContextAttributes);
+    //EGLContext context = eglCreateContext(display, config, eglSharingContext, gContextAttributes);
     if (context == EGL_NO_CONTEXT) {
         printf("Invalid context 1!!! %s\n", SDL_GetError());
         //return nullptr;
     }
 
+// TODO>>> EGL_DRAW? or EGL_READ
     EGLSurface surface = eglGetCurrentSurface(EGL_DRAW);//eglCreateWindowSurface(display, config, window, 0);
+    //EGLSurface surface = eglCreateWindowSurface(display, config, window, 0);
     if (surface == EGL_NO_SURFACE) {
         printf("Invalid surface 1!!! %s\n", SDL_GetError());
         //return nullptr;
@@ -192,7 +199,8 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPbufferContext(EGLContext sharingCo
         return nullptr;
     }
 
-    EGLContext context = eglGetCurrentContext();//eglCreateContext(display, config, sharingContext, gContextAttributes);
+    //EGLContext context = eglGetCurrentContext();//eglCreateContext(display, config, sharingContext, gContextAttributes);
+    EGLContext context = eglCreateContext(display, config, sharingContext, gContextAttributes);
     if (context == EGL_NO_CONTEXT) {
         printf("GLContextEGL::createPbufferContext !context!!!\n");
         return nullptr;
@@ -221,7 +229,8 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPixmapContext(EGLContext sharingCon
     if (!getEGLConfig(&config, PixmapSurface))
         return nullptr;
 
-    EGLContext context = eglGetCurrentContext();//eglCreateContext(display, config, sharingContext, gContextAttributes);
+    //EGLContext context = eglGetCurrentContext();//eglCreateContext(display, config, sharingContext, gContextAttributes);
+    EGLContext context = eglCreateContext(display, config, sharingContext, gContextAttributes);
     if (context == EGL_NO_CONTEXT)
         return nullptr;
 
@@ -256,7 +265,9 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window,
     }
 
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
-      gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      //gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      //gSharedEGLDisplay = (unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      gSharedEGLDisplay = eglGetCurrentDisplay();
     }
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
       printf("Invalid gSharedEGLDisplay 2!!!\n %s", SDL_GetError());
@@ -313,8 +324,15 @@ GLContextEGL::GLContextEGL(EGLContext context, EGLSurface surface, EGLSurfaceTyp
 #endif
 	{
     //m_display = eglGetCurrentDisplay();
+
+    /*
     m_surface = eglGetCurrentSurface(EGL_DRAW);
     m_context = eglGetCurrentContext();
+    */
+
+    m_surface = surface;
+    m_context = context;
+
 /*m_context = context;
 m_surface = surface;*/
 m_type = type;
@@ -323,7 +341,8 @@ m_type = type;
 #if PLATFORM(JS)
 
     if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
-      gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      //gSharedEGLDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//(unsigned *)62000; //SDL_GL_CreateContext(sdl_window);
+      gSharedEGLDisplay = eglGetCurrentDisplay();
     }
     /*if (!gSharedEGLDisplay || gSharedEGLDisplay == EGL_NO_DISPLAY) {
       gSharedEGLDisplay = static_cast<GLContextEGL*>(sharingContext)->m_context;

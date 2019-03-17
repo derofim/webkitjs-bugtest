@@ -74,7 +74,8 @@ EGLOffScreenContext::EGLOffScreenContext()
     : GLPlatformContext()
     //, m_display(0)
 {
-  m_display = eglGetCurrentDisplay();
+  //m_display = eglGetCurrentDisplay();
+  m_display = 0;//eglGetCurrentDisplay()
 }
 
 bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext sharedContext)
@@ -92,7 +93,8 @@ bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext
         return false;
     }
 
-    m_display = eglGetCurrentDisplay();//surface->sharedDisplay();
+    //m_display = eglGetCurrentDisplay();//surface->sharedDisplay();
+    m_display = surface->sharedDisplay();
     if (!m_display) {
         printf("EGLOffScreenContext::initialize !m_display!!!\n");
         return false;
@@ -104,8 +106,10 @@ bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext
         return false;
     }
 
-    if (isRobustnessExtSupported(m_display))
-        m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextRobustnessAttributes);
+    if (isRobustnessExtSupported(m_display)) {
+        //m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextRobustnessAttributes);
+        m_contextHandle = eglCreateContext(m_display, config, sharedContext, contextRobustnessAttributes);
+    }
 
     if (m_contextHandle != EGL_NO_CONTEXT) {
         // The EGL_EXT_create_context_robustness spec requires that a context created with
@@ -118,8 +122,10 @@ bool EGLOffScreenContext::initialize(GLPlatformSurface* surface, PlatformContext
             eglDestroyContext(m_display, m_contextHandle);
     }
 
-    if (m_contextHandle == EGL_NO_CONTEXT)
-        m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextAttributes);
+    if (m_contextHandle == EGL_NO_CONTEXT) {
+        //m_contextHandle = eglGetCurrentContext();//eglCreateContext(m_display, config, sharedContext, contextAttributes);
+        m_contextHandle = eglCreateContext(m_display, config, sharedContext, contextAttributes);
+    }
 
     if (m_contextHandle != EGL_NO_CONTEXT)
         return true;
