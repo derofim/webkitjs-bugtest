@@ -66,7 +66,7 @@ public:
 protected:
     JSHTMLDocument(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLDocument>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::NewImpurePropertyFiresWatchpoints | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::HasImpureGetOwnPropertySlot | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::NewImpurePropertyFiresWatchpoints | JSC::HasImpureGetOwnPropertySlot | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
 private:
     static bool canGetItemsForName(JSC::ExecState*, HTMLDocument*, JSC::PropertyName);
     static JSC::EncodedJSValue nameGetter(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);

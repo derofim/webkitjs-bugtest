@@ -71,7 +71,7 @@ private:
 protected:
     JSSVGViewSpec(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGViewSpec>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSSVGViewSpecOwner : public JSC::WeakHandleOwner {
@@ -151,12 +151,6 @@ JSC::EncodedJSValue jsSVGViewSpecTransformString(JSC::ExecState*, JSC::EncodedJS
 JSC::EncodedJSValue jsSVGViewSpecViewTargetString(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGViewSpecZoomAndPan(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 void setJSSVGViewSpecZoomAndPan(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGViewSpecViewBox(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGViewSpecPreserveAspectRatio(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGViewSpecConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

@@ -69,7 +69,7 @@ private:
 protected:
     JSDOMSecurityPolicy(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMSecurityPolicy>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSDOMSecurityPolicyOwner : public JSC::WeakHandleOwner {

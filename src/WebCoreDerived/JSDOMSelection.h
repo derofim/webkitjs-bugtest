@@ -67,7 +67,7 @@ private:
 protected:
     JSDOMSelection(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMSelection>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSDOMSelectionOwner : public JSC::WeakHandleOwner {

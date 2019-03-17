@@ -24,23 +24,11 @@
 
 #include "JSSVGPatternElement.h"
 
-#include "ExceptionCode.h"
-#include "JSDOMBinding.h"
 #include "JSSVGAnimatedEnumeration.h"
 #include "JSSVGAnimatedLength.h"
 #include "JSSVGAnimatedTransformList.h"
 #include "SVGPatternElement.h"
-#include <runtime/Error.h>
 #include <wtf/GetPtr.h>
-
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#include "JSSVGAnimatedPreserveAspectRatio.h"
-#include "JSSVGAnimatedRect.h"
-#include "JSSVGAnimatedString.h"
-#include "JSSVGStringList.h"
-#include "SVGStringList.h"
-#endif
 
 using namespace JSC;
 
@@ -57,32 +45,11 @@ static const HashTableValue JSSVGPatternElementTableValues[] =
     { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementY), (intptr_t)0 },
     { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementWidth), (intptr_t)0 },
     { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementHeight), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "viewBox", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementViewBox), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "preserveAspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementPreserveAspectRatio), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "requiredFeatures", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementRequiredFeatures), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "requiredExtensions", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementRequiredExtensions), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "systemLanguage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementSystemLanguage), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementHref), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGPatternElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGPatternElementTable = { 37, 31, JSSVGPatternElementTableValues, 0 };
+static const HashTable JSSVGPatternElementTable = { 18, 15, JSSVGPatternElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGPatternElementConstructorTableValues[] =
@@ -115,24 +82,15 @@ bool JSSVGPatternElementConstructor::getOwnPropertySlot(JSObject* object, ExecSt
 
 static const HashTableValue JSSVGPatternElementPrototypeTableValues[] =
 {
-#if ENABLE(SVG)
-    { "hasExtension", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGPatternElementPrototypeFunctionHasExtension), (intptr_t)0 },
-#endif
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGPatternElementPrototypeTable = { 2, 1, JSSVGPatternElementPrototypeTableValues, 0 };
+static const HashTable JSSVGPatternElementPrototypeTable = { 1, 0, JSSVGPatternElementPrototypeTableValues, 0 };
 const ClassInfo JSSVGPatternElementPrototype::s_info = { "SVGPatternElementPrototype", &Base::s_info, &JSSVGPatternElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGPatternElementPrototype) };
 
 JSObject* JSSVGPatternElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
 {
     return getDOMPrototype<JSSVGPatternElement>(vm, globalObject);
-}
-
-bool JSSVGPatternElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSSVGPatternElementPrototype* thisObject = jsCast<JSSVGPatternElementPrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSSVGPatternElementPrototypeTable, thisObject, propertyName, slot);
 }
 
 const ClassInfo JSSVGPatternElement::s_info = { "SVGPatternElement", &Base::s_info, &JSSVGPatternElementTable, 0 , CREATE_METHOD_TABLE(JSSVGPatternElement) };
@@ -258,115 +216,6 @@ EncodedJSValue jsSVGPatternElementHeight(ExecState* exec, EncodedJSValue slotBas
 }
 
 
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementExternalResourcesRequired(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementViewBox(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedRect> obj = impl.viewBoxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementPreserveAspectRatio(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedPreserveAspectRatio> obj = impl.preserveAspectRatioAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementRequiredFeatures(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredFeatures())));
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementRequiredExtensions(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredExtensions())));
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementSystemLanguage(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.systemLanguage())));
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGPatternElementHref(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGPatternElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedString> obj = impl.hrefAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
 EncodedJSValue jsSVGPatternElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {
     JSSVGPatternElement* domObject = jsDynamicCast<JSSVGPatternElement*>(JSValue::decode(thisValue));
@@ -381,25 +230,6 @@ JSValue JSSVGPatternElement::getConstructor(VM& vm, JSGlobalObject* globalObject
 {
     return getDOMConstructor<JSSVGPatternElementConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
 }
-
-#if ENABLE(SVG)
-EncodedJSValue JSC_HOST_CALL jsSVGPatternElementPrototypeFunctionHasExtension(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    JSSVGPatternElement* castedThis = jsDynamicCast<JSSVGPatternElement*>(thisValue);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGPatternElement::info());
-    SVGPatternElement& impl = castedThis->impl();
-    const String& extension(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.hasExtension(extension));
-    return JSValue::encode(result);
-}
-
-#endif
 
 
 }

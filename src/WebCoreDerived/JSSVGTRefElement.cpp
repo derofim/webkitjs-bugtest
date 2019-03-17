@@ -27,10 +27,6 @@
 #include "SVGTRefElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedString.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -39,14 +35,11 @@ namespace WebCore {
 
 static const HashTableValue JSSVGTRefElementTableValues[] =
 {
-#if ENABLE(SVG)
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTRefElementHref), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGTRefElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGTRefElementTable = { 4, 3, JSSVGTRefElementTableValues, 0 };
+static const HashTable JSSVGTRefElementTable = { 2, 1, JSSVGTRefElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGTRefElementConstructorTableValues[] =
@@ -114,22 +107,6 @@ bool JSSVGTRefElement::getOwnPropertySlot(JSObject* object, ExecState* exec, Pro
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGTRefElement, Base>(exec, JSSVGTRefElementTable, thisObject, propertyName, slot);
 }
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGTRefElementHref(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGTRefElement* castedThis = jsDynamicCast<JSSVGTRefElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGTRefElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedString> obj = impl.hrefAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGTRefElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

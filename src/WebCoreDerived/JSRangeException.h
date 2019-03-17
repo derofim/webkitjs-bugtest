@@ -67,7 +67,7 @@ private:
 protected:
     JSRangeException(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<RangeException>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSRangeExceptionOwner : public JSC::WeakHandleOwner {

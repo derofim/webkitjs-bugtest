@@ -221,7 +221,6 @@ static const HashTableValue JSElementPrototypeTableValues[] =
 #if ENABLE(CSS_REGIONS)
     { "webkitGetRegionFlowRanges", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsElementPrototypeFunctionWebkitGetRegionFlowRanges), (intptr_t)0 },
 #endif
-    { "remove", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsElementPrototypeFunctionRemove), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
@@ -2817,20 +2816,6 @@ EncodedJSValue JSC_HOST_CALL jsElementPrototypeFunctionWebkitGetRegionFlowRanges
 }
 
 #endif
-
-EncodedJSValue JSC_HOST_CALL jsElementPrototypeFunctionRemove(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    JSElement* castedThis = jsDynamicCast<JSElement*>(thisValue);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSElement::info());
-    Element& impl = castedThis->impl();
-    ExceptionCode ec = 0;
-    impl.remove(ec);
-    setDOMException(exec, ec);
-    return JSValue::encode(jsUndefined());
-}
 
 Element* toElement(JSC::JSValue value)
 {

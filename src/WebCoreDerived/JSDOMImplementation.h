@@ -67,7 +67,7 @@ private:
 protected:
     JSDOMImplementation(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DOMImplementation>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSDOMImplementationOwner : public JSC::WeakHandleOwner {

@@ -70,7 +70,7 @@ private:
 protected:
     JSSVGAnimatedTransformList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAnimatedTransformList>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSSVGAnimatedTransformListOwner : public JSC::WeakHandleOwner {

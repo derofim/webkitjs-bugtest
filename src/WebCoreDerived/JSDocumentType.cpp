@@ -22,12 +22,9 @@
 #include "JSDocumentType.h"
 
 #include "DocumentType.h"
-#include "ExceptionCode.h"
-#include "JSDOMBinding.h"
 #include "JSNamedNodeMap.h"
 #include "NamedNodeMap.h"
 #include "URL.h"
-#include <runtime/Error.h>
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
@@ -82,22 +79,15 @@ bool JSDocumentTypeConstructor::getOwnPropertySlot(JSObject* object, ExecState* 
 
 static const HashTableValue JSDocumentTypePrototypeTableValues[] =
 {
-    { "remove", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsDocumentTypePrototypeFunctionRemove), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSDocumentTypePrototypeTable = { 2, 1, JSDocumentTypePrototypeTableValues, 0 };
+static const HashTable JSDocumentTypePrototypeTable = { 1, 0, JSDocumentTypePrototypeTableValues, 0 };
 const ClassInfo JSDocumentTypePrototype::s_info = { "DocumentTypePrototype", &Base::s_info, &JSDocumentTypePrototypeTable, 0, CREATE_METHOD_TABLE(JSDocumentTypePrototype) };
 
 JSObject* JSDocumentTypePrototype::self(VM& vm, JSGlobalObject* globalObject)
 {
     return getDOMPrototype<JSDocumentType>(vm, globalObject);
-}
-
-bool JSDocumentTypePrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
-{
-    JSDocumentTypePrototype* thisObject = jsCast<JSDocumentTypePrototype*>(object);
-    return getStaticFunctionSlot<JSObject>(exec, JSDocumentTypePrototypeTable, thisObject, propertyName, slot);
 }
 
 const ClassInfo JSDocumentType::s_info = { "DocumentType", &Base::s_info, &JSDocumentTypeTable, 0 , CREATE_METHOD_TABLE(JSDocumentType) };
@@ -216,20 +206,6 @@ EncodedJSValue jsDocumentTypeConstructor(ExecState* exec, EncodedJSValue thisVal
 JSValue JSDocumentType::getConstructor(VM& vm, JSGlobalObject* globalObject)
 {
     return getDOMConstructor<JSDocumentTypeConstructor>(vm, jsCast<JSDOMGlobalObject*>(globalObject));
-}
-
-EncodedJSValue JSC_HOST_CALL jsDocumentTypePrototypeFunctionRemove(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    JSDocumentType* castedThis = jsDynamicCast<JSDocumentType*>(thisValue);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSDocumentType::info());
-    DocumentType& impl = castedThis->impl();
-    ExceptionCode ec = 0;
-    impl.remove(ec);
-    setDOMException(exec, ec);
-    return JSValue::encode(jsUndefined());
 }
 
 DocumentType* toDocumentType(JSC::JSValue value)

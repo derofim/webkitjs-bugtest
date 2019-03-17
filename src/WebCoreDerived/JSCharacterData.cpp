@@ -81,7 +81,6 @@ static const HashTableValue JSCharacterDataPrototypeTableValues[] =
     { "insertData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionInsertData), (intptr_t)0 },
     { "deleteData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionDeleteData), (intptr_t)0 },
     { "replaceData", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionReplaceData), (intptr_t)0 },
-    { "remove", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsCharacterDataPrototypeFunctionRemove), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
@@ -316,20 +315,6 @@ EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceData(ExecSta
     if (exec->hadException())
         return JSValue::encode(jsUndefined());
     impl.replaceData(offset, length, data, ec);
-    setDOMException(exec, ec);
-    return JSValue::encode(jsUndefined());
-}
-
-EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionRemove(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    JSCharacterData* castedThis = jsDynamicCast<JSCharacterData*>(thisValue);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSCharacterData::info());
-    CharacterData& impl = castedThis->impl();
-    ExceptionCode ec = 0;
-    impl.remove(ec);
     setDOMException(exec, ec);
     return JSValue::encode(jsUndefined());
 }

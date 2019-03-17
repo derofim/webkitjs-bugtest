@@ -68,7 +68,7 @@ private:
 protected:
     JSDataTransferItem(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<DataTransferItem>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSDataTransferItemOwner : public JSC::WeakHandleOwner {

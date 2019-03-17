@@ -55,12 +55,6 @@
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#include "JSSVGAnimatedPreserveAspectRatio.h"
-#include "JSSVGAnimatedRect.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -84,51 +78,19 @@ static const HashTableValue JSSVGSVGElementTableValues[] =
     { "currentView", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementCurrentView), (intptr_t)0 },
     { "currentScale", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementCurrentScale), (intptr_t)setJSSVGSVGElementCurrentScale },
     { "currentTranslate", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementCurrentTranslate), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "viewBox", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementViewBox), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "preserveAspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementPreserveAspectRatio), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "zoomAndPan", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementZoomAndPan), (intptr_t)setJSSVGSVGElementZoomAndPan },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGSVGElementTable = { 66, 63, JSSVGSVGElementTableValues, 0 };
+static const HashTable JSSVGSVGElementTable = { 33, 31, JSSVGSVGElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGSVGElementConstructorTableValues[] =
 {
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_UNKNOWN), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_DISABLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_DISABLE), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_MAGNIFY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_MAGNIFY), (intptr_t)0 },
-#endif
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGSVGElementConstructorTable = { 9, 7, JSSVGSVGElementConstructorTableValues, 0 };
-
-#if ENABLE(SVG)
-COMPILE_ASSERT(0 == SVGSVGElement::SVG_ZOOMANDPAN_UNKNOWN, SVGSVGElementEnumSVG_ZOOMANDPAN_UNKNOWNIsWrongUseDoNotCheckConstants);
-#endif
-#if ENABLE(SVG)
-COMPILE_ASSERT(1 == SVGSVGElement::SVG_ZOOMANDPAN_DISABLE, SVGSVGElementEnumSVG_ZOOMANDPAN_DISABLEIsWrongUseDoNotCheckConstants);
-#endif
-#if ENABLE(SVG)
-COMPILE_ASSERT(2 == SVGSVGElement::SVG_ZOOMANDPAN_MAGNIFY, SVGSVGElementEnumSVG_ZOOMANDPAN_MAGNIFYIsWrongUseDoNotCheckConstants);
-#endif
-
+static const HashTable JSSVGSVGElementConstructorTable = { 1, 0, JSSVGSVGElementConstructorTableValues, 0 };
 const ClassInfo JSSVGSVGElementConstructor::s_info = { "SVGSVGElementConstructor", &Base::s_info, &JSSVGSVGElementConstructorTable, 0, CREATE_METHOD_TABLE(JSSVGSVGElementConstructor) };
 
 JSSVGSVGElementConstructor::JSSVGSVGElementConstructor(Structure* structure, JSDOMGlobalObject* globalObject)
@@ -153,15 +115,6 @@ bool JSSVGSVGElementConstructor::getOwnPropertySlot(JSObject* object, ExecState*
 
 static const HashTableValue JSSVGSVGElementPrototypeTableValues[] =
 {
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_UNKNOWN", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_UNKNOWN), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_DISABLE", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_DISABLE), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "SVG_ZOOMANDPAN_MAGNIFY", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSVGElementSVG_ZOOMANDPAN_MAGNIFY), (intptr_t)0 },
-#endif
     { "suspendRedraw", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGSVGElementPrototypeFunctionSuspendRedraw), (intptr_t)0 },
     { "unsuspendRedraw", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGSVGElementPrototypeFunctionUnsuspendRedraw), (intptr_t)0 },
     { "unsuspendRedrawAll", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGSVGElementPrototypeFunctionUnsuspendRedrawAll), (intptr_t)0 },
@@ -188,7 +141,7 @@ static const HashTableValue JSSVGSVGElementPrototypeTableValues[] =
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGSVGElementPrototypeTable = { 69, 63, JSSVGSVGElementPrototypeTableValues, 0 };
+static const HashTable JSSVGSVGElementPrototypeTable = { 68, 63, JSSVGSVGElementPrototypeTableValues, 0 };
 const ClassInfo JSSVGSVGElementPrototype::s_info = { "SVGSVGElementPrototype", &Base::s_info, &JSSVGSVGElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGSVGElementPrototype) };
 
 JSObject* JSSVGSVGElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
@@ -199,7 +152,7 @@ JSObject* JSSVGSVGElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
 bool JSSVGSVGElementPrototype::getOwnPropertySlot(JSObject* object, ExecState* exec, PropertyName propertyName, PropertySlot& slot)
 {
     JSSVGSVGElementPrototype* thisObject = jsCast<JSSVGSVGElementPrototype*>(object);
-    return getStaticPropertySlot<JSSVGSVGElementPrototype, JSObject>(exec, JSSVGSVGElementPrototypeTable, thisObject, propertyName, slot);
+    return getStaticFunctionSlot<JSObject>(exec, JSSVGSVGElementPrototypeTable, thisObject, propertyName, slot);
 }
 
 const ClassInfo JSSVGSVGElement::s_info = { "SVGSVGElement", &Base::s_info, &JSSVGSVGElementTable, 0 , CREATE_METHOD_TABLE(JSSVGSVGElement) };
@@ -426,69 +379,6 @@ EncodedJSValue jsSVGSVGElementCurrentTranslate(ExecState* exec, EncodedJSValue s
 }
 
 
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementExternalResourcesRequired(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGSVGElement* castedThis = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGSVGElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementViewBox(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGSVGElement* castedThis = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGSVGElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedRect> obj = impl.viewBoxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementPreserveAspectRatio(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGSVGElement* castedThis = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGSVGElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedPreserveAspectRatio> obj = impl.preserveAspectRatioAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementZoomAndPan(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGSVGElement* castedThis = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGSVGElement& impl = castedThis->impl();
-    JSValue result = jsNumber(impl.zoomAndPan());
-    return JSValue::encode(result);
-}
-
-#endif
-
 EncodedJSValue jsSVGSVGElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {
     JSSVGSVGElement* domObject = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
@@ -556,25 +446,6 @@ void setJSSVGSVGElementCurrentScale(ExecState* exec, EncodedJSValue thisValue, E
     impl.setCurrentScale(nativeValue);
 }
 
-
-#if ENABLE(SVG)
-void setJSSVGSVGElementZoomAndPan(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue encodedValue)
-{
-    JSValue value = JSValue::decode(encodedValue);
-    UNUSED_PARAM(exec);
-    JSSVGSVGElement* castedThis = jsDynamicCast<JSSVGSVGElement*>(JSValue::decode(thisValue));
-    if (!castedThis) {
-        throwVMTypeError(exec);
-        return;
-    }
-    SVGSVGElement& impl = castedThis->impl();
-    uint16_t nativeValue(toUInt16(exec, value, NormalConversion));
-    if (exec->hadException())
-        return;
-    impl.setZoomAndPan(nativeValue);
-}
-
-#endif
 
 JSValue JSSVGSVGElement::getConstructor(VM& vm, JSGlobalObject* globalObject)
 {
@@ -932,32 +803,6 @@ EncodedJSValue JSC_HOST_CALL jsSVGSVGElementPrototypeFunctionGetElementById(Exec
     return JSValue::encode(result);
 }
 
-// Constant getters
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementSVG_ZOOMANDPAN_UNKNOWN(ExecState* exec, EncodedJSValue, EncodedJSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return JSValue::encode(jsNumber(static_cast<int>(0)));
-}
-
-#endif
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementSVG_ZOOMANDPAN_DISABLE(ExecState* exec, EncodedJSValue, EncodedJSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return JSValue::encode(jsNumber(static_cast<int>(1)));
-}
-
-#endif
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSVGElementSVG_ZOOMANDPAN_MAGNIFY(ExecState* exec, EncodedJSValue, EncodedJSValue, PropertyName)
-{
-    UNUSED_PARAM(exec);
-    return JSValue::encode(jsNumber(static_cast<int>(2)));
-}
-
-#endif
 
 }
 

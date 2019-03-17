@@ -69,7 +69,7 @@ private:
 protected:
     JSWebGLRenderbuffer(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<WebGLRenderbuffer>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSWebGLRenderbufferOwner : public JSC::WeakHandleOwner {

@@ -56,7 +56,7 @@ public:
 protected:
     JSElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<Element>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 Element* toElement(JSC::JSValue);
@@ -146,7 +146,6 @@ JSC::EncodedJSValue JSC_HOST_CALL jsElementPrototypeFunctionWebkitRequestPointer
 #if ENABLE(CSS_REGIONS)
 JSC::EncodedJSValue JSC_HOST_CALL jsElementPrototypeFunctionWebkitGetRegionFlowRanges(JSC::ExecState*);
 #endif
-JSC::EncodedJSValue JSC_HOST_CALL jsElementPrototypeFunctionRemove(JSC::ExecState*);
 // Attributes
 
 JSC::EncodedJSValue jsElementTagName(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
