@@ -334,8 +334,14 @@ static void addQTDirToPATH()
 }
 
 #ifdef DEBUG_ALL
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
 #define WEBKITDLL TEXT("WebKit_debug.dll")
 #else
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
 #define WEBKITDLL TEXT("WebKit.dll")
 #endif
 

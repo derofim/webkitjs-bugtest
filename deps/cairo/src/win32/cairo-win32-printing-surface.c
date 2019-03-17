@@ -157,6 +157,10 @@ _cairo_win32_printing_surface_init_language_pack (cairo_win32_printing_surface_t
     typedef BOOL (WINAPI *gdi_init_lang_pack_func_t)(int);
     gdi_init_lang_pack_func_t gdi_init_lang_pack;
     HMODULE module;
+    
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
 
     if (GetModuleHandleW (L"LPK.DLL"))
 	return;

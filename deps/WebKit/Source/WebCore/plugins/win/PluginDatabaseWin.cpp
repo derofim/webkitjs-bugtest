@@ -102,6 +102,9 @@ static inline void addPluginPathsFromRegistry(HKEY rootKey, HashSet<String>& pat
 
 void PluginDatabase::getPluginPathsInDirectories(HashSet<String>& paths) const
 {
+  #if PLATFORM(JS)
+#error "no __declspec"
+#endif
     // FIXME: This should be a case insensitive set.
     HashSet<String> uniqueFilenames;
 

@@ -1,6 +1,8 @@
 webkit.js
 =========
 
+TODO: llvm trap https://groups.google.com/forum/#!msg/emscripten-discuss/SlZevdrVatY/LI-iLSYxTUoJ
+
 A port of WebKit (specifically, webcore+libs) to JavaScript aimed at running in both node.js and browsers. Currently available for contributors; and testers.  However this is not recommended for production or beta environments.
 
 See the [webkit.js Google Group](https://groups.google.com/forum/#!forum/webkitjs) for Discussions & Questions

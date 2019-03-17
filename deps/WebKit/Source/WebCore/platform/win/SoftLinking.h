@@ -32,6 +32,10 @@
 #include <windows.h>
 #include <wtf/Assertions.h>
 
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 #define SOFT_LINK_LIBRARY_HELPER(lib, suffix) \
     static HMODULE lib##Library() \
     { \

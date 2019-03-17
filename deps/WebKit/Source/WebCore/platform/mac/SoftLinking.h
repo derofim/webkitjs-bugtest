@@ -29,6 +29,10 @@
 #import <wtf/Assertions.h>
 #import <dlfcn.h>
 
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 #if PLATFORM(IOS)
 #import <objc/runtime.h>
 #endif

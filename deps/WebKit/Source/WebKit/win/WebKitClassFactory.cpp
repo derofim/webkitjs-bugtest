@@ -68,6 +68,11 @@ SOFT_LINK_DEBUG_LIBRARY(SafariTheme)
 SOFT_LINK_LIBRARY(SafariTheme)
 #endif
 
+
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 SOFT_LINK(SafariTheme, STInitialize, void, APIENTRY, (), ())
 #endif
 

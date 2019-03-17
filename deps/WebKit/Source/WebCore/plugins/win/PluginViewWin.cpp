@@ -261,7 +261,9 @@ static void setUpOffscreenPaintingHooks(HDC (WINAPI*hookedBeginPaint)(HWND, PAIN
     if (haveHooked)
         return;
     haveHooked = true;
-
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
     // Most (all?) windowed plugins don't seem to respond to WM_PRINTCLIENT, so
     // we hook into BeginPaint/EndPaint to allow their normal WM_PAINT handling
     // to draw into a given HDC. Note that this hooking affects the entire

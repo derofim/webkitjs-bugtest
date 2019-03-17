@@ -108,7 +108,17 @@
       },
       'dependencies': [
         '../../third_party/icu/icu.gyp:icuuc',
+        '../../third_party/icu/icu.gyp:icui18n',
+        '../icu/icu.gyp',
+        '../icu/icu.gyp:icui18n',
+        '../icu/icu.gyp:icuuc',
       ],
+      #
+      'cxx':'emcc',
+      'cflags+':['-DHAVE_ICU=1 -Wno-error'],
+      'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+      'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+      #
       'conditions': [
         ['clang==1', {
           'xcode_settings': {
@@ -118,6 +128,7 @@
           },
           'cflags': [
             '-Wno-unused-value',
+            '-Wno-error',
           ]
         }],
       ],

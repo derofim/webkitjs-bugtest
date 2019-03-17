@@ -30,7 +30,12 @@
 /* #undef CAIRO_CAN_TEST_WIN32_PRINTING_SURFACE */
 
 /* Define to 1 if dlsym is available */
+//
+#ifdef __EMSCRIPTEN__
+#define CAIRO_HAS_DLSYM 0
+#else
 #define CAIRO_HAS_DLSYM 1
+#endif
 
 /* Define to 1 to enable cairo's cairo-script-interpreter feature */
 #define CAIRO_HAS_INTERPRETER 1

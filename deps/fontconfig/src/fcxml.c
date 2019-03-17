@@ -3003,6 +3003,9 @@ FcConfigParseAndLoad (FcConfig	    *config,
 #endif
 
 #ifdef _WIN32
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
     if (!pGetSystemWindowsDirectory)
     {
         HMODULE hk32 = GetModuleHandleA("kernel32.dll");

@@ -27,8 +27,8 @@ generator_default_variables = {
   'STATIC_LIB_PREFIX': 'lib',
   'STATIC_LIB_SUFFIX': '.bc',
   'SHARED_LIB_PREFIX': 'lib',
-  'SHARED_LIB_SUFFIX': '.so',
-  #'SHARED_LIB_SUFFIX': '.bc',
+  #'SHARED_LIB_SUFFIX': '.so',
+  'SHARED_LIB_SUFFIX': '.bc',
   'JS_LIB_SUFFIX':     '.js',
   'JS_LIB_PREFIX':     '',
 
@@ -1918,7 +1918,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
         'if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; '
         'fi; fi'
         % { 'solink':
-              'emcc -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
+              'emcc -static $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
             'extract_toc':
               ('{ readelf -d ${lib} | grep SONAME ; '
                'nm -gD -f p ${lib} | cut -f1-2 -d\' \'; }')})
@@ -1935,7 +1935,8 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
       'solink_js',
       description='SOLINK_JS $lib, POSTBUILDS',
       restat=True,
-      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags -s SIDE_MODULE=1
+      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags
+      # -s SIDE_MODULE=1
       pool='link_pool')
     master_ninja.rule(
       'solink_module',
@@ -2018,19 +2019,20 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
       'solink',
       description='SOLINK $lib, POSTBUILDS',
       restat=True,
-      command=mtime_preserving_solink_base % {'suffix': solink_suffix, 'type': '-shared'},
+      command=mtime_preserving_solink_base % {'suffix': solink_suffix, 'type': '-static'},
       pool='link_pool')
     master_ninja.rule(
       'solink_notoc',
       description='SOLINK $lib, POSTBUILDS',
       restat=True,
-      command=solink_base % {'suffix':solink_suffix, 'type': '-shared'},
+      command=solink_base % {'suffix':solink_suffix, 'type': '-static'},
       pool='link_pool')
     master_ninja.rule(
       'solink_js',
       description='SOLINK_JS $lib, POSTBUILDS',
       restat=True,
-      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags -s SIDE_MODULE=1 
+      command='emcc $ldflags $jsflags $in $solibs ', # -o $soname // we don't use this, specify in ldflags
+      # -s SIDE_MODULE=1 
       pool='link_pool')
 			#  ; $ld $ldflags $jsflags $in $solibs -o test.html
     solink_module_suffix = '$in $solibs $libs$postbuilds'

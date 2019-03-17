@@ -62,6 +62,11 @@ typedef void* DDDFAScannerRef;
 #endif
 #endif
 
+
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 SOFT_LINK_PRIVATE_FRAMEWORK_OPTIONAL(DataDetectorsCore)
 SOFT_LINK(DataDetectorsCore, DDDFACacheCreateFromFramework, DDDFACacheRef, (), ())
 SOFT_LINK(DataDetectorsCore, DDDFAScannerCreateFromCache, DDDFAScannerRef, (DDDFACacheRef cache), (cache))

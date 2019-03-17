@@ -42,7 +42,12 @@
 #include "GLContext.h"
 #endif
 
-#include <SDL.h>
+//#include <SDL.h>
+#include <SDL2/SDL.h>
+//#include <SDL.h>
+#include <SDL2/SDL_thread.h>
+#include <SDL2/SDL_syswm.h>
+#include <SDL2/SDL_video.h>
 
 #include <stdio.h>
 #include <string>
@@ -80,10 +85,13 @@ namespace WebCore {
 
 		webkitTrace();
 		WebKitJSStrategies::initialize();
+		webkitTrace();
 		m_private = new WebViewPrivate();
+		webkitTrace();
 		m_private->transparent = false;
 		Page::PageClients pageClients;
 		fillWithEmptyClients(pageClients);
+		webkitTrace();
 
     // https://github.com/emscripten-core/emscripten/blob/master/tools/ports/sdl.py#L10
 		/*if(SDL_Init(SDL_INIT_AUDIO | SDL_INIT_VIDEO) < 0) {
@@ -95,21 +103,33 @@ namespace WebCore {
       printf("Unable to create window: %s\n", SDL_GetError());
     }
 #if USE(ACCELERATED_COMPOSITING)
-    m_private->glContext->setWindow(window_);
+    if(m_private->glContext)
+      m_private->glContext->setWindow(window_);
+    else
+    {
+      printf("!m_private->glContext......: %s\n", SDL_GetError());
+    }
+    
 #endif
+
     if (!context_) {
       printf("Unable to create context: %s\n", SDL_GetError());
     }
+		webkitTrace();
 
 		m_private->chromeClient = WebCore::ChromeClientJS::createClient(this);
+		webkitTrace();
 		pageClients.chromeClient = m_private->chromeClient->toChromeClient();
 		m_private->mainFrame = new WebCore::WebFrameJS(this);
+		webkitTrace();
 		pageClients.loaderClientForMainFrame = WebCore::FrameLoaderClientJS::createClient(m_private->mainFrame);
 		m_private->corePage = new Page(pageClients);
+		webkitTrace();
 		m_private->corePage->addLayoutMilestones(DidFirstVisuallyNonEmptyLayout);
     m_private->corePage->setGroupName("webkit.js");
 		//m_private->corePage->setGroupName(L"webkit.js");
 
+		webkitTrace();
 		m_private->corePage->settings().setMediaEnabled(false);
 		m_private->corePage->settings().setScreenFontSubstitutionEnabled(true);
 		m_private->corePage->settings().setWebSecurityEnabled(false);
@@ -123,6 +143,7 @@ namespace WebCore {
 		m_private->corePage->settings().setScriptEnabled(false);
 		m_private->corePage->settings().setPluginsEnabled(false);
 
+		webkitTrace();
     // TODO: https://github.com/pqrkchqps/MusicBrowser/blob/03216439d1cc3dae160f440417fcb557bb72f8e4/src/webkit/glue/webpreferences.cc
 		if(accelerated) {
 		  webkitTrace();
@@ -149,17 +170,21 @@ namespace WebCore {
 			//m_private->corePage->settings().setTiledBackingStoreEnabled(false);
     }
 
+		webkitTrace();
     printf("initializeScreens...\n");
     printf("WebView: width = %d height = %d \n", width, height);
 		initializeScreens(width, height);
 
+		webkitTrace();
 		m_private->mainFrame->init();
 		m_private->corePage->setIsVisible(true, true);
 		m_private->corePage->setIsInWindow(true);
 
+		webkitTrace();
     printf("resize...\n");
 		resize(width, height);
 
+		webkitTrace();
 		if(!m_private->accelerated) {
 			EM_ASM({
 				postMessage({target:'status',context:'ready'});
@@ -344,7 +369,7 @@ namespace WebCore {
         printf("no m_private->acceleratedContext...%s\n", SDL_GetError());
       }
       // >>>>>>>>.
-      m_private->acceleratedContext->initialize();
+      //m_private->acceleratedContext->initialize();
 #endif
 
 			if ( !m_private->sdl_screen ) {
@@ -388,14 +413,16 @@ namespace WebCore {
 		coreFrame->view()->scrollBy(IntSize(offsetX, offsetY));
 	}
 
-	void WebView::handleSDLEvent(const SDL_Event& event)
+	/*void WebView::handleSDLEvent(const SDL_Event& event)
 	{
 		// Note: do not add a trace or printf here, this funciton executes quite
 		// a few times that it will cause the browser to slow down to a crawl
 		// to finish writing console messages.
 		switch (event.type) {
-			case SDL_VIDEORESIZE:
-			resize(event.resize.w, event.resize.h);
+			case SDL_WINDOWEVENT_RESIZED:
+			//resize(event.resize.w, event.resize.h);
+      // https://wiki.libsdl.org/SDL_WindowEvent
+      resize(event.window.data1, event.window.data2);
 			break;
 			case SDL_VIDEOEXPOSE:
 			break;
@@ -417,7 +444,8 @@ namespace WebCore {
 			break;
 		}
 
-	}
+	}*/
+
 	void WebView::scalefactor(float t) {
 		webkitTrace();
 //		m_private->corePage->setDeviceScaleFactor(t);

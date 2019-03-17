@@ -22,15 +22,21 @@
     # -s EMULATE_FUNCTION_POINTER_CASTS=1 , Emscripten emits code to emulate function pointer casts at runtime,
     # -s EMULATE_FUNCTION_POINTER_CASTS=1 
     # !!! EMULATE_FUNCTION_POINTER_CASTS can add significant runtime overhead, so it is not recommended, but is be worth trying in dev. !!!
-    #
-		'emscripten_linktojs':'-s ASSERTIONS=1 -s FULL_ES2=1 -s NO_EXIT_RUNTIME=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
+    #  -s LINKABLE=1 increases my code size by 30%! Should be a warning about that for larger projects ;) However it was also a source of "too many variables" problems in Firefox.
+    #  -s NO_EXIT_RUNTIME produced a LLVM TRAP! I didn't chase down the stack trace since it was a release mode but I should mention that I never intended on running "main" so it might not be an issue?
+#define JS_EXPORT_PRIVATE
+#define WTF_EXPORT_PRIVATE
+    #  --memory-init-file 1 did cut down code and produced a ~2MB memory file, however it also caused a LLVM TRAP. 
+    # -std=c++11 
+		'emscripten_cflags':'-s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig',
+		'emscripten_linktojs':'<(emscripten_cflags) -o webkit.html',
 		#--post-js ../src/webkit.post.js --pre-js ../src/webkit.pre.js --proxy-to-worker --proxy-to-worker -o webkit.js
 		# Ensure that Apple, and Win32 builds do not interfere with the compile, we'll assume we're linux since
 		# emscripten has a very posix unix compile interface, should be the most compatible with existing code.
 		# -fshort-wchar is needed, emscripten uses a 4, not 8 wchar (32 vs. 64 bit). 
 		#'cflags':'-U__APPLE__ -U__WIN32__ -Ulinux -Wno-warn-absolute-paths -Werror -fshort-wchar -isysroot <(emscripten_sysroot)',
     #  -fshort-wchar 
-    'cflags':'-DWTF_PLATFORM_JS=1 -DDEBUG=1 -m32 -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1  -U__APPLE__ -U__WIN32__ -DPFNGLCLIPPLANEXIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG -DPFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC -DPFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG=PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC -Ulinux -Wno-error -Wno-warn-absolute-paths -Wno-expansion-to-defined -Wno-logical-not-parentheses -Wno-inconsistent-missing-override -isysroot <(emscripten_sysroot)',
+    'cflags':'<(emscripten_cflags) -DHAVE_ICU=1 -DJS_EXPORT_PRIVATE="" -DWTF_PLATFORM_JS=1 -DDEBUG=1 -m32 -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1  -U__APPLE__ -U__WIN32__ -DPFNGLCLIPPLANEXIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG -DPFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMG=PFNGLFRAMEBUFFERTEXTURE2DMULTISAMPLEIMGPROC -DPFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG=PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC -Ulinux -Wno-error -Wno-warn-absolute-paths -Wno-expansion-to-defined -Wno-logical-not-parentheses -Wno-inconsistent-missing-override -isysroot <(emscripten_sysroot)',
 		# -DTARGET_EMSCRIPTEN=1 -D__EMSCRIPTEN__=1 
     # -fwchar-type=short -fno-signed-wchar
     # -m32 https://github.com/trevorlinton/webkit.js/issues/40
@@ -38,7 +44,7 @@
     #'solink_js':'$ld $ldflags $jsflags $in $solibs',
 		'cflags_cc':'-std=c++11',
 		'ldflags':'-m32',
-		'webcore_excludes':'(curl/|SSLHandle\\.cpp$|leveldb/|skia|glx/|cg/|ca/|avfoundation/|wince/|Modules/|soup/|ios/|nix/|plugin/|plugins/|blackberry/|WinCE|Gtk|storage/|win/|linux/|glib/|cocoa/|gtk/|cf/|mac/|efl/|appcache/|ExportFileGenerator\\.cpp$|CF\\.cpp$|IOS\\.|Mac\\.|Win\\.|XMLHttpRequest|ThemeSafari|PlugInElement|PlugInImageElement|JSAbstractView|InspectorWebBackend|AllInOne|OpenTypeUtilities|HarfBuzzFaceCoreText|graphics/FontPlatformData\\.cpp$|GraphicsContext3DOpenGL\\.cpp$|platform/sql/|ICU\\.cpp$|enchant/|ExportFileGenerator\\.cpp$|SmartReplaceICU\\.cpp$|HTMLObjectElement\\.cpp$|RenderEmbeddedObject\\.cpp$|Extensions3DOpenGL\\.cpp$|DragController\\.cpp$|JSDOMPlugin\\.cpp$|WebCoreDerived/JS|posix/|debug.cpp$|ANGLE/src/common/|_win.cpp$|BlobResourceHandle\\.cpp$|BlobRegistryImpl\\.cpp$|BlobRegistry\\.cpp$|GraphicsContext3DOpenGL\\.cpp$|javascript/OpenGLES)',
+		'webcore_excludes':'(curl/|SSLHandle\\.cpp$|leveldb/|skia|glx/|cg/|ca/|avfoundation/|wince/|Modules/|soup/|ios/|nix/|plugin/|plugins/|blackberry/|WinCE|Gtk|storage/|win/|linux/|glib/|cocoa/|gtk/|cf/|mac/|efl/|appcache/|ExportFileGenerator\\.cpp$|CF\\.cpp$|IOS\\.|Mac\\.|Win\\.|XMLHttpRequest|ThemeSafari|PlugInElement|PlugInImageElement|JSAbstractView|InspectorWebBackend|AllInOne|OpenTypeUtilities|HarfBuzzFaceCoreText|graphics/FontPlatformData\\.cpp$|GraphicsContext3DOpenGL\\.cpp$|platform/sql/|ICU\\.cpp$|enchant/|ExportFileGenerator\\.cpp$|SmartReplaceICU\\.cpp$|HTMLObjectElement\\.cpp$|Extensions3DOpenGL\\.cpp$|DragController\\.cpp$|JSDOMPlugin\\.cpp$|WebCoreDerived/JS|posix/|debug.cpp$|ANGLE/src/common/|_win.cpp$|BlobResourceHandle\\.cpp$|BlobRegistryImpl\\.cpp$|BlobRegistry\\.cpp$|GraphicsContext3DOpenGL\\.cpp$|javascript/OpenGLES)',
 		# svg/InitializeParseContext|ossource_posix.cpp$|coordinated/
 		# cairo use: ANGLE/|angle/|cairo/ 
 	},
@@ -95,7 +101,8 @@
 				# We add -O2 to get rid of dead functions, -g2 preserves the symbol names for a fairly
 				#		decent stack trace on an abort or heap/stack violation.  Using js-opts 0 disables any
 				#		mangaling of the javascript, this is the optimal way of debugging.
-				'jsflags+':['<(emscripten_linktojs) -s WARN_UNALIGNED=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=2 -O2 -g2 --js-opts 0 -s SAFE_HEAP=1 -s ALIASING_FUNCTION_POINTERS=0'],
+        # 7. Allowing "Memory to grow" always threw an LLVM trap, is the -s TOTAL_MEMORY=X a cap on the memory use, or is this amount of memory effectively grabbed for the heap when it initializes?.. I was never clear on it and don't understand its impact to performance/init
+				'jsflags+':['<(emscripten_linktojs) -s WARN_UNALIGNED=1 -s ALLOW_MEMORY_GROWTH=1 -s ASSERTIONS=1 -O2 -g2 --js-opts 0 -s SAFE_HEAP=1 -s ALIASING_FUNCTION_POINTERS=0'],
 			},
 		},
 	},

@@ -1906,7 +1906,7 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
         'if ! cmp -s ${lib}.tmp ${lib}.TOC; then mv ${lib}.tmp ${lib}.TOC ; '
         'fi; fi'
         % { 'solink':
-              'emcc -shared $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
+              'emcc -static $ldflags -o $lib -Wl,-soname=$soname %(suffix)s',
             'extract_toc':
               ('{ readelf -d ${lib} | grep SONAME ; '
                'nm -gD -f p ${lib} | cut -f1-2 -d\' \'; }')})
@@ -1996,14 +1996,14 @@ def GenerateOutputForConfig(target_list, target_dicts, data, params,
       'solink',
       description='SOLINK $lib, POSTBUILDS',
       restat=True,
-      command='$ld %(type)s $ldflags -o $lib %(suffix)s' % {'suffix': solink_suffix, 'type': '-shared'},
+      command='$ld %(type)s $ldflags -o $lib %(suffix)s' % {'suffix': solink_suffix, 'type': '-static'},
       #command=mtime_preserving_solink_base % {'suffix': solink_suffix, 'type': '-shared'},
       pool='link_pool')
     master_ninja.rule(
       'solink_notoc',
       description='SOLINK $lib, POSTBUILDS',
       restat=True,
-      command='$ld %(type)s $ldflags -o $lib %(suffix)s' % {'suffix': solink_suffix, 'type': '-shared'},
+      command='$ld %(type)s $ldflags -o $lib %(suffix)s' % {'suffix': solink_suffix, 'type': '-static'},
       #command=solink_base % {'suffix':solink_suffix, 'type': '-shared'},
       pool='link_pool')
     master_ninja.rule(

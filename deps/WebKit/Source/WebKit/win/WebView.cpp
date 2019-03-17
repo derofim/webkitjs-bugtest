@@ -183,6 +183,11 @@
 #include <wtf/text/StringConcatenate.h>
 #include <wtf/win/GDIObject.h>
 
+
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 // Soft link functions for gestures and panning feedback
 SOFT_LINK_LIBRARY(USER32);
 SOFT_LINK_OPTIONAL(USER32, GetGestureInfo, BOOL, WINAPI, (HGESTUREINFO, PGESTUREINFO));
@@ -5521,6 +5526,9 @@ const IMMDict& IMMDict::dict()
 
 IMMDict::IMMDict()
 {
+  #if PLATFORM(JS)
+#error "no __declspec"
+#endif
     m_instance = ::LoadLibraryW(L"IMM32.DLL");
     getContext = reinterpret_cast<getContextPtr>(::GetProcAddress(m_instance, "ImmGetContext"));
     ASSERT(getContext);

@@ -43,8 +43,8 @@
       ],
       'dependencies': [
           'wtf_config',
-          #'<(DEPTH)/deps/icu/icu.gyp:icui18n',
-          #'<(DEPTH)/deps/icu/icu.gyp:icuuc',
+          '<(DEPTH)/deps/icu/icu.gyp:icui18n',
+          '<(DEPTH)/deps/icu/icu.gyp:icuuc',
       ],
       'sources': [
         '<@(wtf_files)',
@@ -59,8 +59,8 @@
       },
       'export_dependent_settings': [
         'wtf_config',
-        #'<(DEPTH)/deps/icu/icu.gyp:icui18n',
-        #'<(DEPTH)/deps/icu/icu.gyp:icuuc',
+        '<(DEPTH)/deps/icu/icu.gyp:icui18n',
+        '<(DEPTH)/deps/icu/icu.gyp:icuuc',
       ],
       'sources/': [
         ['exclude', 'Mac\\.mm$'],

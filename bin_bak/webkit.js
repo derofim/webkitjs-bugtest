@@ -26,7 +26,7 @@ function WebKit(settings) {
 	var _height = settings.height;
 	var _scale = settings.scale;
 	var _transparent = false;
-	var _html = "<html><body></body></html>";
+	var _html = "<html><body style=\"background-color:green;\"></body></html>";
 	var _hidpi = settings.hidpi;
 	var renderFrameData = null;
 	var Module = {

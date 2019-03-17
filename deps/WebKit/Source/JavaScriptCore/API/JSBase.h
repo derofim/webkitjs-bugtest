@@ -26,6 +26,8 @@
 #ifndef JSBase_h
 #define JSBase_h
 
+#include <wtf/Platform.h>
+
 #ifndef __cplusplus
 #include <stdbool.h>
 #endif
@@ -70,7 +72,7 @@ typedef struct OpaqueJSValue* JSObjectRef;
 /* These rules should stay the same as in WebKit2/Shared/API/c/WKBase.h */
 
 #undef JS_EXPORT
-#if defined(JS_NO_EXPORT)
+#if defined(JS_NO_EXPORT) || PLATFORM(JS)
 #define JS_EXPORT
 #elif defined(__GNUC__) && !defined(__CC_ARM) && !defined(__ARMCC__)
 #define JS_EXPORT __attribute__((visibility("default")))

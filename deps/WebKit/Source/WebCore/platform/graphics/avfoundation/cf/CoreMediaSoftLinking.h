@@ -27,6 +27,11 @@
 
 // Soft-link against CoreMedia functions and variables required by MediaPlayerPrivateAVFoundationCF.cpp.
 
+
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 #ifdef DEBUG_ALL
 SOFT_LINK_DEBUG_LIBRARY(CoreMedia)
 #else

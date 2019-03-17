@@ -23,6 +23,7 @@
 			'jpeg_turbo',
 			'png',
 			'freetype',
+#			'icu',
 			'harfbuzz',
 			'cairo',
 			'curl',
@@ -60,11 +61,14 @@
 		'defines+':['<@(feature_defines)','CAIRO_HAS_FT_FONT','CAIRO_HAS_FC_FONT','CAIRO_HAS_EGL_FUNCTIONS'],
 		'include_dirs':['<@(webcore_includes)','<(DEPTH)/src/',],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-		'ldflags+':[''],
-		'jsflags+':[''],
+		'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_support',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)','CAIRO_HAS_FT_FONT','CAIRO_HAS_FC_FONT','CAIRO_HAS_EGL_FUNCTIONS'],
 		'sources':[
 			'<(DEPTH)/src/WebCoreSupport/ApplicationCacheHostJS.cpp',
@@ -111,146 +115,235 @@
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)','<(DEPTH)/src/',],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+		'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_xml',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_xml_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
-		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_wtf',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_wtf_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_svg',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_svg_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_loader',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_loader_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_html',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_html_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_dom',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_dom_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_css',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_css_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_rendering',
+    #
+		'type':'static_library',
+    #
 		'defines+': ['<@(feature_defines)'],
 		'sources':['<@(webcore_rendering_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_page',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_page_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_style',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_style_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'webcore_derived',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_derived_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_platform',
+    #
+		'type':'static_library',
+    #
 		'defines+':[ '<@(feature_defines)', 'CAIRO_HAS_FT_FONT', 'CAIRO_HAS_FC_FONT', 'CAIRO_HAS_EGL_FUNCTIONS', ],
 		'sources':['<@(webcore_platform_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'], #,'<(DEPTH)/deps/skia/include/core/','<(DEPTH)/deps/skia/include/config/'
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_history',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_history_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+},
 	{
 		'target_name':'webcore_editing',
+    #
+		'type':'static_library',
+    #
 		'defines+':['<@(feature_defines)'],
 		'sources':['<@(webcore_editing_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name': 'webcore_storage',
+    #
+		'type':'static_library',
+    #
 		'defines+': ['<@(feature_defines)'],
 		'sources': ['<@(webcore_storage_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name': 'webcore_angle',
+    #
+		'type':'static_library',
+    #
 		'defines+': ['<@(feature_defines)'],
 		'sources': ['<@(webcore_angle_files)',],
 		'sources/':[ ['exclude','<(webcore_excludes)'] ],
 		'include_dirs':['<@(webcore_includes)'],
 		'cflags+':['-Werror -include ../deps/WebKit/Source/WebCore/WebCorePrefix.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name': 'xml',
+    #
+		'type':'static_library',
+    #
 		'sources':['<@(libxml2)',],
 		'include_dirs':[
 			'<(DEPTH)/deps/zlib', '<(DEPTH)/deps/libxml2/include', '<(DEPTH)/deps/libxml2/config',
 		],
 		'sources/':[['exclude','(test|rngparser|trio|runxmlconf|runtest|runsuite|python/|macos/|win32config|nano|elfgccheck|tutorial|win32/|example|doc/|xmlcatalog\\.c$|testlimits\\.c$|gjobread\\.c$|macos_main\\.c$|xmllint\\.c$)'],],
 		'cflags+':['-Werror'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name':'jpeg_turbo',
+    #
+		'type':'static_library',
+    #
 		'sources':['<@(libjpeg_turbo)',],
 		'sources/':[
 		['exclude','(cjpeg\\.c$|djpeg\\.c$|example\\.c$|java/|jccolext\\.c$|jcstest\\.c$|jdcolext\\.c$|jdmrgext\\.c$|jpegtran\\.c$|md5cmp\\.c$|rdjpgcom\\.c$|jsimd_arm\\.c$|jsimd_i386\\.c$|jsimd_mips_dspr2_asm\\.h$|jsimd_mips\\.c$|jsimd_x86_64\\.c$|jsimdcfg\\.inc\\.h$|tjbench\\.c$|tjunittest\\.c$|tjutil\\.c$|tjutil\\.h$|turbojpeg-jni\\.c$|wrjpgcom\\.c$)'],
@@ -260,16 +353,26 @@
 			'<(DEPTH)/deps/libjpeg_turbo/config',
 		],
 		'cflags+':['-Werror'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'png',
+    #
+		'type':'static_library',
+    #
 		'sources':['<@(libpng)',],
 		'include_dirs':['<(DEPTH)/deps/libpng', '<(DEPTH)/deps/zlib/' ],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name': 'freetype',
+    #
+		'type':'static_library',
+    #
 		'sources': ['<@(freetype)',],
 		'sources/': [ ['exclude', '(builds/|util/|/tools|autofit/af|gzip/ad|gzip/inf|gzip/z|/ftmac\\.c$|/ftbase\\.c$|/bdf\\.c$|ftcache\\.c$|cff\\.c$|/type1cid\\.c$|/gxvalid\\.c$|/otvalid\\.c$|pcf\\.c$|pfr\\.c$|/raster\\.c$|sfnt\\.c$|/smooth\\.c$|/truetype\\.c$|/type1\\.c$|/type42\\.c$|ftzopen\\.c$|/psaux\\.c$|/pshinter\\.c$|/psnames\\.c$|ttsbit0\\.c$|/gxvfgen\\.c$|/infutil\\.c$)'] ],
 		'defines+': [
@@ -283,9 +386,14 @@
 			'<(DEPTH)/deps/zlib'
 		],
 		'cflags+':['-Werror'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name':'libpixman',
+    #
+		'type':'static_library',
+    #
 		'defines': ['HAVE_CONFIG_H','PIXMAN_NO_TLS'],
 		'sources': ['<@(pixman)',],
 		'sources/': [ ['exclude', '(demos/|test/|pixman-sse2\\.c$|pixman-ssse3\\.c$|pixman-vmx\\.c$|pixman-region\\.c$)'] ],
@@ -295,12 +403,17 @@
 		],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name':'harfbuzz',
-		'defines': ['HB_OT','HB_NO_MT','HAVE_OT',],
+    #
+		'type':'static_library',
+    #
+		'defines': ['HB_OT','HB_NO_MT','HAVE_OT', 'HAVE_ICU'],
 		'sources': ['<@(harfbuzz_files)',],
-		'sources/': [ ['exclude', '(glib|coretext|icu|gobject|io1|jcstest)'] ],
+		'sources/': [ ['exclude', '(glib|coretext|gobject|io1|jcstest)'] ],
 		'include_dirs': [
 			'<(DEPTH)/deps/harfbuzz',
 			'<(DEPTH)/deps/freetype',
@@ -308,10 +421,34 @@
 			'<(DEPTH)/deps/freetype/include/freetype/config/',
 		],
 		'cxx':'<(emscripten_cc)',
-		'cflags+':['-Werror'],
-	},
+		'cflags+':['-DHAVE_ICU=1 -Wno-error'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
+#	{
+#		'target_name':'icu',
+#    #
+#		'type':'static_library',
+#    #
+#		'defines': ['HB_OT','HB_NO_MT','HAVE_OT',],
+#		'sources': ['<@(harfbuzz_files)',],
+#		'sources/': [ ['exclude', '(glib|coretext|icu|gobject|io1|jcstest)'] ],
+#		'include_dirs': [
+#			'<(DEPTH)/deps/harfbuzz',
+#			'<(DEPTH)/deps/freetype',
+#			'<(DEPTH)/deps/freetype/include',
+#			'<(DEPTH)/deps/freetype/include/freetype/config/',
+#		],
+#		'cxx':'<(emscripten_cc)',
+#		'cflags+':['-Werror'],
+#    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+#		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+#  },
 	{
 		'target_name': 'cairo',
+    #
+		'type':'static_library',
+    #
 		'defines+': ['CAIRO_NO_MUTEX','HAVE_CONFIG_H'], #,'PIXMAN_NO_TLS','HAVE_UINT64_T'
 		'sources': ['<@(cairo)',],
 		'sources/': [['exclude', '(prefs/|perf/|util/|test/|os2|win32|beos|qt|boilerplate|arm-|sse2|pdf|quartz|script-|wgl|xcb|vg-|-drm|skia-|tee-|xlib-|xml-|-vmx|utils/|cogl|directfb-|glx-|check-has-hidden|perceptualdiff\\.c$|cairo-ps-surface\\.c$|cairo-pdf-surface\\.c$|cairo-svg-surface\\.c$|cairo-time\\.c$|/test-|check-link\\.c$)'],], 
@@ -331,9 +468,14 @@
 		],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror'],
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
 	},
 	{
 		'target_name': 'fontconfig',
+    #
+		'type':'static_library',
+    #
 		'defines+': ['FONTCONFIG_PATH="/usr/lib/fontconfig/"','FC_CACHEDIR="/usr/lib/fontconfig/cache"','ENABLE_LIBXML2'],
 		'sources': ['<@(fontconfig_files)',],
 		'include_dirs': [
@@ -348,9 +490,14 @@
 		],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror -include ../deps/fontconfig/config/config.h'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name': 'curl',
+    #
+		'type':'static_library',
+    #
 		'sources': ['<@(curl)',],
 		'sources/': [['exclude','(docs/|m4/|packages/|perl/|tests/|vs/|winbuild/|CMake/|tool_|vtls/|macos/)'],],
 		'include_dirs': [
@@ -365,14 +512,21 @@
 		],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 	{
 		'target_name':'zlib',
+    #
+		'type':'static_library',
+    #
 		'sources':['<@(zlib_files)'],
 		'include_dirs':['<(DEPTH)/deps/zlib',],
 		'cxx':'<(emscripten_cc)',
 		'cflags+':['-Werror'],
-	},
+    'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+		'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1  -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+  },
 
 	#'sources/': [['exclude', '(fcobjs.c$)'],],
 	#{

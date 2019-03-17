@@ -471,6 +471,9 @@ bool Display::hasExistingWindowSurface(HWND window)
 
 void Display::initExtensionString()
 {
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
     HMODULE swiftShader = GetModuleHandle(TEXT("swiftshader_d3d9.dll"));
     bool shareHandleSupported = mRenderer->getShareHandleSupport();
 
