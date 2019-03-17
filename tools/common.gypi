@@ -57,7 +57,7 @@
 		'ld':'<(emscripten_ld)',
 		'configurations': {
 			'Release': {
-				'defines+': ['NDEBUG','TARGET_EMSCRIPTEN','__EMSCRIPTEN__'],
+				'defines+': ['DEBUG','TARGET_EMSCRIPTEN','__EMSCRIPTEN__'],
 				'cflags+':['<(cflags) -Oz'], # -g0 - do not add this, it causes huge memory allocations on compile
 				'cflags_cc+':['<(cflags_cc)'],
 				'cflags_c':['<(cflags_c)'],
