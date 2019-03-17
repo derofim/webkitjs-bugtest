@@ -406,7 +406,7 @@ PassRefPtr<TextureMapperShaderProgram> TextureMapperShaderProgram::create(PassRe
     printf("fragmentSource %s\n", fragmentSource.ascii().data());
     printf("vertexSource %s\n", vertexSource.ascii().data());
 
-LOG(TextureMapperShaderProgram, "TextureMapperShaderProgram fragmentSource %s", fragmentSource.ascii().data());
+//LOG(TextureMapperShaderProgram, "TextureMapperShaderProgram fragmentSource %s", fragmentSource.ascii().data());
         
     if(!context)
       printf("!context\n");
@@ -419,7 +419,7 @@ LOG(TextureMapperShaderProgram, "TextureMapperShaderProgram fragmentSource %s", 
     if(!pt)
       printf("!pt TextureMapperShaderProgram\n");
 
-    return adoptRef();
+    return adoptRef(pt);
 }
 
 }
