@@ -73,25 +73,34 @@ public:
         typedef HashMap<PlatformGraphicsContext3D, SharedGLData*> GLContextDataMap;
         static GLContextDataMap& glContextDataMap()
         {
+              printf("glContextDataMap 1\n");
             static GLContextDataMap map;
+              printf("glContextDataMap 2\n");
             return map;
         }
 
         static PassRefPtr<SharedGLData> currentSharedGLData(GraphicsContext3D* context)
         {
+            printf("currentSharedGLData 1\n");
             GLContextDataMap::iterator it = glContextDataMap().find(context->platformGraphicsContext3D());
             if (it != glContextDataMap().end())
                 return it->value;
 
+            if(!context)
+              printf("currentSharedGLData !context\n");
+
+            printf("currentSharedGLData 2\n");
             return adoptRef(new SharedGLData(context));
         }
 
         PassRefPtr<TextureMapperShaderProgram> getShaderProgram(TextureMapperShaderProgram::Options options)
         {
+            printf("getShaderProgram 1\n");
             HashMap<TextureMapperShaderProgram::Options, RefPtr<TextureMapperShaderProgram> >::AddResult result = m_programs.add(options, nullptr);
             if (result.isNewEntry)
                 result.iterator->value = TextureMapperShaderProgram::create(m_context, options);
 
+            printf("getShaderProgram 2\n");
             return result.iterator->value;
         }
 
@@ -101,7 +110,13 @@ public:
         explicit SharedGLData(GraphicsContext3D* context)
             : m_context(context)
         {
+              printf("SharedGLData 1\n");
+
+            if(!context)
+              printf("currentSharedGLData !context\n");
+
             glContextDataMap().add(context->platformGraphicsContext3D(), this);
+              printf("SharedGLData 2\n");
         }
 
         ~SharedGLData()
@@ -143,6 +158,11 @@ public:
     {
       printf("TextureMapperGLData...\n");
       webkitTrace();
+      if(!context) {
+        printf("TextureMapperGLData !context...\n");
+        webkitTrace();
+        exit(0);
+      }
     }
 
     ~TextureMapperGLData();

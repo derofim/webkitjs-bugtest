@@ -372,6 +372,8 @@ static const char* fragmentTemplate =
 
 PassRefPtr<TextureMapperShaderProgram> TextureMapperShaderProgram::create(PassRefPtr<GraphicsContext3D> context, TextureMapperShaderProgram::Options options)
 {
+            printf("TextureMapperShaderProgram::create 1\n");
+
     StringBuilder shaderBuilder;
 #define SET_APPLIER_FROM_OPTIONS(Applier) \
     shaderBuilder.append(\
@@ -401,7 +403,23 @@ PassRefPtr<TextureMapperShaderProgram> TextureMapperShaderProgram::create(PassRe
     String vertexSource = vertexBuilder.toString();
     String fragmentSource = shaderBuilder.toString();
 
-    return adoptRef(new TextureMapperShaderProgram(context, vertexSource, fragmentSource));
+    printf("fragmentSource %s\n", fragmentSource.ascii().data());
+    printf("vertexSource %s\n", vertexSource.ascii().data());
+
+LOG(TextureMapperShaderProgram, "TextureMapperShaderProgram fragmentSource %s", fragmentSource.ascii().data());
+        
+    if(!context)
+      printf("!context\n");
+
+    printf("TextureMapperShaderProgram::create 2\n");
+    auto pt = new TextureMapperShaderProgram(context, vertexSource, fragmentSource);
+
+    printf("TextureMapperShaderProgram::create 3\n");
+
+    if(!pt)
+      printf("!pt TextureMapperShaderProgram\n");
+
+    return adoptRef();
 }
 
 }
