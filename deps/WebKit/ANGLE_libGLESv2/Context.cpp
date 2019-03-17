@@ -697,6 +697,7 @@ GLuint Context::createProgram()
 
 GLuint Context::createShader(GLenum type)
 {
+    printf("Context::createShader\n");
     return mResourceManager->createShader(type);
 }
 

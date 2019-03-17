@@ -47,24 +47,40 @@ static inline bool compositingLogEnabled()
 TextureMapperShaderProgram::TextureMapperShaderProgram(PassRefPtr<GraphicsContext3D> context, const String& vertex, const String& fragment)
     : m_context(context)
 {
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 1\n");
+
+  if(!m_context)
+    printf("TextureMapperShaderProgram::TextureMapperShaderProgram !m_context\n");
+
     m_vertexShader = m_context->createShader(GraphicsContext3D::VERTEX_SHADER);
+    
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 1.1\n");
     m_context->shaderSource(m_vertexShader, vertex);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 1.2\n");
 		m_context->compileShader(m_vertexShader);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 2\n");
 
 		m_fragmentShader = m_context->createShader(GraphicsContext3D::FRAGMENT_SHADER);
 		m_context->shaderSource(m_fragmentShader, fragment);
 		m_context->compileShader(m_fragmentShader);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 3\n");
 
 		m_id = m_context->createProgram();
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 4\n");
     m_context->attachShader(m_id, m_vertexShader);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 5\n");
     m_context->attachShader(m_id, m_fragmentShader);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 6\n");
     m_context->linkProgram(m_id);
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 7\n");
 
     if (!compositingLogEnabled())
        return;
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 8\n");
 
     if (m_context->getError() == GraphicsContext3D::NO_ERROR)
         return;
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 9\n");
 
     String log = m_context->getShaderInfoLog(m_vertexShader);
     LOG(Compositing, "Vertex shader log: %s\n", log.utf8().data());
@@ -72,10 +88,12 @@ TextureMapperShaderProgram::TextureMapperShaderProgram(PassRefPtr<GraphicsContex
     LOG(Compositing, "Fragment shader log: %s\n", log.utf8().data());
 		log = m_context->getProgramInfoLog(m_id);
     LOG(Compositing, "Program log: %s\n", log.utf8().data());
+  printf("TextureMapperShaderProgram::TextureMapperShaderProgram 10\n");
 }
 
 void TextureMapperShaderProgram::setMatrix(GC3Duint location, const TransformationMatrix& matrix)
 {
+  printf("TextureMapperShaderProgram::setMatrix 1\n");
     GC3Dfloat matrixAsFloats[] = {
         GC3Dfloat(matrix.m11()), GC3Dfloat(matrix.m12()), GC3Dfloat(matrix.m13()), GC3Dfloat(matrix.m14()),
         GC3Dfloat(matrix.m21()), GC3Dfloat(matrix.m22()), GC3Dfloat(matrix.m23()), GC3Dfloat(matrix.m24()),
@@ -83,11 +101,13 @@ void TextureMapperShaderProgram::setMatrix(GC3Duint location, const Transformati
         GC3Dfloat(matrix.m41()), GC3Dfloat(matrix.m42()), GC3Dfloat(matrix.m43()), GC3Dfloat(matrix.m44())
     };
 
+  printf("TextureMapperShaderProgram::setMatrix 2\n");
     m_context->uniformMatrix4fv(location, 1, false, matrixAsFloats);
 }
 
 GC3Duint TextureMapperShaderProgram::getLocation(const AtomicString& name, VariableType type)
 {
+  printf("TextureMapperShaderProgram::getLocation 1\n");
     HashMap<AtomicString, GC3Duint>::iterator it = m_variables.find(name);
     if (it != m_variables.end())
         return it->value;
@@ -111,6 +131,7 @@ GC3Duint TextureMapperShaderProgram::getLocation(const AtomicString& name, Varia
 
 TextureMapperShaderProgram::~TextureMapperShaderProgram()
 {
+  printf("TextureMapperShaderProgram::~TextureMapperShaderProgram 1\n");
     Platform3DObject programID = m_id;
     if (!programID)
         return;

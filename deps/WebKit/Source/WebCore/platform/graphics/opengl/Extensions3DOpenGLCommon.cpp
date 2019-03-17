@@ -154,14 +154,18 @@ int Extensions3DOpenGLCommon::getGraphicsResetStatusARB()
 
 String Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE(Platform3DObject shader)
 {
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 1\n");
     ASSERT(shader);
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 2\n");
     int GLshaderType;
     ANGLEShaderType shaderType;
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 3\n");
     ANGLEWebKitBridge& compiler = m_context->m_compiler;
 
     m_context->getShaderiv(shader, GraphicsContext3D::SHADER_TYPE, &GLshaderType);
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 4\n");
     if (GLshaderType == GraphicsContext3D::VERTEX_SHADER)
         shaderType = SHADER_TYPE_VERTEX;
     else if (GLshaderType == GraphicsContext3D::FRAGMENT_SHADER)
@@ -169,23 +173,31 @@ String Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE(Platform3DObject
     else
         return ""; // Invalid shader type.
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 5\n");
     HashMap<Platform3DObject, GraphicsContext3D::ShaderSourceEntry>::iterator result = m_context->m_shaderSourceMap.find(shader);
 
     if (result == m_context->m_shaderSourceMap.end())
         return "";
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 6\n");
     GraphicsContext3D::ShaderSourceEntry& entry = result->value;
 
     String translatedShaderSource;
     String shaderInfoLog;
     int extraCompileOptions = SH_MAP_LONG_VARIABLE_NAMES | SH_CLAMP_INDIRECT_ARRAY_BOUNDS | SH_UNFOLD_SHORT_CIRCUIT | SH_ENFORCE_PACKING_RESTRICTIONS;
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 7\n");
     if (m_requiresBuiltInFunctionEmulation)
         extraCompileOptions |= SH_EMULATE_BUILT_IN_FUNCTIONS;
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 7.1\n");
     Vector<ANGLEShaderSymbol> symbols;
-    bool isValid = compiler.compileShaderSource(entry.source.utf8().data(), shaderType, translatedShaderSource, shaderInfoLog, symbols, extraCompileOptions);
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 7.2\n");
+    const char * dt = entry.source.utf8().data();
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 7.3\n");
+    bool isValid = compiler.compileShaderSource(dt, shaderType, translatedShaderSource, shaderInfoLog, symbols, extraCompileOptions);
 
+    printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 8\n");
     entry.log = shaderInfoLog;
     entry.isValid = isValid;
 
@@ -196,9 +208,11 @@ String Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE(Platform3DObject
         entry.symbolMap(shaderSymbol.symbolType).set(shaderSymbol.name, symbolInfo);
     }
 
+  printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 9\n");
     if (!isValid)
         return "";
 
+  printf("Extensions3DOpenGLCommon::getTranslatedShaderSourceANGLE 10\n");
     return translatedShaderSource;
 }
 

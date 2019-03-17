@@ -81,12 +81,14 @@ CustomFilterCompiledProgram::CustomFilterCompiledProgram(PassRefPtr<GraphicsCont
 
 Platform3DObject CustomFilterCompiledProgram::compileShader(GC3Denum shaderType, const String& shaderString)
 {
+  printf("CustomFilterCompiledProgram::compileShader 1\n");
     ASSERT(!shaderString.isNull());
 
     Platform3DObject shader = m_context->createShader(shaderType);
     m_context->shaderSource(shader, shaderString);
     m_context->compileShader(shader);
     
+  printf("CustomFilterCompiledProgram::compileShader 2\n");
     int compiled = 0;
     m_context->getShaderiv(shader, GraphicsContext3D::COMPILE_STATUS, &compiled);
     if (!compiled) {
@@ -95,6 +97,7 @@ Platform3DObject CustomFilterCompiledProgram::compileShader(GC3Denum shaderType,
         m_context->deleteShader(shader);
         return 0;
     }
+  printf("CustomFilterCompiledProgram::compileShader 3\n");
     
     return shader;
 }

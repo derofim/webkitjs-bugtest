@@ -139,6 +139,7 @@ bool EGLImageLayerWebKitThread::createTextureIfNeeded(const IntSize& size)
 
 void EGLImageLayerWebKitThread::createShaderIfNeeded()
 {
+    printf("EGLImageLayerWebKitThread::createShaderIfNeeded\n");
     // Shaders for drawing the layer contents.
     static char vertexShaderString[] =
         "attribute vec4 a_position;   \n"
@@ -173,6 +174,7 @@ void EGLImageLayerWebKitThread::createShaderIfNeeded()
 
 void EGLImageLayerWebKitThread::blitToFrontBuffer(unsigned backBufferTexture)
 {
+    printf("EGLImageLayerWebKitThread::blitToFrontBuffer\n");
     if (!backBufferTexture)
         return;
 
