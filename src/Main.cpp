@@ -609,7 +609,7 @@ the same framebuffer object name in multiple contexts on the same share list.
     assert(ret == EGL_TRUE);
 
     SDL_GL_MakeCurrent(window, contextDisplay);
-    printf("SDL_GL_MakeCurrent...%s\n", SDL_GetError());
+    printf("(makes warning) SDL_GL_MakeCurrent...%s\n", SDL_GetError());
 
     EGLint ewidth, eheight;
     eglQuerySurface(contextDisplay, glSurface, EGL_WIDTH, &ewidth);

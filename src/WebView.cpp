@@ -107,7 +107,7 @@ namespace WebCore {
       m_private->glContext->setWindow(window_);
     else
     {
-      printf("!m_private->glContext......: %s\n", SDL_GetError());
+      printf("(makes warning) !m_private->glContext......: %s\n", SDL_GetError());
     }
     
 #endif

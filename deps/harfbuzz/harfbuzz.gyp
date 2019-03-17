@@ -116,8 +116,8 @@
       #
       'cxx':'emcc',
       'cflags+':['-DHAVE_ICU=1 -Wno-error'],
-      'ldflags+':['-s ASSERTIONS=1 -s FULL_ES2=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
-      'jsflags+':['-s ASSERTIONS=1 -s FULL_ES2=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+      'ldflags+':['-s SIDE_MODULE=1 -s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
+      'jsflags+':['-s SIDE_MODULE=1 -s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -std=c++11 -s USE_ICU=1'],
       #
       'conditions': [
         ['clang==1', {
