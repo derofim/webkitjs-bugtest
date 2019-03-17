@@ -550,7 +550,7 @@ static void prepareFilterProgram(TextureMapperShaderProgram* program, const Filt
 
 void TextureMapperGL::drawTexture(const BitmapTexture& texture, const FloatRect& targetRect, const TransformationMatrix& matrix, float opacity, unsigned exposedEdges)
 {
-    printf("TextureMapperGL drawTexture...\n");
+    printf("TextureMapperGL drawTexture 1...\n");
     if (!texture.isValid())
         return;
 
@@ -562,12 +562,16 @@ void TextureMapperGL::drawTexture(const BitmapTexture& texture, const FloatRect&
     TemporaryChange<const BitmapTextureGL::FilterInfo*> filterInfo(data().filterInfo, textureGL.filterInfo());
 #endif
 
+    printf("TextureMapperGL drawTexture 2...\n");
+
     drawTexture(textureGL.id(), textureGL.isOpaque() ? 0 : ShouldBlend, textureGL.size(), targetRect, matrix, opacity, exposedEdges);
+
+    printf("TextureMapperGL drawTexture 3...\n");
 }
 
 void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const IntSize& textureSize, const FloatRect& targetRect, const TransformationMatrix& modelViewMatrix, float opacity, unsigned exposedEdges)
 {
-    printf("TextureMapperGL drawTexture Platform3DObject...\n");
+    printf("TextureMapperGL drawTexture Platform3DObject 1...\n");
     bool useRect = flags & ShouldUseARBTextureRect;
     bool useAntialiasing = m_enableEdgeDistanceAntialiasing
         && exposedEdges == AllEdges
@@ -583,6 +587,7 @@ void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const I
         flags |= ShouldAntialias;
     }
 
+    printf("TextureMapperGL drawTexture Platform3DObject 2...\n");
 #if ENABLE(CSS_FILTERS)
     RefPtr<FilterOperation> filter = data().filterInfo ? data().filterInfo->filter: 0;
     GC3Duint filterContentTextureID = 0;
@@ -596,18 +601,23 @@ void TextureMapperGL::drawTexture(Platform3DObject texture, Flags flags, const I
     }
 #endif
 
+    printf("TextureMapperGL drawTexture Platform3DObject 3...\n");
     if (useAntialiasing || opacity < 1)
         flags |= ShouldBlend;
 
     RefPtr<TextureMapperShaderProgram> program;
     program = data().sharedGLData().getShaderProgram(options);
 
+    printf("TextureMapperGL drawTexture Platform3DObject 4...\n");
 #if ENABLE(CSS_FILTERS)
     if (filter)
         prepareFilterProgram(program.get(), *filter.get(), data().filterInfo->pass, textureSize, filterContentTextureID);
 #endif
 
+    printf("TextureMapperGL drawTexture Platform3DObject 5...\n");
     drawTexturedQuadWithProgram(program.get(), texture, flags, textureSize, targetRect, modelViewMatrix, opacity);
+
+    printf("TextureMapperGL drawTexture Platform3DObject 6...\n");
 }
 
 void TextureMapperGL::drawSolidColor(const FloatRect& rect, const TransformationMatrix& matrix, const Color& color)
