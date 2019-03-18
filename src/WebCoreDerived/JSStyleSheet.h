@@ -70,7 +70,7 @@ private:
 protected:
     JSStyleSheet(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<StyleSheet>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSStyleSheetOwner : public JSC::WeakHandleOwner {

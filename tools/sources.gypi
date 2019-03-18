@@ -122,7 +122,13 @@
 		  '<(DEPTH)/deps/harfbuzz/src',
 		  '<(DEPTH)/deps/freetype/include',
 		  '<(DEPTH)/deps/libjpeg_turbo',
+		  '<(DEPTH)/deps/curl',
 		  '<(DEPTH)/deps/curl/include',
+		  '<(DEPTH)/deps/curl/build',
+		  '<(DEPTH)/deps/curl/build/include',
+		  '<(DEPTH)/deps/curl/build/include/curl',
+			'<(DEPTH)/deps/curl/build/lib',
+			'<(DEPTH)/deps/curl/lib',
 		  '<(DEPTH)/deps/cairo',
 		  '<(DEPTH)/deps/cairo/src',
 			#'<(DEPTH)/deps/skia/src',
@@ -165,6 +171,13 @@
 		'harfbuzz_files':[
 			'<(DEPTH)/deps/harfbuzz/src/hb-atomic-private.hh',
 			'<(DEPTH)/deps/harfbuzz/src/hb-blob.cc',
+      #
+			'<(DEPTH)/deps/harfbuzz/src/hb-unicode.cc',
+			'<(DEPTH)/deps/harfbuzz/src/hb-unicode.h',
+			'<(DEPTH)/deps/harfbuzz/src/hb-unicode-private.hh',
+      #'<(DEPTH)/deps/harfbuzz/src/hb-ucdn.cc',
+      #'<(DEPTH)/deps/harfbuzz/src/hb-ucdn.h',
+      #
 			'<(DEPTH)/deps/harfbuzz/src/hb-blob.h',
 			'<(DEPTH)/deps/harfbuzz/src/hb-buffer-deserialize-json.hh',
 			'<(DEPTH)/deps/harfbuzz/src/hb-buffer-deserialize-text.hh',
@@ -179,8 +192,10 @@
 			'<(DEPTH)/deps/harfbuzz/src/hb-font-private.hh',
 			'<(DEPTH)/deps/harfbuzz/src/hb-font.cc',
 			'<(DEPTH)/deps/harfbuzz/src/hb-font.h',
-			'<(DEPTH)/deps/harfbuzz/src/hb-icu.cc',
-			'<(DEPTH)/deps/harfbuzz/src/hb-icu.h',
+      #
+#			'<(DEPTH)/deps/harfbuzz/src/hb-icu.cc',
+#			'<(DEPTH)/deps/harfbuzz/src/hb-icu.h',
+      #
 			'<(DEPTH)/deps/harfbuzz/src/hb-mutex-private.hh',
 			'<(DEPTH)/deps/harfbuzz/src/hb-object-private.hh',
 			'<(DEPTH)/deps/harfbuzz/src/hb-open-file-private.hh',

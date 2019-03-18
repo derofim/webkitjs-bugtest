@@ -27,11 +27,6 @@
 #include "SVGFEMergeElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedLength.h"
-#include "JSSVGAnimatedString.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -40,26 +35,11 @@ namespace WebCore {
 
 static const HashTableValue JSSVGFEMergeElementTableValues[] =
 {
-#if ENABLE(SVG)
-    { "x", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementX), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "y", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementY), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "width", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementWidth), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "height", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementHeight), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "result", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementResult), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGFEMergeElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGFEMergeElementTable = { 17, 15, JSSVGFEMergeElementTableValues, 0 };
+static const HashTable JSSVGFEMergeElementTable = { 2, 1, JSSVGFEMergeElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGFEMergeElementConstructorTableValues[] =
@@ -127,86 +107,6 @@ bool JSSVGFEMergeElement::getOwnPropertySlot(JSObject* object, ExecState* exec, 
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGFEMergeElement, Base>(exec, JSSVGFEMergeElementTable, thisObject, propertyName, slot);
 }
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGFEMergeElementX(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGFEMergeElement* castedThis = jsDynamicCast<JSSVGFEMergeElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGFEMergeElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedLength> obj = impl.xAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGFEMergeElementY(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGFEMergeElement* castedThis = jsDynamicCast<JSSVGFEMergeElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGFEMergeElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedLength> obj = impl.yAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGFEMergeElementWidth(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGFEMergeElement* castedThis = jsDynamicCast<JSSVGFEMergeElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGFEMergeElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedLength> obj = impl.widthAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGFEMergeElementHeight(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGFEMergeElement* castedThis = jsDynamicCast<JSSVGFEMergeElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGFEMergeElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedLength> obj = impl.heightAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGFEMergeElementResult(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGFEMergeElement* castedThis = jsDynamicCast<JSSVGFEMergeElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGFEMergeElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedString> obj = impl.resultAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGFEMergeElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

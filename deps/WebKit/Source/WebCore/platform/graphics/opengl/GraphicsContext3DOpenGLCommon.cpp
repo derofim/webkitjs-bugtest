@@ -121,7 +121,17 @@ static uint64_t nameHashForShader(const char* name, size_t length)
 
 PassRefPtr<GraphicsContext3D> GraphicsContext3D::createForCurrentGLContext()
 {
-    RefPtr<GraphicsContext3D> context = adoptRef(new GraphicsContext3D(Attributes(), 0, GraphicsContext3D::RenderToCurrentGLContext));
+    printf("GraphicsContext3D::createForCurrentGLContext 1...\n");
+    webkitTrace();
+    auto atts = Attributes();
+    printf("GraphicsContext3D::createForCurrentGLContext 1.1...\n");
+    webkitTrace();
+    auto pt = new GraphicsContext3D(atts, 0, GraphicsContext3D::RenderToCurrentGLContext);
+    printf("GraphicsContext3D::createForCurrentGLContext 2...\n");
+    webkitTrace();
+    RefPtr<GraphicsContext3D> context = adoptRef(pt);
+    printf("GraphicsContext3D::createForCurrentGLContext 3...\n");
+    webkitTrace();
     return context->m_private ? context.release() : 0;
 }
 
@@ -509,29 +519,39 @@ void GraphicsContext3D::colorMask(GC3Dboolean red, GC3Dboolean green, GC3Dboolea
 
 void GraphicsContext3D::compileShader(Platform3DObject shader)
 {
+  printf("GraphicsContext3D::compileShader 1\n");
     ASSERT(shader);
     makeContextCurrent();
+  printf("GraphicsContext3D::compileShader 2\n");
 
     // Turn on name mapping. Due to the way ANGLE name hashing works, we
     // point a global hashmap to the map owned by this context.
     ShBuiltInResources ANGLEResources = m_compiler.getResources();
+  printf("GraphicsContext3D::compileShader 3\n");
     ShHashFunction64 previousHashFunction = ANGLEResources.HashFunction;
     ANGLEResources.HashFunction = nameHashForShader;
+  printf("GraphicsContext3D::compileShader 4\n");
 
     if (!nameHashMapForShaders)
         nameHashMapForShaders = adoptPtr(new ShaderNameHash);
+  printf("GraphicsContext3D::compileShader 5\n");
     currentNameHashMapForShader = nameHashMapForShaders.get();
+  printf("GraphicsContext3D::compileShader 6\n");
     m_compiler.setResources(ANGLEResources);
 
+  printf("GraphicsContext3D::compileShader 6.1\n");
     String translatedShaderSource = m_extensions->getTranslatedShaderSourceANGLE(shader);
 
+  printf("GraphicsContext3D::compileShader 7\n");
     ANGLEResources.HashFunction = previousHashFunction;
     m_compiler.setResources(ANGLEResources);
     currentNameHashMapForShader = nullptr;
 
+  printf("GraphicsContext3D::compileShader 8\n");
     if (!translatedShaderSource.length())
         return;
 
+  printf("GraphicsContext3D::compileShader 9\n");
     const CString& translatedShaderCString = translatedShaderSource.utf8();
     const char* translatedShaderPtr = translatedShaderCString.data();
     int translatedShaderLength = translatedShaderCString.length();
@@ -539,12 +559,14 @@ void GraphicsContext3D::compileShader(Platform3DObject shader)
     LOG(WebGL, "--- begin original shader source ---\n%s\n--- end original shader source ---\n", getShaderSource(shader).utf8().data());
     LOG(WebGL, "--- begin translated shader source ---\n%s\n--- end translated shader source ---", translatedShaderPtr);
 
+  printf("GraphicsContext3D::compileShader 10\n");
     ::glShaderSource(shader, 1, &translatedShaderPtr, &translatedShaderLength);
     
     ::glCompileShader(shader);
     
     int GLCompileSuccess;
     
+  printf("GraphicsContext3D::compileShader 11\n");
     ::glGetShaderiv(shader, COMPILE_STATUS, &GLCompileSuccess);
 
     ShaderSourceMap::iterator result = m_shaderSourceMap.find(shader);
@@ -554,6 +576,7 @@ void GraphicsContext3D::compileShader(Platform3DObject shader)
     GLint length = 0;
     ::glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &length);
 
+  printf("GraphicsContext3D::compileShader 12\n");
     if (length) {
         GLsizei size = 0;
         auto info = std::make_unique<GLchar[]>(length);
@@ -562,12 +585,14 @@ void GraphicsContext3D::compileShader(Platform3DObject shader)
         entry.log = info.get();
     }
 
+  printf("GraphicsContext3D::compileShader 13\n");
     if (GLCompileSuccess != GL_TRUE) {
         entry.isValid = false;
         LOG(WebGL, "Error: shader translator produced a shader that OpenGL would not compile.");
 #if PLATFORM(BLACKBERRY) && !defined(NDEBUG)
         BBLOG(BlackBerry::Platform::LogLevelWarn, "The shader validated, but didn't compile.\n");
 #endif
+  printf("GraphicsContext3D::compileShader 14\n");
     }
 }
 
@@ -1443,7 +1468,9 @@ Platform3DObject GraphicsContext3D::createRenderbuffer()
 
 Platform3DObject GraphicsContext3D::createShader(GC3Denum type)
 {
+    printf("GraphicsContext3D::createShader 1\n");
     makeContextCurrent();
+    printf("GraphicsContext3D::createShader 2\n");
     return glCreateShader((type == FRAGMENT_SHADER) ? GL_FRAGMENT_SHADER : GL_VERTEX_SHADER);
 }
 

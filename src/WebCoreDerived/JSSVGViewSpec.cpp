@@ -33,11 +33,6 @@
 #include <runtime/JSString.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedPreserveAspectRatio.h"
-#include "JSSVGAnimatedRect.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -53,17 +48,11 @@ static const HashTableValue JSSVGViewSpecTableValues[] =
     { "transformString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecTransformString), (intptr_t)0 },
     { "viewTargetString", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewTargetString), (intptr_t)0 },
     { "zoomAndPan", DontDelete, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecZoomAndPan), (intptr_t)setJSSVGViewSpecZoomAndPan },
-#if ENABLE(SVG)
-    { "viewBox", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecViewBox), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "preserveAspectRatio", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecPreserveAspectRatio), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGViewSpecConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGViewSpecTable = { 33, 31, JSSVGViewSpecTableValues, 0 };
+static const HashTable JSSVGViewSpecTable = { 17, 15, JSSVGViewSpecTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGViewSpecConstructorTableValues[] =
@@ -234,38 +223,6 @@ EncodedJSValue jsSVGViewSpecZoomAndPan(ExecState* exec, EncodedJSValue slotBase,
     return JSValue::encode(result);
 }
 
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGViewSpecViewBox(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
-    RefPtr<SVGAnimatedRect> obj = impl.viewBoxAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGViewSpecPreserveAspectRatio(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGViewSpec* castedThis = jsDynamicCast<JSSVGViewSpec*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGViewSpec& impl = castedThis->impl();
-    RefPtr<SVGAnimatedPreserveAspectRatio> obj = impl.preserveAspectRatioAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGViewSpecConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

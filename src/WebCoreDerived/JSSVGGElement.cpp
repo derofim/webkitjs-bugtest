@@ -27,10 +27,6 @@
 #include "SVGGElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -39,14 +35,11 @@ namespace WebCore {
 
 static const HashTableValue JSSVGGElementTableValues[] =
 {
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGElementExternalResourcesRequired), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGGElementTable = { 5, 3, JSSVGGElementTableValues, 0 };
+static const HashTable JSSVGGElementTable = { 2, 1, JSSVGGElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGGElementConstructorTableValues[] =
@@ -114,22 +107,6 @@ bool JSSVGGElement::getOwnPropertySlot(JSObject* object, ExecState* exec, Proper
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGGElement, Base>(exec, JSSVGGElementTable, thisObject, propertyName, slot);
 }
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGElementExternalResourcesRequired(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGElement* castedThis = jsDynamicCast<JSSVGGElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGGElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

@@ -216,7 +216,7 @@
       'targets': [
         {
           'target_name': 'libGLESv2',
-          'type': 'shared_library',
+          'type': 'static_library',
           'dependencies': ['translator'],
           'include_dirs': [
             '.',
@@ -372,7 +372,7 @@
         },
         {
           'target_name': 'libEGL',
-          'type': 'shared_library',
+          'type': 'static_library',
           'dependencies': ['libGLESv2'],
           'include_dirs': [
             '.',

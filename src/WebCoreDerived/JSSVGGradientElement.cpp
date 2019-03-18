@@ -29,11 +29,6 @@
 #include "SVGGradientElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#include "JSSVGAnimatedString.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -45,17 +40,11 @@ static const HashTableValue JSSVGGradientElementTableValues[] =
     { "gradientUnits", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientUnits), (intptr_t)0 },
     { "gradientTransform", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementGradientTransform), (intptr_t)0 },
     { "spreadMethod", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementSpreadMethod), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementExternalResourcesRequired), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "href", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementHref), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGradientElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGGradientElementTable = { 16, 15, JSSVGGradientElementTableValues, 0 };
+static const HashTable JSSVGGradientElementTable = { 8, 7, JSSVGGradientElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGGradientElementConstructorTableValues[] =
@@ -179,38 +168,6 @@ EncodedJSValue jsSVGGradientElementSpreadMethod(ExecState* exec, EncodedJSValue 
     return JSValue::encode(result);
 }
 
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGradientElementExternalResourcesRequired(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGradientElementHref(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGradientElement* castedThis = jsDynamicCast<JSSVGGradientElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGradientElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedString> obj = impl.hrefAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGGradientElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

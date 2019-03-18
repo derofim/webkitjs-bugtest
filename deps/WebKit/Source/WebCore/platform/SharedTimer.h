@@ -71,7 +71,7 @@ namespace WebCore {
         virtual void setFireInterval(double interval)
         {
 #if PLATFORM(JS)
-				
+				/////
 #endif
             setSharedTimerFireInterval(interval);
         }

@@ -58,7 +58,7 @@ public:
 protected:
     JSSVGGradientElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGGradientElement>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 
@@ -115,12 +115,6 @@ protected:
 JSC::EncodedJSValue jsSVGGradientElementGradientUnits(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGGradientElementGradientTransform(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGGradientElementSpreadMethod(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGradientElementExternalResourcesRequired(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGradientElementHref(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGGradientElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 // Constants
 

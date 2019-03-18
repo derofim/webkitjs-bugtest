@@ -20,6 +20,9 @@
 #ifndef TextureMapper_h
 #define TextureMapper_h
 
+#include "config.h"
+//#include "WebPreferences.h"
+
 #if USE(ACCELERATED_COMPOSITING) && USE(TEXTURE_MAPPER)
 
 #if (PLATFORM(GTK) || PLATFORM(EFL) || PLATFORM(NIX)) && USE(OPENGL_ES_2)

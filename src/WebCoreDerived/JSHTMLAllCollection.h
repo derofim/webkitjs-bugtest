@@ -77,7 +77,7 @@ private:
 protected:
     JSHTMLAllCollection(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<HTMLAllCollection>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::MasqueradesAsUndefined | JSC::HasImpureGetOwnPropertySlot | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::MasqueradesAsUndefined | JSC::OverridesGetOwnPropertySlot | JSC::HasImpureGetOwnPropertySlot | JSC::OverridesGetPropertyNames | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
     static JSC::EncodedJSValue indexGetter(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, unsigned);
 private:
     static bool canGetItemsForName(JSC::ExecState*, HTMLAllCollection*, JSC::PropertyName);

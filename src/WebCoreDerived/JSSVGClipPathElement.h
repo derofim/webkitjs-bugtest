@@ -58,7 +58,7 @@ public:
 protected:
     JSSVGClipPathElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGClipPathElement>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 
@@ -112,9 +112,6 @@ protected:
 // Attributes
 
 JSC::EncodedJSValue jsSVGClipPathElementClipPathUnits(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGClipPathElementExternalResourcesRequired(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGClipPathElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

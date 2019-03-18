@@ -55,12 +55,13 @@ void WTF::scheduleDispatchFunctionsOnMainThread() {
 }
 
 namespace WebCore {
-#if USE(ACCELERATED_COMPOSITING)
+/*#if USE(ACCELERATED_COMPOSITING)
   bool RenderEmbeddedObject::allowsAcceleratedCompositing() const {
 	
 		return true;
 	}
-#endif
+#endif*/
+
   /*ApplicationCacheHost::ApplicationCacheHost(WebCore::DocumentLoader* documentLoader)
 	 : m_documentLoader(documentLoader)
 	 , m_defersEvents(true)
@@ -180,7 +181,7 @@ namespace WebCore {
 
   void signedPublicKeyAndChallengeString(unsigned int, WTF::String const&, WebCore::URL const&) { notImplemented(); }
   void willCreatePossiblyOrphanedTreeByRemovalSlowCase(WebCore::Node*) { notImplemented(); }
-  RenderPtr<RenderEmbeddedObject> RenderEmbeddedObject::createForApplet(WebCore::HTMLAppletElement& a, WTF::PassRef<WebCore::RenderStyle> b) { notImplemented(); return nullptr; }
+  //RenderPtr<RenderEmbeddedObject> RenderEmbeddedObject::createForApplet(WebCore::HTMLAppletElement& a, WTF::PassRef<WebCore::RenderStyle> b) { notImplemented(); return nullptr; }
   Cursor::Cursor(Cursor const&) { notImplemented(); }
   Cursor& Cursor::operator=(const Cursor& cursor) { notImplemented(); return *this; }
   Cursor::~Cursor()  { notImplemented(); }
@@ -296,11 +297,11 @@ namespace JSC {
   void HandleSet::grow() {}
 
   void HandleSet::writeBarrier(JSC::JSValue*, JSC::JSValue const&) { notImplemented(); }
-  void Heap::reportExtraMemoryCostSlowCase(unsigned int) { notImplemented(); }
+  void Heap::reportExtraMemoryCostSlowCase(size_t) { notImplemented(); }
 
   ExecState* JSGlobalObject::globalExec() { notImplemented(); return NULL; }
 
-  void *MarkedAllocator::allocateSlowCase(unsigned int) { notImplemented(); return NULL; }
+  void *MarkedAllocator::allocateSlowCase(size_t) { notImplemented(); return NULL; }
 
   SourceProvider::SourceProvider(WTF::String const& a, WTF::TextPosition const& b) { notImplemented(); }
   SourceProvider::~SourceProvider() { notImplemented(); }

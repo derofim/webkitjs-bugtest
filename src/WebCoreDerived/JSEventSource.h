@@ -70,7 +70,7 @@ private:
 protected:
     JSEventSource(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<EventSource>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
 };
 
 class JSEventSourceOwner : public JSC::WeakHandleOwner {
@@ -114,7 +114,7 @@ public:
 private:
     JSEventSourcePrototype(JSC::VM& vm, JSC::JSGlobalObject*, JSC::Structure* structure) : JSC::JSNonFinalObject(vm, structure) { }
 protected:
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::OverridesVisitChildren | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::OverridesVisitChildren | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSEventSourceConstructor : public DOMConstructorObject {

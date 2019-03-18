@@ -116,23 +116,11 @@ JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetBBox(J
 JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetCTM(JSC::ExecState*);
 JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetScreenCTM(JSC::ExecState*);
 JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetTransformToElement(JSC::ExecState*);
-#if ENABLE(SVG)
-JSC::EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionHasExtension(JSC::ExecState*);
-#endif
 // Attributes
 
 JSC::EncodedJSValue jsSVGGraphicsElementTransform(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGGraphicsElementNearestViewportElement(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGGraphicsElementFarthestViewportElement(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGraphicsElementRequiredFeatures(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGraphicsElementRequiredExtensions(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGraphicsElementSystemLanguage(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGGraphicsElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

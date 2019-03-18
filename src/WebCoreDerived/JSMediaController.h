@@ -72,7 +72,7 @@ private:
 protected:
     JSMediaController(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<MediaController>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::OverridesVisitChildren | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
 };
 
 class JSMediaControllerOwner : public JSC::WeakHandleOwner {

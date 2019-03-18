@@ -179,6 +179,9 @@ Renderer9 *Renderer9::makeRenderer9(Renderer *renderer)
 
 EGLint Renderer9::initialize()
 {
+  #if PLATFORM(JS)
+#error "no __declspec"
+#endif
     if (!initializeCompiler())
     {
         return EGL_NOT_INITIALIZED;

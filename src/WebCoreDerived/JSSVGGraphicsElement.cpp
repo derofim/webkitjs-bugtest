@@ -37,11 +37,6 @@
 #include <runtime/Error.h>
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGStringList.h"
-#include "SVGStringList.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -53,20 +48,11 @@ static const HashTableValue JSSVGGraphicsElementTableValues[] =
     { "transform", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementTransform), (intptr_t)0 },
     { "nearestViewportElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementNearestViewportElement), (intptr_t)0 },
     { "farthestViewportElement", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementFarthestViewportElement), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "requiredFeatures", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredFeatures), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "requiredExtensions", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementRequiredExtensions), (intptr_t)0 },
-#endif
-#if ENABLE(SVG)
-    { "systemLanguage", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementSystemLanguage), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGGraphicsElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGGraphicsElementTable = { 19, 15, JSSVGGraphicsElementTableValues, 0 };
+static const HashTable JSSVGGraphicsElementTable = { 9, 7, JSSVGGraphicsElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGGraphicsElementConstructorTableValues[] =
@@ -103,13 +89,10 @@ static const HashTableValue JSSVGGraphicsElementPrototypeTableValues[] =
     { "getCTM", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetCTM), (intptr_t)0 },
     { "getScreenCTM", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetScreenCTM), (intptr_t)0 },
     { "getTransformToElement", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionGetTransformToElement), (intptr_t)0 },
-#if ENABLE(SVG)
-    { "hasExtension", JSC::Function, NoIntrinsic, (intptr_t)static_cast<NativeFunction>(jsSVGGraphicsElementPrototypeFunctionHasExtension), (intptr_t)0 },
-#endif
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGGraphicsElementPrototypeTable = { 17, 15, JSSVGGraphicsElementPrototypeTableValues, 0 };
+static const HashTable JSSVGGraphicsElementPrototypeTable = { 8, 7, JSSVGGraphicsElementPrototypeTableValues, 0 };
 const ClassInfo JSSVGGraphicsElementPrototype::s_info = { "SVGGraphicsElementPrototype", &Base::s_info, &JSSVGGraphicsElementPrototypeTable, 0, CREATE_METHOD_TABLE(JSSVGGraphicsElementPrototype) };
 
 JSObject* JSSVGGraphicsElementPrototype::self(VM& vm, JSGlobalObject* globalObject)
@@ -188,51 +171,6 @@ EncodedJSValue jsSVGGraphicsElementFarthestViewportElement(ExecState* exec, Enco
 }
 
 
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGraphicsElementRequiredFeatures(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredFeatures())));
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGraphicsElementRequiredExtensions(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.requiredExtensions())));
-    return JSValue::encode(result);
-}
-
-#endif
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGGraphicsElementSystemLanguage(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGGraphicsElement& impl = castedThis->impl();
-    JSValue result = toJS(exec, castedThis->globalObject(), WTF::getPtr(SVGStaticListPropertyTearOff<SVGStringList>::create(impl, impl.systemLanguage())));
-    return JSValue::encode(result);
-}
-
-#endif
-
 EncodedJSValue jsSVGGraphicsElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {
     JSSVGGraphicsElement* domObject = jsDynamicCast<JSSVGGraphicsElement*>(JSValue::decode(thisValue));
@@ -304,25 +242,6 @@ EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionGetTransformTo
     setDOMException(exec, ec);
     return JSValue::encode(result);
 }
-
-#if ENABLE(SVG)
-EncodedJSValue JSC_HOST_CALL jsSVGGraphicsElementPrototypeFunctionHasExtension(ExecState* exec)
-{
-    JSValue thisValue = exec->hostThisValue();
-    JSSVGGraphicsElement* castedThis = jsDynamicCast<JSSVGGraphicsElement*>(thisValue);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    ASSERT_GC_OBJECT_INHERITS(castedThis, JSSVGGraphicsElement::info());
-    SVGGraphicsElement& impl = castedThis->impl();
-    const String& extension(exec->argument(0).isEmpty() ? String() : exec->argument(0).toString(exec)->value(exec));
-    if (exec->hadException())
-        return JSValue::encode(jsUndefined());
-
-    JSC::JSValue result = jsBoolean(impl.hasExtension(extension));
-    return JSValue::encode(result);
-}
-
-#endif
 
 
 }

@@ -36,6 +36,7 @@ TextureMapperTiledBackingStore::TextureMapperTiledBackingStore()
 
 void TextureMapperTiledBackingStore::updateContentsFromImageIfNeeded(TextureMapper* textureMapper)
 {
+    printf("TextureMapperTiledBackingStore::updateContentsFromImageIfNeeded...\n");
     if (!m_image)
         return;
 
@@ -45,11 +46,13 @@ void TextureMapperTiledBackingStore::updateContentsFromImageIfNeeded(TextureMapp
 
 TransformationMatrix TextureMapperTiledBackingStore::adjustedTransformForRect(const FloatRect& targetRect)
 {
+    printf("TextureMapperTiledBackingStore::adjustedTransformForRect...\n");
     return TransformationMatrix::rectToRect(rect(), targetRect);
 }
 
 void TextureMapperTiledBackingStore::paintToTextureMapper(TextureMapper* textureMapper, const FloatRect& targetRect, const TransformationMatrix& transform, float opacity)
 {
+    printf("TextureMapperTiledBackingStore::paintToTextureMapper...\n");
     updateContentsFromImageIfNeeded(textureMapper);
     TransformationMatrix adjustedTransform = transform * adjustedTransformForRect(targetRect);
     for (size_t i = 0; i < m_tiles.size(); ++i)
@@ -58,6 +61,7 @@ void TextureMapperTiledBackingStore::paintToTextureMapper(TextureMapper* texture
 
 void TextureMapperTiledBackingStore::drawBorder(TextureMapper* textureMapper, const Color& borderColor, float borderWidth, const FloatRect& targetRect, const TransformationMatrix& transform)
 {
+    printf("TextureMapperTiledBackingStore::drawBorder...\n");
     TransformationMatrix adjustedTransform = transform * adjustedTransformForRect(targetRect);
     for (size_t i = 0; i < m_tiles.size(); ++i)
         textureMapper->drawBorder(borderColor, borderWidth, m_tiles[i].rect(), adjustedTransform);
@@ -65,6 +69,7 @@ void TextureMapperTiledBackingStore::drawBorder(TextureMapper* textureMapper, co
 
 void TextureMapperTiledBackingStore::drawRepaintCounter(TextureMapper* textureMapper, int repaintCount, const Color& borderColor, const FloatRect& targetRect, const TransformationMatrix& transform)
 {
+    printf("TextureMapperTiledBackingStore::drawRepaintCounter...\n");
     TransformationMatrix adjustedTransform = transform * adjustedTransformForRect(targetRect);
     for (size_t i = 0; i < m_tiles.size(); ++i)
         textureMapper->drawNumber(repaintCount, borderColor, m_tiles[i].rect().location(), adjustedTransform);
@@ -72,6 +77,7 @@ void TextureMapperTiledBackingStore::drawRepaintCounter(TextureMapper* textureMa
 
 void TextureMapperTiledBackingStore::createOrDestroyTilesIfNeeded(const FloatSize& size, const IntSize& tileSize, bool hasAlpha)
 {
+    printf("TextureMapperTiledBackingStore::createOrDestroyTilesIfNeeded...\n");
     if (size == m_size)
         return;
 
@@ -136,6 +142,7 @@ void TextureMapperTiledBackingStore::createOrDestroyTilesIfNeeded(const FloatSiz
 
 void TextureMapperTiledBackingStore::updateContents(TextureMapper* textureMapper, Image* image, const FloatSize& totalSize, const IntRect& dirtyRect, BitmapTexture::UpdateContentsFlag updateContentsFlag)
 {
+    printf("TextureMapperTiledBackingStore::updateContents 2...\n");
     createOrDestroyTilesIfNeeded(totalSize, textureMapper->maxTextureSize(), !image->currentFrameKnownToBeOpaque());
     for (size_t i = 0; i < m_tiles.size(); ++i)
         m_tiles[i].updateContents(textureMapper, image, dirtyRect, updateContentsFlag);
@@ -143,6 +150,7 @@ void TextureMapperTiledBackingStore::updateContents(TextureMapper* textureMapper
 
 void TextureMapperTiledBackingStore::updateContents(TextureMapper* textureMapper, GraphicsLayer* sourceLayer, const FloatSize& totalSize, const IntRect& dirtyRect, BitmapTexture::UpdateContentsFlag updateContentsFlag)
 {
+    printf("TextureMapperTiledBackingStore::updateContents 3...\n");
 		createOrDestroyTilesIfNeeded(totalSize, textureMapper->maxTextureSize(), true);
     for (size_t i = 0; i < m_tiles.size(); ++i)
         m_tiles[i].updateContents(textureMapper, sourceLayer, dirtyRect, updateContentsFlag);
@@ -150,6 +158,7 @@ void TextureMapperTiledBackingStore::updateContents(TextureMapper* textureMapper
 
 PassRefPtr<BitmapTexture> TextureMapperTiledBackingStore::texture() const
 {
+    printf("TextureMapperTiledBackingStore::texture...\n");
     for (size_t i = 0; i < m_tiles.size(); ++i) {
         RefPtr<BitmapTexture> texture = m_tiles[i].texture();
         if (texture)

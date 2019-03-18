@@ -59,7 +59,7 @@ public:
 protected:
     JSSVGGlyphRefElement(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGGlyphRefElement>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 
@@ -124,9 +124,6 @@ JSC::EncodedJSValue jsSVGGlyphRefElementDx(JSC::ExecState*, JSC::EncodedJSValue,
 void setJSSVGGlyphRefElementDx(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue);
 JSC::EncodedJSValue jsSVGGlyphRefElementDy(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 void setJSSVGGlyphRefElementDy(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGGlyphRefElementHref(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGGlyphRefElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

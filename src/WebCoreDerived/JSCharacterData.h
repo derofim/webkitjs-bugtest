@@ -115,7 +115,6 @@ JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionAppendData(JSC
 JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionInsertData(JSC::ExecState*);
 JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionDeleteData(JSC::ExecState*);
 JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionReplaceData(JSC::ExecState*);
-JSC::EncodedJSValue JSC_HOST_CALL jsCharacterDataPrototypeFunctionRemove(JSC::ExecState*);
 // Attributes
 
 JSC::EncodedJSValue jsCharacterDataData(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);

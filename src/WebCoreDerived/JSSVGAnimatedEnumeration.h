@@ -71,7 +71,7 @@ private:
 protected:
     JSSVGAnimatedEnumeration(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGAnimatedEnumeration>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSSVGAnimatedEnumerationOwner : public JSC::WeakHandleOwner {

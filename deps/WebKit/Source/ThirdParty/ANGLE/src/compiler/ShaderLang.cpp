@@ -119,6 +119,7 @@ ShHandle ShConstructCompiler(ShShaderType type, ShShaderSpec spec,
 
 void ShDestruct(ShHandle handle)
 {
+  printf("ShDestruct 1\n");
     if (handle == 0)
         return;
 

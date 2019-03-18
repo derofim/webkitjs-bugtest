@@ -3051,6 +3051,10 @@ void RenderLayerCompositor::ensureRootLayer()
 
     if (!m_rootContentLayer) {
         m_rootContentLayer = GraphicsLayer::create(graphicsLayerFactory(), this);
+    if (!m_rootContentLayer) {
+        printf("RenderLayerCompositor::ensureRootLayer !m_rootContentLayer !!!!!!!!!\n...");
+        return;
+    }
 #ifndef NDEBUG
         m_rootContentLayer->setName("content root");
 #endif
@@ -3119,8 +3123,12 @@ void RenderLayerCompositor::ensureRootLayer()
 
 void RenderLayerCompositor::destroyRootLayer()
 {
-    if (!m_rootContentLayer)
+    printf("RenderLayerCompositor::destroyRootLayer\n...");
+
+    if (!m_rootContentLayer) {
+        printf("RenderLayerCompositor::ensureRootLayer !m_rootContentLayer !!!!!!!!!\n...");
         return;
+    }
 
     detachRootLayer();
 
@@ -3167,37 +3175,57 @@ void RenderLayerCompositor::destroyRootLayer()
 
 void RenderLayerCompositor::attachRootLayer(RootLayerAttachment attachment)
 {
-    if (!m_rootContentLayer)
+  printf("RenderLayerCompositor::attachRootLayer 1\n...");
+    if (!m_rootContentLayer) {
+        printf("RenderLayerCompositor::!m_rootContentLayer !!!!!!!!!\n...");
         return;
+    }
 
+  printf("RenderLayerCompositor::attachRootLayer 2\n...");
     switch (attachment) {
         case RootLayerUnattached:
             ASSERT_NOT_REACHED();
+            printf("RenderLayerCompositor::attachRootLayer 2.0\n...");
             break;
         case RootLayerAttachedViaChromeClient: {
             Frame& frame = m_renderView.frameView().frame();
             Page* page = frame.page();
-            if (!page)
-                return;
+            if (!page) {
+              printf("!page !!!!!!!!!\n...");
+              return;
+            }
 
+            printf("RenderLayerCompositor::attachRootLayer 2.1\n...");
+    if (!rootGraphicsLayer()) {
+        printf("RenderLayerCompositor::!rootGraphicsLayer() !!!!!!!!!\n...");
+        return;
+    }
+    /*if (!m_renderView.frameView().frame()) {
+        printf("RenderLayerCompositor::!rootGraphicsLayer() !!!!!!!!!\n...");
+        return;
+    }*/
             page->chrome().client().attachRootGraphicsLayer(&frame, rootGraphicsLayer());
             break;
         }
         case RootLayerAttachedViaEnclosingFrame: {
             // The layer will get hooked up via RenderLayerBacking::updateGraphicsLayerConfiguration()
             // for the frame's renderer in the parent document.
+            printf("RenderLayerCompositor::attachRootLayer 2.3\n...");
             m_renderView.document().ownerElement()->scheduleSetNeedsStyleRecalc(SyntheticStyleChange);
             break;
         }
     }
+  printf("RenderLayerCompositor::attachRootLayer 3\n...");
 
     m_rootLayerAttachment = attachment;
     rootLayerAttachmentChanged();
     
+  printf("RenderLayerCompositor::attachRootLayer 4\n...");
     if (m_shouldFlushOnReattach) {
         scheduleLayerFlushNow();
         m_shouldFlushOnReattach = false;
     }
+  printf("RenderLayerCompositor::attachRootLayer 5\n...");
 }
 
 void RenderLayerCompositor::detachRootLayer()

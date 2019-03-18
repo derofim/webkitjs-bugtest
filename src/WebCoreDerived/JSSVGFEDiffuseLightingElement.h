@@ -116,21 +116,6 @@ JSC::EncodedJSValue jsSVGFEDiffuseLightingElementSurfaceScale(JSC::ExecState*, J
 JSC::EncodedJSValue jsSVGFEDiffuseLightingElementDiffuseConstant(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGFEDiffuseLightingElementKernelUnitLengthX(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 JSC::EncodedJSValue jsSVGFEDiffuseLightingElementKernelUnitLengthY(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGFEDiffuseLightingElementX(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGFEDiffuseLightingElementY(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGFEDiffuseLightingElementWidth(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGFEDiffuseLightingElementHeight(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGFEDiffuseLightingElementResult(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGFEDiffuseLightingElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

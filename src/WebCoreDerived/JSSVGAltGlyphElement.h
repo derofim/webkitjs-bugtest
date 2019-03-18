@@ -116,9 +116,6 @@ JSC::EncodedJSValue jsSVGAltGlyphElementGlyphRef(JSC::ExecState*, JSC::EncodedJS
 void setJSSVGAltGlyphElementGlyphRef(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue);
 JSC::EncodedJSValue jsSVGAltGlyphElementFormat(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 void setJSSVGAltGlyphElementFormat(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue);
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGAltGlyphElementHref(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGAltGlyphElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

@@ -132,6 +132,9 @@ Renderer11 *Renderer11::makeRenderer11(Renderer *renderer)
 
 EGLint Renderer11::initialize()
 {
+  #if PLATFORM(JS)
+#error "no __declspec"
+#endif
     if (!initializeCompiler())
     {
         return EGL_NOT_INITIALIZED;

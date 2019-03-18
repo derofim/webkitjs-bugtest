@@ -76,7 +76,7 @@ private:
 protected:
     JSTextTrack(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<TextTrack>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesVisitChildren | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::OverridesVisitChildren | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSTextTrackOwner : public JSC::WeakHandleOwner {

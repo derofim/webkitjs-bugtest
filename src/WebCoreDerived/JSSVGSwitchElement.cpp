@@ -27,10 +27,6 @@
 #include "SVGSwitchElement.h"
 #include <wtf/GetPtr.h>
 
-#if ENABLE(SVG)
-#include "JSSVGAnimatedBoolean.h"
-#endif
-
 using namespace JSC;
 
 namespace WebCore {
@@ -39,14 +35,11 @@ namespace WebCore {
 
 static const HashTableValue JSSVGSwitchElementTableValues[] =
 {
-#if ENABLE(SVG)
-    { "externalResourcesRequired", DontDelete | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementExternalResourcesRequired), (intptr_t)0 },
-#endif
     { "constructor", DontEnum | ReadOnly, NoIntrinsic, (intptr_t)static_cast<PropertySlot::GetValueFunc>(jsSVGSwitchElementConstructor), (intptr_t)0 },
     { 0, 0, NoIntrinsic, 0, 0 }
 };
 
-static const HashTable JSSVGSwitchElementTable = { 5, 3, JSSVGSwitchElementTableValues, 0 };
+static const HashTable JSSVGSwitchElementTable = { 2, 1, JSSVGSwitchElementTableValues, 0 };
 /* Hash table for constructor */
 
 static const HashTableValue JSSVGSwitchElementConstructorTableValues[] =
@@ -114,22 +107,6 @@ bool JSSVGSwitchElement::getOwnPropertySlot(JSObject* object, ExecState* exec, P
     ASSERT_GC_OBJECT_INHERITS(thisObject, info());
     return getStaticValueSlot<JSSVGSwitchElement, Base>(exec, JSSVGSwitchElementTable, thisObject, propertyName, slot);
 }
-
-#if ENABLE(SVG)
-EncodedJSValue jsSVGSwitchElementExternalResourcesRequired(ExecState* exec, EncodedJSValue slotBase, EncodedJSValue thisValue, PropertyName)
-{
-    JSSVGSwitchElement* castedThis = jsDynamicCast<JSSVGSwitchElement*>(JSValue::decode(thisValue));
-    UNUSED_PARAM(slotBase);
-    if (!castedThis)
-        return throwVMTypeError(exec);
-    UNUSED_PARAM(exec);
-    SVGSwitchElement& impl = castedThis->impl();
-    RefPtr<SVGAnimatedBoolean> obj = impl.externalResourcesRequiredAnimated();
-    JSValue result =  toJS(exec, castedThis->globalObject(), obj.get());
-    return JSValue::encode(result);
-}
-
-#endif
 
 EncodedJSValue jsSVGSwitchElementConstructor(ExecState* exec, EncodedJSValue thisValue, EncodedJSValue, PropertyName)
 {

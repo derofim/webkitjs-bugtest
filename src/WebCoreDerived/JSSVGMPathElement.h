@@ -111,12 +111,6 @@ protected:
 
 // Attributes
 
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGMPathElementExternalResourcesRequired(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
-#if ENABLE(SVG)
-JSC::EncodedJSValue jsSVGMPathElementHref(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
-#endif
 JSC::EncodedJSValue jsSVGMPathElementConstructor(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, JSC::PropertyName);
 
 } // namespace WebCore

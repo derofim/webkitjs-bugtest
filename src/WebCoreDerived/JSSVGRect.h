@@ -72,7 +72,7 @@ private:
 protected:
     JSSVGRect(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<SVGPropertyTearOff<FloatRect> >);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetOwnPropertySlot | Base::StructureFlags;
 };
 
 class JSSVGRectOwner : public JSC::WeakHandleOwner {

@@ -116,12 +116,16 @@ RenderEmbeddedObject::~RenderEmbeddedObject()
     view().frameView().removeEmbeddedObjectToUpdate(*this);
 }
 
+#if PLATFORM(JS)
+RenderPtr<RenderEmbeddedObject> RenderEmbeddedObject::createForApplet(WebCore::HTMLAppletElement& a, WTF::PassRef<WebCore::RenderStyle> b) { notImplemented(); return nullptr; }
+#else
 RenderPtr<RenderEmbeddedObject> RenderEmbeddedObject::createForApplet(HTMLAppletElement& applet, PassRef<RenderStyle> style)
 {
     auto renderer = createRenderer<RenderEmbeddedObject>(applet, std::move(style));
     renderer->setInline(true);
     return renderer;
 }
+#endif
 
 #if USE(ACCELERATED_COMPOSITING)
 bool RenderEmbeddedObject::requiresLayer() const
@@ -134,6 +138,10 @@ bool RenderEmbeddedObject::requiresLayer() const
 
 bool RenderEmbeddedObject::allowsAcceleratedCompositing() const
 {
+#if PLATFORM(JS)
+    return true;
+#endif
+
 #if PLATFORM(IOS)
     // The timing of layer creation is different on the phone, since the plugin can only be manipulated from the main thread.
     return widget() && widget()->isPluginViewBase() && toPluginViewBase(widget())->willProvidePluginLayer();

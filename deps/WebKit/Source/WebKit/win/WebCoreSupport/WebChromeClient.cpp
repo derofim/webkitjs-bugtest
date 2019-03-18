@@ -754,6 +754,7 @@ void WebChromeClient::setLastSetCursorToCurrentCursor()
 #if USE(ACCELERATED_COMPOSITING)
 void WebChromeClient::attachRootGraphicsLayer(Frame* frame, GraphicsLayer* graphicsLayer)
 {
+    printf("WebChromeClient::attachRootGraphicsLayer\n...");
     m_webView->setRootChildLayer(graphicsLayer);
 }
 

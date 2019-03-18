@@ -69,7 +69,7 @@ private:
 protected:
     JSStyleSheetList(JSC::Structure*, JSDOMGlobalObject*, PassRefPtr<StyleSheetList>);
     void finishCreation(JSC::VM&);
-    static const unsigned StructureFlags = JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::HasImpureGetOwnPropertySlot | Base::StructureFlags;
+    static const unsigned StructureFlags = JSC::InterceptsGetOwnPropertySlotByIndexEvenWhenLengthIsNotZero | JSC::OverridesGetPropertyNames | JSC::OverridesGetOwnPropertySlot | JSC::HasImpureGetOwnPropertySlot | Base::StructureFlags;
     static JSC::EncodedJSValue indexGetter(JSC::ExecState*, JSC::EncodedJSValue, JSC::EncodedJSValue, unsigned);
 private:
     static bool canGetItemsForName(JSC::ExecState*, StyleSheetList*, JSC::PropertyName);

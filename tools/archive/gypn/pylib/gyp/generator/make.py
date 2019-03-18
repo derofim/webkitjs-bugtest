@@ -2021,14 +2021,14 @@ def GenerateOutput(target_list, target_dicts, data, params):
     })
 
   header_params.update({
-    'CC.target':   GetEnvironFallback(('CC_target', 'CC'), '$(CC)'),
-    'AR.target':   GetEnvironFallback(('AR_target', 'AR'), '$(AR)'),
-    'CXX.target':  GetEnvironFallback(('CXX_target', 'CXX'), '$(CXX)'),
-    'LINK.target': GetEnvironFallback(('LINK_target', 'LINK'), '$(LINK)'),
-    'CC.host':     GetEnvironFallback(('CC_host',), 'gcc'),
-    'AR.host':     GetEnvironFallback(('AR_host',), 'ar'),
-    'CXX.host':    GetEnvironFallback(('CXX_host',), 'g++'),
-    'LINK.host':   GetEnvironFallback(('LINK_host',), '$(CXX.host)'),
+    'CC.target':   GetEnvironFallback(('CC_target', 'CC'), 'emcc'),
+    'AR.target':   GetEnvironFallback(('AR_target', 'AR'), 'emcc'),
+    'CXX.target':  GetEnvironFallback(('CXX_target', 'CXX'), 'em++'),
+    'LINK.target': GetEnvironFallback(('LINK_target', 'LINK'), 'emcc'),
+    'CC.host':     GetEnvironFallback(('CC_host',), 'emcc'),
+    'AR.host':     GetEnvironFallback(('AR_host',), 'emcc'),
+    'CXX.host':    GetEnvironFallback(('CXX_host',), 'em++'),
+    'LINK.host':   GetEnvironFallback(('LINK_host',), 'emcc'),
   })
 
   build_file, _, _ = gyp.common.ParseQualifiedTarget(target_list[0])

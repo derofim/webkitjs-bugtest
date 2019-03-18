@@ -48,7 +48,9 @@ namespace WebCore {
 
     stopSharedTimer();
     timerInterval = intervalInMS;
+    //timerInterval = intervalInMS + 500.0;
     timerActive = true;
-		emscripten_async_call(sharedTimerRun, NULL, timerInterval);
+    printf("setSharedTimerFireInterval timerInterval %d\n", timerInterval);
+		emscripten_async_call(sharedTimerRun, NULL, (double)timerInterval);
   }
 }

@@ -138,7 +138,12 @@ private:
     bool beginScissorClip(const TransformationMatrix&, const FloatRect&);
     void bindDefaultSurface();
     ClipStack& clipStack();
-    inline TextureMapperGLData& data() { return *m_data; }
+    inline TextureMapperGLData& data() {
+        if(!m_data) {
+          printf("!m_data\n");
+        }
+        return *m_data; 
+    }
     RefPtr<GraphicsContext3D> m_context3D;
     TextureMapperGLData* m_data;
     ClipStack m_clipStack;

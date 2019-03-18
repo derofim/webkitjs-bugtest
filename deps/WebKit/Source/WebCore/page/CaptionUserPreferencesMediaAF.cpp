@@ -55,6 +55,11 @@
 #include <MediaAccessibility/MediaAccessibility.h>
 #endif
 
+
+#if PLATFORM(JS)
+#error "can`t softlink"
+#endif
+
 #if HAVE(MEDIA_ACCESSIBILITY_FRAMEWORK)
 
 #if !PLATFORM(WIN)

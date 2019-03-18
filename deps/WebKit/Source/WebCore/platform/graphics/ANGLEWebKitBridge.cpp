@@ -190,26 +190,33 @@ ANGLEWebKitBridge::~ANGLEWebKitBridge()
 
 void ANGLEWebKitBridge::cleanupCompilers()
 {
+  printf("ANGLEWebKitBridge::cleanupCompilers 0\n");
     if (m_fragmentCompiler)
         ShDestruct(m_fragmentCompiler);
+  printf("ANGLEWebKitBridge::cleanupCompilers 1\n");
     m_fragmentCompiler = 0;
     if (m_vertexCompiler)
         ShDestruct(m_vertexCompiler);
     m_vertexCompiler = 0;
+  printf("ANGLEWebKitBridge::cleanupCompilers 2\n");
 
     builtCompilers = false;
 }
     
 void ANGLEWebKitBridge::setResources(ShBuiltInResources resources)
 {
+  printf("ANGLEWebKitBridge::setResources 1\n");
     // Resources are (possibly) changing - cleanup compilers if we had them already
     cleanupCompilers();
+  printf("ANGLEWebKitBridge::setResources 2\n");
     
     m_resources = resources;
+  printf("ANGLEWebKitBridge::setResources 3\n");
 }
 
 bool ANGLEWebKitBridge::compileShaderSource(const char* shaderSource, ANGLEShaderType shaderType, String& translatedShaderSource, String& shaderValidationLog, Vector<ANGLEShaderSymbol>& symbols, int extraCompileOptions)
 {
+  printf("ANGLEWebKitBridge::compileShaderSource 1\n");
     if (!builtCompilers) {
         m_fragmentCompiler = ShConstructCompiler(SH_FRAGMENT_SHADER, m_shaderSpec, m_shaderOutput, &m_resources);
         m_vertexCompiler = ShConstructCompiler(SH_VERTEX_SHADER, m_shaderSpec, m_shaderOutput, &m_resources);
@@ -220,6 +227,7 @@ bool ANGLEWebKitBridge::compileShaderSource(const char* shaderSource, ANGLEShade
 
         builtCompilers = true;
     }
+  printf("ANGLEWebKitBridge::compileShaderSource 2\n");
     
     ShHandle compiler;
 
@@ -230,6 +238,7 @@ bool ANGLEWebKitBridge::compileShaderSource(const char* shaderSource, ANGLEShade
 
     const char* const shaderSourceStrings[] = { shaderSource };
 
+  printf("ANGLEWebKitBridge::compileShaderSource 3\n");
     bool validateSuccess = ShCompile(compiler, shaderSourceStrings, 1, SH_OBJECT_CODE | SH_VARIABLES | extraCompileOptions);
     if (!validateSuccess) {
         int logSize = getValidationResultValue(compiler, SH_INFO_LOG_LENGTH);
@@ -243,6 +252,7 @@ bool ANGLEWebKitBridge::compileShaderSource(const char* shaderSource, ANGLEShade
         return false;
     }
 
+  printf("ANGLEWebKitBridge::compileShaderSource 4\n");
     int translationLength = getValidationResultValue(compiler, SH_OBJECT_CODE_LENGTH);
     if (translationLength > 1) {
         auto translationBuffer = std::make_unique<char[]>(translationLength);
@@ -252,11 +262,13 @@ bool ANGLEWebKitBridge::compileShaderSource(const char* shaderSource, ANGLEShade
         translatedShaderSource = translationBuffer.get();
     }
     
+  printf("ANGLEWebKitBridge::compileShaderSource 5\n");
     if (!getSymbolInfo(compiler, SH_ACTIVE_ATTRIBUTES, symbols))
         return false;
     if (!getSymbolInfo(compiler, SH_ACTIVE_UNIFORMS, symbols))
         return false;
 
+  printf("ANGLEWebKitBridge::compileShaderSource 6\n");
     return true;
 }
 

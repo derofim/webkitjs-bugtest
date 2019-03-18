@@ -119,7 +119,9 @@ static bool isWOW64()
 {
     static bool initialized = false;
     static bool wow64 = false;
-
+#if PLATFORM(JS)
+#error "no __declspec"
+#endif
     if (!initialized) {
         initialized = true;
         HMODULE kernel32Module = GetModuleHandleA("kernel32.dll");

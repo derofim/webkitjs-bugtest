@@ -48,6 +48,8 @@
 
 using WTF::ThreadSpecific;
 
+//static SDL_Window *gWindow;
+
 namespace WebCore {
 
 class ThreadGlobalGLContext {
@@ -65,15 +67,20 @@ ThreadSpecific<ThreadGlobalGLContext>* ThreadGlobalGLContext::staticGLContext = 
 
 inline ThreadGlobalGLContext* currentContext()
 {
-    if (!ThreadGlobalGLContext::staticGLContext)
+    if (!ThreadGlobalGLContext::staticGLContext) {
         ThreadGlobalGLContext::staticGLContext = new ThreadSpecific<ThreadGlobalGLContext>;
+    }
     return *ThreadGlobalGLContext::staticGLContext;
 }
 
+SDL_Window *GLContext::gWindow = 0;
+
 GLContext* GLContext::sharingContext()
 {
-	
-    DEFINE_STATIC_LOCAL(OwnPtr<GLContext>, sharing, (createOffscreenContext()));
+    if (!gWindow) {
+      printf("sharingContext: Invalid gWindow!!!\n");
+    }
+    DEFINE_STATIC_LOCAL(OwnPtr<GLContext>, sharing, (createOffscreenContext(0, gWindow)));
     return sharing.get();
 }
 
@@ -88,6 +95,13 @@ Display* GLContext::sharedX11Display()
         gSharedX11Display = XOpenDisplay(0);
     return gSharedX11Display;
 }
+
+/*void GLContext::setGlobalWindow(SDL_Window *sdl_window) {
+  if(!sdl_window) {
+    printf("setGlobalWindow: invalid window\n");
+  }
+  gWindow = sdl_window;
+}*/
 
 void GLContext::cleanupSharedX11Display()
 {
@@ -146,9 +160,21 @@ void GLContext::cleanupActiveContextsAtExit()
 }
 #endif // PLATFORM(X11)
 
+void GLContext::setWindow(SDL_Window *sdl_window) {
+  if(!sdl_window)
+    printf("setWindow: invalid sdl_window!!! \n");
+  window_ = sdl_window;
+  if (!gWindow)
+    gWindow = sdl_window;
+  if (!window_)
+    window_ = gWindow;
+}
 
-PassOwnPtr<GLContext> GLContext::createContextForWindow(GLNativeWindowType windowHandle, GLContext* sharingContext)
+PassOwnPtr<GLContext> GLContext::createContextForWindow(GLNativeWindowType windowHandle, GLContext* sharingContext, SDL_Window *sdl_window)
 {
+  if (!gWindow)
+    gWindow = sdl_window;
+
 #if PLATFORM(GTK) && PLATFORM(WAYLAND) && !defined(GTK_API_VERSION_2) && defined(GDK_WINDOWING_WAYLAND) && USE(EGL)
     GdkDisplay* display = gdk_display_manager_get_default_display(gdk_display_manager_get());
 
@@ -165,8 +191,15 @@ PassOwnPtr<GLContext> GLContext::createContextForWindow(GLNativeWindowType windo
         return glxContext.release();
 #endif
 #if USE(EGL)
-    if (OwnPtr<GLContext> eglContext = GLContextEGL::createContext(windowHandle, sharingContext))
+    if (!gWindow) {
+      printf("GLContext::createContextForWindow: Invalid gWindow!!!\n");
+    }
+// TODO >>>
+    if (OwnPtr<GLContext> eglContext = GLContextEGL::createContext(windowHandle, sharingContext, gWindow)) {
         return eglContext.release();
+    } else {
+        printf("invalid OwnPtr<GLContext> eglContext!\n");
+    }
 #endif
 #endif
     return nullptr;
@@ -179,15 +212,23 @@ GLContext::GLContext()
 #endif
 }
 
-PassOwnPtr<GLContext> GLContext::createOffscreenContext(GLContext* sharingContext)
+PassOwnPtr<GLContext> GLContext::createOffscreenContext(GLContext* sharingContext, SDL_Window *sdl_window)
 {
-    return createContextForWindow(0, sharingContext);
+    if (!gWindow)
+      gWindow = sdl_window;
+
+    return createContextForWindow(0, sharingContext, gWindow);
+}
+
+PassOwnPtr<GLContext> createOffscreenContext(GLContext* sharing) {
+  notImplemented();
 }
 
 GLContext::~GLContext()
 {
     if (this == currentContext()->context())
         currentContext()->setContext(0);
+
 #if PLATFORM(X11)
     removeActiveContext(this);
 #endif

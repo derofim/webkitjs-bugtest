@@ -108,12 +108,12 @@
 #endif
 #endif
 
-#if ENABLE(CSS_SHADERS)
+//#if ENABLE(CSS_SHADERS)
 #include "WebKitCSSArrayFunctionValue.h"
 #include "WebKitCSSMatFunctionValue.h"
 #include "WebKitCSSMixFunctionValue.h"
 #include "WebKitCSSShaderValue.h"
-#endif
+//#endif
 
 #if ENABLE(DASHBOARD_SUPPORT)
 #include "DashboardRegion.h"
@@ -331,9 +331,9 @@ CSSParser::CSSParser(const CSSParserContext& context)
     , m_hadSyntacticallyValidCSSRule(false)
     , m_logErrors(false)
     , m_ignoreErrorsInDeclaration(false)
-#if ENABLE(CSS_SHADERS)
+//#if ENABLE(CSS_SHADERS)
     , m_inFilterRule(false)
-#endif
+//#endif
     , m_defaultNamespace(starAtom)
     , m_parsedTextPrefixLength(0)
     , m_propertyRange(UINT_MAX, UINT_MAX)
@@ -9706,15 +9706,22 @@ bool CSSParser::parseFilterRuleParameters()
     return true;
 }
 
+#endif // ENABLE(CSS_SHADERS)
+
+//#if ENABLE(CSS_SHADERS)
 PassRefPtr<StyleRuleBase> CSSParser::createFilterRule(const CSSParserString& filterName)
 {
+  #if ENABLE(CSS_SHADERS)
     RefPtr<StyleRuleFilter> rule = StyleRuleFilter::create(filterName, createStyleProperties());
     clearProperties();
     processAndAddNewRuleToSourceTreeIfNeeded();
     return rule.release();
+  #else
+    printf("CSSParser::createFilterRule while !CSS_SHADERS !!!\n");
+    return nullptr;
+  #endif
 }
-
-#endif // ENABLE(CSS_SHADERS)
+//#endif // ENABLE(CSS_SHADERS)
 
 PassRefPtr<WebKitCSSFilterValue> CSSParser::parseBuiltinFilterArguments(CSSParserValueList* args, WebKitCSSFilterValue::FilterOperationType filterType)
 {

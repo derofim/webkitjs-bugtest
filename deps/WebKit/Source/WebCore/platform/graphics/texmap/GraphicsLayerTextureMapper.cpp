@@ -35,11 +35,13 @@ namespace WebCore {
 
 TextureMapperLayer* toTextureMapperLayer(GraphicsLayer* layer)
 {
+    printf("TextureMapperLayer::toTextureMapperLayer...\n");
     return layer ? toGraphicsLayerTextureMapper(layer)->layer() : 0;
 }
 
 std::unique_ptr<GraphicsLayer> GraphicsLayer::create(GraphicsLayerFactory* factory, GraphicsLayerClient* client)
 {
+    printf("GraphicsLayerTextureMapper.cpp GraphicsLayer::create...\n");
     if (!factory) {
         return std::make_unique<GraphicsLayerTextureMapper>(client);
     }
@@ -58,10 +60,12 @@ GraphicsLayerTextureMapper::GraphicsLayerTextureMapper(GraphicsLayerClient* clie
     , m_animationStartTime(0)
     , m_isScrollable(false)
 {
+    printf("GraphicsLayerTextureMapper::GraphicsLayerTextureMapper...\n");
 }
 
 void GraphicsLayerTextureMapper::notifyChange(ChangeMask changeMask)
 {
+    printf("GraphicsLayerTextureMapper::notifyChange...\n");
     m_changeMask |= changeMask;
     if (!client())
         return;
@@ -70,11 +74,13 @@ void GraphicsLayerTextureMapper::notifyChange(ChangeMask changeMask)
 
 void GraphicsLayerTextureMapper::setName(const String& name)
 {
+    printf("GraphicsLayer::setName...\n");
     GraphicsLayer::setName(name);
 }
 
 GraphicsLayerTextureMapper::~GraphicsLayerTextureMapper()
 {
+    printf("GraphicsLayerTextureMapper::~GraphicsLayerTextureMapper...\n");
     if (m_contentsLayer)
         m_contentsLayer->setClient(0);
 
@@ -83,6 +89,7 @@ GraphicsLayerTextureMapper::~GraphicsLayerTextureMapper()
 
 void GraphicsLayerTextureMapper::willBeDestroyed()
 {
+    printf("GraphicsLayer::willBeDestroyed...\n");
     GraphicsLayer::willBeDestroyed();
 }
 

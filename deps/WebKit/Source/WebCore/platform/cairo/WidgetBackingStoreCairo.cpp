@@ -26,6 +26,8 @@
 #include "RefPtrCairo.h"
 #include <cairo.h>
 
+//#include "WebView.h"
+
 namespace WebCore {
 
 static PassRefPtr<cairo_surface_t> createSurfaceForBackingStore(PlatformWidget widget, const IntSize& size)
@@ -34,14 +36,19 @@ static PassRefPtr<cairo_surface_t> createSurfaceForBackingStore(PlatformWidget w
     return adoptRef(gdk_window_create_similar_surface(gtk_widget_get_window(widget), CAIRO_CONTENT_COLOR_ALPHA, size.width(), size.height()));
 #elif PLATFORM(JS)
 	webkitTrace();
+
+  // TODO >>>>
 	if(widget) {
+	webkitTrace();
 		SDL_Surface *sdl_surface = (SDL_Surface *)widget;
 		return adoptRef(cairo_image_surface_create_for_data((unsigned char*)sdl_surface->pixels,
 																			CAIRO_FORMAT_ARGB32,
 																			sdl_surface->w,
 																			sdl_surface->h,
 																			sdl_surface->pitch));
-	} else {
+	} else
+  {
+	webkitTrace();
 		UNUSED_PARAM(widget);
 		return adoptRef(cairo_image_surface_create(CAIRO_FORMAT_ARGB32, size.width(), size.height()));
 	}
@@ -61,11 +68,12 @@ PassOwnPtr<WidgetBackingStore> WidgetBackingStoreCairo::create(PlatformWidget wi
 // quick scrolling requests.
 WidgetBackingStoreCairo::WidgetBackingStoreCairo(PlatformWidget widget, const IntSize& size)
     : WidgetBackingStore(size)
-    , m_surface(createSurfaceForBackingStore(widget, size))
+    , m_surface(createSurfaceForBackingStore(widget, size)) // TODO
     , m_scrollSurface(createSurfaceForBackingStore(widget, size))
 		, m_widget(widget)
 
 {
+  //m_surface = WebView::cairo_context_; // TODO
 
 }
 

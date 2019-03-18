@@ -2,7 +2,6 @@
 #define WEBKIT_WEBVIEW_H
 
 #include "config.h"
-
 #include "Page.h"
 #include "Frame.h"
 #include "FrameLoader.h"
@@ -17,10 +16,13 @@
 #elif USE(SKIA)
 #endif
 
-#include "SDL.h"
+#include <SDL2/SDL.h>
+#include <SDL2/SDL_thread.h>
+
 #if USE(ACCELERATED_COMPOSITING)
-#include "GL/glew.h"
-#include "GLContext.h"
+//#include "GL/glew.h"
+//#include "SDL_opengles2.h"
+//#include "GLContext.h"
 #endif
 
 namespace WebCore {
@@ -28,6 +30,9 @@ namespace WebCore {
 	class ChromeClientJS;
 	class FrameLoaderClientJS;
 	class WebFrameJS;
+#if USE(ACCELERATED_COMPOSITING)
+  class GLContext;
+#endif
 }
 
 namespace WebCore {
@@ -48,7 +53,7 @@ namespace WebCore {
 
 	class WebView {
 	public:
-		WebView(int width, int height, bool accelerated);
+		WebView(SDL_Window *window,  SDL_GLContext& context, int width, int height, bool accelerated);
 		~WebView();
 
 		void setTransparent(bool transparent) { m_private->transparent = transparent; };
@@ -56,7 +61,7 @@ namespace WebCore {
 		
 		void setUrl(char *);
 		char *url();
-		void setHtml(char *, int len);
+		void setHtml(const char *, int len);
 		char *html();
 
 		void resize(int width, int height);
@@ -84,7 +89,7 @@ namespace WebCore {
 		bool focusNextPrevChild(bool next);
 		void initializeScreens(int width, int height);
 #if USE(ACCELERATED_COMPOSITING)
-		WebCore::GLContext *glWindowContext();
+		WebCore::GLContext *glWindowContext(SDL_Window *sdl_window);
 #endif
 		WebViewPrivate* p() { return m_private; }
 	protected:
@@ -93,8 +98,14 @@ namespace WebCore {
 		friend class WebCore::WebFrameJS;
 		friend class WebCore::AcceleratedContext;
 	private:
-		void handleSDLEvent(const SDL_Event& event);
 		WebViewPrivate* m_private;
+  public:
+  // TODO:
+		//void handleSDLEvent(const SDL_Event& event);
+    SDL_Window *window_;
+    SDL_GLContext& context_;
+    //static cairo_t *cairo_context_;
+    //static cairo_surface_t *cairo_surface_;
 	};
 }
 

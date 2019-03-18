@@ -37,6 +37,7 @@ namespace WebCore {
 EGLWindowTransportSurface::EGLWindowTransportSurface(const IntSize& size, GLPlatformSurface::SurfaceAttributes attributes)
     : EGLTransportSurface(size, attributes)
 {
+  printf("EGLWindowTransportSurface::EGLWindowTransportSurface 1\n");
     if (!m_configSelector)
         return;
 
@@ -90,6 +91,7 @@ void EGLWindowTransportSurface::destroy()
 EGLPixmapSurface::EGLPixmapSurface(GLPlatformSurface::SurfaceAttributes surfaceAttributes)
     : EGLOffScreenSurface(surfaceAttributes)
 {
+  printf("EGLPixmapSurface::EGLPixmapSurface 1\n");
     if (!m_configSelector)
         return;
 
@@ -234,6 +236,7 @@ EGLTextureFromPixmap::EGLTextureFromPixmap(const NativePixmap handle, bool hasAl
     : m_eglImage(0)
     , m_surface(EGL_NO_SURFACE)
 {
+  printf("EGLTextureFromPixmap::EGLTextureFromPixmap 1\n");
     if (!handle)
         return;
 

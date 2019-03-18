@@ -210,6 +210,7 @@ bool PluginPackage::load()
         ASSERT(m_module);
         m_freeLibraryTimer.stop();
     } else {
+        webkitTrace();
         ASSERT(!m_loadCount);
         m_module = dlopen(m_path.utf8().data(), RTLD_LAZY);
     }

@@ -1298,14 +1298,18 @@ void WebGLRenderingContext::colorMask(GC3Dboolean red, GC3Dboolean green, GC3Dbo
 
 void WebGLRenderingContext::compileShader(WebGLShader* shader, ExceptionCode& ec)
 {
+  printf("WebGLRenderingContext::compileShader 1\n");
     UNUSED_PARAM(ec);
     if (isContextLost() || !validateWebGLObject("compileShader", shader))
         return;
+  printf("WebGLRenderingContext::compileShader 2\n");
     m_context->compileShader(objectOrZero(shader));
     GC3Dint value;
+  printf("WebGLRenderingContext::compileShader 3\n");
     m_context->getShaderiv(objectOrZero(shader), GraphicsContext3D::COMPILE_STATUS, &value);
     shader->setValid(value);
     cleanupAfterGraphicsCall(false);
+  printf("WebGLRenderingContext::compileShader 4\n");
 }
 
 void WebGLRenderingContext::compressedTexImage2D(GC3Denum target, GC3Dint level, GC3Denum internalformat, GC3Dsizei width,
@@ -1551,6 +1555,7 @@ PassRefPtr<WebGLRenderbuffer> WebGLRenderingContext::createRenderbuffer()
 
 PassRefPtr<WebGLShader> WebGLRenderingContext::createShader(GC3Denum type, ExceptionCode& ec)
 {
+    printf("WebGLRenderingContext::createShader\n");
     UNUSED_PARAM(ec);
     if (isContextLost())
         return 0;
