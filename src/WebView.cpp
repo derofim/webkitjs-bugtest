@@ -103,6 +103,10 @@ namespace WebCore {
       printf("Unable to create window: %s\n", SDL_GetError());
     }
 #if USE(ACCELERATED_COMPOSITING)
+////
+/*if(!m_private->glContext)
+  m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), sdl_window);*/
+////
     if(m_private->glContext)
       m_private->glContext->setWindow(window_);
     else
@@ -174,6 +178,13 @@ namespace WebCore {
     printf("initializeScreens...\n");
     printf("WebView: width = %d height = %d \n", width, height);
 		initializeScreens(width, height);
+
+    if(m_private->glContext)
+      m_private->glContext->setWindow(window_);
+    else
+    {
+      printf("2 !m_private->glContext......: %s\n", SDL_GetError());
+    }
 
 		webkitTrace();
 		m_private->mainFrame->init();
@@ -255,12 +266,13 @@ namespace WebCore {
       GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
     } else {
 		  webkitTrace();
-      printf("!context_ !\n");
+      printf("glWindowContext !context_ !\n");
     }
 
     //->>>>>>>
 		//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), sdl_window);
-    m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), sdl_window);
+    if(!m_private->glContext)
+      m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), sdl_window);
     
 		if(!m_private->glContext) {
       printf("no glContext...%s\n", SDL_GetError());
@@ -345,12 +357,13 @@ namespace WebCore {
       GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
     } else {
 		  webkitTrace();
-      printf("!context_ !\n");
+      printf("view !context_ !\n");
     }
 
 #if USE(ACCELERATED_COMPOSITING)
 			//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
-			m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), window_);
+      if(!m_private->glContext)
+			  m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), window_);
       if(!m_private->glContext) {
         printf("no glContext!...%s\n", SDL_GetError());
       }

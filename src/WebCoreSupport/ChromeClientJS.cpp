@@ -347,7 +347,9 @@ namespace WebCore {
 
 		// WebCore timers by default have a lower priority which leads to more artifacts when opaque
 		// resize is on
-		emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 0);
+		emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 0.0);
+    //repaintEverythingSoonTimeout(this);
+    //emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 6000.0);
 	}
 
 	void ChromeClientJS::performAllPendingScrolls()
@@ -754,7 +756,15 @@ namespace WebCore {
 			bool turningOnCompositing = rootLayer && !m_view->m_private->acceleratedContext->enabled();
       //bool turningOnCompositing = true;
 
-      printf("m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer) .......\n");
+		if (!rootLayer) {
+      printf("ChromeClientJS::attachRootGraphicsLayer !rootLayer !!!!!!!!!!!!!!!!!!!\n");
+    }
+
+		if (!frame) {
+      printf("ChromeClientJS::attachRootGraphicsLayer !frame !!!!!!!!!!!!!!!!!!!\n");
+    }
+
+      printf("ChromeClientJS m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer) .......\n");
 			m_view->m_private->acceleratedContext->setRootCompositingLayer(rootLayer);
 
 			if (turningOnCompositing) {

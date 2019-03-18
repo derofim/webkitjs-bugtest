@@ -24,7 +24,7 @@
 // There seems to be a delicate balance between the main loop being flooded
 // with motion events (that force flushes) and starving the main loop of events
 // with flush callbacks. This delay is entirely empirical.
-const double framesPerSecond = 60;
+const double framesPerSecond = 60.0;
 const double scheduleDelay = (1.0 / framesPerSecond);
 
 namespace WebCore {
@@ -38,7 +38,7 @@ namespace WebCore {
 	{
 		webkitTrace();
     /// >>>
-    initialize();
+    //initialize();
 	}
 
 	void redirectedWindowDamagedCallback(void* data)
@@ -52,9 +52,10 @@ namespace WebCore {
 
 		webkitTrace();
     if (m_rootLayer) {
-      printf("m_rootLayer already exists\n");
+      printf("AcceleratedContext::initialize m_rootLayer already exists\n");
       webkitTrace();
       /////return;
+      return;
     }
 
 		IntSize pageSize = roundedIntSize(m_view->positionAndSize().size());
@@ -76,6 +77,7 @@ namespace WebCore {
       printf("m_nonCompositedContentLayer already exists\n");
       webkitTrace();
       /////return;
+      return;
     }
 
 		// The non-composited contents are a child of the root layer.
@@ -139,11 +141,13 @@ namespace WebCore {
     
 #if USE(TEXTURE_MAPPER) && USE(TEXTURE_MAPPER_GL)
 		webkitTrace();
+      printf("AcceleratedContext m_textureMapper = TextureMapper::create 1\n");
 		m_textureMapper = TextureMapper::create(TextureMapper::OpenGLMode);
+      printf("AcceleratedContext m_textureMapper = TextureMapper::create 2\n");
 		webkitTrace();
     //m_textureMapper = TextureMapper::create(TextureMapper::SoftwareMode);
     if (!m_textureMapper) {
-      printf("!m_textureMapper\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
 		  webkitTrace();
 			return;
     }
@@ -196,12 +200,16 @@ namespace WebCore {
 
 	GLContext* AcceleratedContext::prepareForRendering()
 	{
+    printf("AcceleratedContext::prepareForRendering 1 ....\n");
 		webkitTrace();
     if(!enabled()) {
-      printf("!enabled()\n");
+      printf("prepareForRendering !enabled()\n");
 		  webkitTrace();
-			return NULL;
+			///////////////////////////return NULL;
+      // return NULL;
     }
+
+    printf("AcceleratedContext::prepareForRendering 2 ....\n");
 
 		GLContext* context = GLContext::getCurrent();
 		webkitTrace();
@@ -210,9 +218,11 @@ namespace WebCore {
     //	if (!context) {
       printf("!context makeContextCurrent\n");
 		  webkitTrace();
-			return NULL;
+			/////////////////////return NULL;
+      // return NULL;
     }
 
+    printf("AcceleratedContext::prepareForRendering 3 ....\n");
 		return context;
 	}
 
@@ -223,7 +233,7 @@ namespace WebCore {
 		GLContext* context = prepareForRendering();
 
 		if (!context) {
-      printf("!context\n");
+      printf("compositeLayersToContext !context\n");
 		  webkitTrace();
 			return;
     }
@@ -232,13 +242,14 @@ namespace WebCore {
 		glViewport(0, 0, windowSize.width(), windowSize.height());
 
 		if (purpose == ForResize) {
-			glClearColor(1, 1, 1, 0);
+		//glClearColor(1, 1, 1, 0);
+			glClearColor(1.0, 0.5, 1.0, 0.5);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
 #if USE(TEXTURE_MAPPER) && USE(TEXTURE_MAPPER_GL)
     if(!m_textureMapper) {
-      printf("!m_textureMapper\n");
+      printf("AcceleratedContext::compositeLayersToContext !m_textureMapper\n");
 		  webkitTrace();
     }
 		if (!m_rootLayer) {
@@ -265,7 +276,10 @@ namespace WebCore {
 		if(toTextureMapperLayer(m_rootLayer.get())->descendantsOrSelfHaveRunningAnimations()) {
 		  webkitTrace();
 			m_layerFlushTimerCallbackId = 1;
-			emscripten_async_call(&layerFlushTimerFiredCallback, this, scheduleDelay * 1000);
+      printf("layerFlushTimerFired scheduleDelay %d\n", scheduleDelay);
+			emscripten_async_call(&layerFlushTimerFiredCallback, this, scheduleDelay * 1000.0);
+      //layerFlushTimerFiredCallback(this);
+			//emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
 		}
 #else
 		// TODO: Determine if there's a running animation and call back for a composite.
@@ -279,14 +293,15 @@ namespace WebCore {
 		GLContext* context = prepareForRendering();
 
 		if (!context) {
-      printf("!context()\n");
+      printf("clearEverywhere !context()\n");
 		  webkitTrace();
 			return;
     }
 
 		IntSize windowSize = roundedIntSize(m_view->positionAndSize().size());
 		glViewport(0, 0, windowSize.width(), windowSize.height());
-		glClearColor(1, 1, 1, 0);
+		//glClearColor(1, 1, 1, 0);
+			glClearColor(0.0, 0.5, 1.0, 0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 
   // >>>>>>>
@@ -364,7 +379,7 @@ namespace WebCore {
 		webkitTrace();
 
 		if (!enabled()) {
-      printf("!enabled()\n");
+      printf("resizeRootLayer !enabled()\n");
 		  webkitTrace();
 			return;
     }
@@ -416,7 +431,7 @@ namespace WebCore {
 		webkitTrace();
 		AcceleratedContext *contexts = (AcceleratedContext *)context;
     if (!contexts) {
-      printf("!contexts\n");
+      printf("layerFlushTimerFiredCallback !contexts\n");
       webkitTrace();
       return;
     }
@@ -428,18 +443,25 @@ namespace WebCore {
 		webkitTrace();
 
     if (!enabled()) {
-      printf("!enabled\n");
+      printf("scheduleLayerFlush !enabled\n");
       webkitTrace();
+      ///////////return;
+      //return;
+    }
+
+		if (m_layerFlushTimerCallbackId) {
+      printf("scheduleLayerFlush m_layerFlushTimerCallbackId\n");
+      webkitTrace();
+			/////////return;
       return;
     }
 
-		if (!enabled() || m_layerFlushTimerCallbackId) {
-			return;
-    }
-
 		m_layerFlushTimerCallbackId = 1;
-		double nextFlush = std::max(scheduleDelay - (currentTime() - m_lastFlushTime), 0.0);
-		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 1000);
+		double nextFlush = std::max(scheduleDelay - (currentTime() - m_lastFlushTime), 1.0);
+    printf("nextFlush in %f", nextFlush);
+		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 5000.0);
+    //emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
+    //layerFlushTimerFiredCallback(this);
 	}
 
 	bool AcceleratedContext::flushPendingLayerChanges()
@@ -448,7 +470,7 @@ namespace WebCore {
 
 
     if (!enabled()) {
-      printf("!enabled\n");
+      printf("flushPendingLayerChanges !enabled\n");
       webkitTrace();
       return false;
     }
@@ -469,7 +491,7 @@ namespace WebCore {
 		webkitTrace();
 
 		if (!enabled()) {
-      printf("!enabled\n");
+      printf("flushAndRenderLayers 1 !enabled\n");
 		  webkitTrace();
 			return;
     }
@@ -487,7 +509,7 @@ namespace WebCore {
 		frame->view()->updateLayoutAndStyleIfNeededRecursive();
 
 		if (!enabled()) {
-      printf("!enabled\n");
+      printf("flushAndRenderLayers 2 !enabled\n");
 		  webkitTrace();
 			return;
     }
@@ -496,13 +518,13 @@ namespace WebCore {
 		webkitTrace();
 	
 		if (!context) {
-      printf("!context\n");
+      printf("flushAndRenderLayers !context\n");
 		  webkitTrace();
 			return;
     }
 	
 		if (context && !context->makeContextCurrent()) {
-      printf("!context->makeContextCurrent()\n");
+      printf("flushAndRenderLayers !context->makeContextCurrent()\n");
 		  webkitTrace();
 			return;
     }

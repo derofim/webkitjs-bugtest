@@ -28,7 +28,7 @@
 #define WTF_EXPORT_PRIVATE 
 # ASSERTIONS == 2 gives even more runtime checks
 		#'emscripten_cflags':'-s ALIASING_FUNCTION_POINTERS=0 -s WARN_UNALIGNED=1 -s SIMD=1 -s ASSERTIONS=2 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1',
-		'emscripten_cflags':'-s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1',
+		'emscripten_cflags':'-s NO_EXIT_RUNTIME=1 -s ASSERTIONS=1 -s FULL_ES2=1 -s LINKABLE=1 -s ASM_JS=1 -s WASM=0 -s USE_SDL=2 -s USE_ICU=1',
 		'emscripten_linktojs':'<(emscripten_cflags) -std=c++11 -s EXPORTED_FUNCTIONS="[\'_main\',\'_scalefactor\',\'_createWebKit\',\'_setHtml\',\'_setTransparent\',\'_scrollBy\',\'_resize\']" --embed-files ../src/assets/fontconfig/fonts@/usr/share/fonts --embed-files ../src/assets/fontconfig/config/fonts.conf@/etc/fonts/fonts.conf --embed-files ../src/assets/fontconfig/cache@/usr/local/var/cache/fontconfig -o webkit.html',
 		#--post-js ../src/webkit.post.js --pre-js ../src/webkit.pre.js --proxy-to-worker --proxy-to-worker -o webkit.js
 		# Ensure that Apple, and Win32 builds do not interfere with the compile, we'll assume we're linux since

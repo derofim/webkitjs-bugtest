@@ -775,6 +775,7 @@ GraphicsLayerFactory* WebChromeClient::graphicsLayerFactory() const
 
 void WebChromeClient::attachRootGraphicsLayer(Frame*, GraphicsLayer* layer)
 {
+    printf("WebChromeClient 1::attachRootGraphicsLayer\n...");
     if (layer)
         m_page->enterAcceleratedCompositingMode(layer);
     else

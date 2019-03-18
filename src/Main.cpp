@@ -7,6 +7,8 @@
 #include <SDL2/SDL_syswm.h>
 #include <SDL2/SDL_video.h>
 
+//#define TRY_EGL
+
 #include "WebView.h"
 #include "IntSize.h"
 
@@ -75,10 +77,13 @@ static float zoom = 1.0;
 
 static SDL_Window *window;
 static SDL_GLContext contextDisplay;
+
+#ifdef TRY_EGL
     EGLConfig   glConfig;
     EGLContext  glContext;
     EGLSurface  glSurface;
     EGLint      numConfigs;
+#endif
 
 //Main loop flag
 static bool quit = false;
@@ -356,119 +361,7 @@ extern "C" {
 	void createWebKit(SDL_Window *window, SDL_GLContext& contextDisplay, int width, int height, bool accel) { WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, accel); }
 }
 
-void tick() {
-  if(!WebCore::mainView) {
-    printf("!webview!\n");
-    return;
-  }
-
-#ifdef __EMSCRIPTEN__
-	if (quit) emscripten_cancel_main_loop();
-#endif
-	while (SDL_PollEvent(&e) != 0)
-	{
-
-    //WebCore::mainView->handleSDLEvent(e);
-  /*  
-  resize(width + 1, height + 1);
-  scrollBy(1,1);
-  scalefactor(2);
-  setTransparent(false);
-  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());*/
-  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);
- 
- 
- 
-  //////// eglSwapBuffers(contextDisplay, glSurface);
-
-
-
-/*
-		//Update screen
-		SDL_GL_SwapWindow(window);
-
-
-  resize(width + 1, height + 1);
-  scrollBy(1,1);
-  scalefactor(2);
-  setTransparent(false);
-  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());
-  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);*/
-
-		if (e.type == SDL_QUIT)
-		{
-			quit = true;
-		}
-
-    if (e.type == SDL_WINDOWEVENT_RESIZED)
-		{
-			//resize(event.resize.w, event.resize.h);
-      // https://wiki.libsdl.org/SDL_WindowEvent
-      WebCore::mainView->resize(e.window.data1, e.window.data2);
-		}
-
-		else if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
-		{
-			//Get mouse position
-			int x, y;
-			SDL_GetMouseState(&x, &y);
-			//std::cout << "x = " << x << " y = " << y << " type = " << e.type << std::endl;
-		}
-
-		else if (e.type == SDL_KEYDOWN)
-		{
-			//Select surfaces based on key press
-			switch (e.key.keysym.sym)
-			{
-			case SDLK_UP:
-				zoom+= 1.0 / 100.0;
-				break;
-			case SDLK_DOWN:
-				zoom -= 1.0 / 100.0;
-				break;
-			default:
-				break;
-			}
-		}
-	}
-	//Render
-
-#ifdef DRAW_TEST
-	Draw();
-#endif // DRAW_TEST
-}
-
-/*void emulateGLUperspective(GLfloat fovY, GLfloat aspect, GLfloat zNear,
-                           GLfloat zFar)
-{
-    GLfloat fW, fH;
-    fH = tan(fovY / 180 * M_PI) * zNear / 2;
-    fW = fH * aspect;
-    glFrustumf(-fW, fW, -fH, fH, zNear, zFar);
-}*/
-
-int main(int argc, char** argv)
-{
-	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-		printf("Unable to initialize SDL: %s\n", SDL_GetError());
-		return 1;
-	}
-
-	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
-	{
-		printf("Warning: Linear texture filtering not enabled!");
-	}
-
-#ifdef __EMSCRIPTEN__
-	emscripten_set_canvas_size(width, height); // using SDL_SetVideoMode 
-#endif
-
-	window = SDL_CreateWindow("sdl_gl_read", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
-
-	if (!window) {
-		printf("Unable to create window: %s\n", SDL_GetError());
-		return 1;
-	}
+void eglInit() {
 
 #ifdef __EMSCRIPTEN__
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -498,10 +391,15 @@ int main(int argc, char** argv)
   // https://skryabiin.wordpress.com/2015/04/25/hello-world/
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); 
 
+#ifdef TRY_EGL
   auto sdlContext = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, sdlContext);
     printf("SDL_GL_MakeCurrent sdlContext...%s\n", SDL_GetError());
-
+#else
+  contextDisplay = SDL_GL_CreateContext(window);
+    SDL_GL_MakeCurrent(window, contextDisplay);
+    printf("SDL_GL_MakeCurrent contextDisplay...%s\n", SDL_GetError());
+#endif
   // SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 
 	//Use Vsync
@@ -510,11 +408,12 @@ int main(int argc, char** argv)
 		printf("Warning: Unable to set VSync via SDL_GL_SetSwapInterval! SDL Error: %s\n", SDL_GetError());
 	}
 
+#ifdef TRY_EGL
 	contextDisplay = eglGetDisplay(EGL_DEFAULT_DISPLAY);//
   //contextDisplay = (unsigned *)62000; //(unsigned *)62000; //SDL_GL_CreateContext(window);
 	if (!contextDisplay) {
 		printf("Unable to create contextDisplay: %s\n", SDL_GetError());
-		return 1;
+		return;
 	}
 
   // https://github.com/emscripten-core/emscripten/blob/aae300219122ab62a50f2bcfeca5ba0be2e1040d/site/source/docs/porting/multimedia_and_graphics/EGL-Support-in-Emscripten.rst
@@ -632,11 +531,14 @@ the same framebuffer object name in multiple contexts on the same share list.
     //glLoadIdentity();*/
 
   // SDL_Surface* sdl_screen
-
+  
 // TODO>>>
     SDL_GL_MakeCurrent(window, sdlContext);
     printf("SDL_GL_MakeCurrent sdlContext...%s\n", SDL_GetError());
-    
+    #endif
+
+
+
 #ifndef __EMSCRIPTEN__
 	//Initialize GLEW
 	glewExperimental = GL_TRUE;
@@ -646,6 +548,147 @@ the same framebuffer object name in multiple contexts on the same share list.
 		printf("Error initializing GLEW! %s\n", glewGetErrorString(glewError));
 	}
 #endif
+}
+
+
+void tick() {
+  if(!WebCore::mainView) {
+    printf("(makes warning) !webview!\n");
+    eglInit();
+    printf("createWebKit... \n");
+    createWebKit(window, contextDisplay, width, height, true);
+
+
+  
+  //WebView->setViewWindow(scr);
+  //setHtml(std::string("<html><body style='background-color:red;height:500px;width:500px'></body></html>").c_str());
+  //resize(width + 1, height + 1);
+  //scrollBy(1,1);
+  //scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:yellow;border:5px solid red;height:100%;width:100%"></body></html>)raw").c_str());
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);
+  //eglSwapBuffers(contextDisplay, glSurface);
+  
+
+    return;
+  }
+
+#ifdef __EMSCRIPTEN__
+	if (quit) emscripten_cancel_main_loop();
+#endif
+
+	while (SDL_PollEvent(&e) != 0)
+	{
+
+#ifdef __EMSCRIPTEN__
+	if (quit) emscripten_cancel_main_loop();
+#endif
+
+    //WebCore::mainView->handleSDLEvent(e);
+  /*  
+  resize(width + 1, height + 1);
+  scrollBy(1,1);
+  scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());*/
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);
+ 
+ 
+ 
+  //////// eglSwapBuffers(contextDisplay, glSurface);
+
+
+
+/*
+		//Update screen
+		SDL_GL_SwapWindow(window);
+
+
+  resize(width + 1, height + 1);
+  scrollBy(1,1);
+  scalefactor(2);
+  setTransparent(false);
+  setHtml(std::string(R"raw(<html><body style="background-color:blue;height:100%;width:100%"></body></html>)raw").c_str());
+  //WebCore::mainView = new WebCore::WebView(window, contextDisplay, width, height, true);*/
+
+		if (e.type == SDL_QUIT)
+		{
+      printf("SDL_QUIT!\n");
+			quit = true;
+		}
+
+    if (e.type == SDL_WINDOWEVENT_RESIZED)
+		{
+      printf("SDL_WINDOWEVENT_RESIZED!\n");
+			//resize(event.resize.w, event.resize.h);
+      // https://wiki.libsdl.org/SDL_WindowEvent
+      WebCore::mainView->resize(e.window.data1, e.window.data2);
+		}
+
+		else if (e.type == SDL_MOUSEMOTION || e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+		{
+			//Get mouse position
+			int x, y;
+			SDL_GetMouseState(&x, &y);
+			//std::cout << "x = " << x << " y = " << y << " type = " << e.type << std::endl;
+		}
+
+		else if (e.type == SDL_KEYDOWN)
+		{
+			//Select surfaces based on key press
+			switch (e.key.keysym.sym)
+			{
+			case SDLK_UP:
+				zoom+= 1.0 / 100.0;
+				break;
+			case SDLK_DOWN:
+				zoom -= 1.0 / 100.0;
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	//Render
+
+#ifdef DRAW_TEST
+	Draw();
+#endif // DRAW_TEST
+}
+
+/*void emulateGLUperspective(GLfloat fovY, GLfloat aspect, GLfloat zNear,
+                           GLfloat zFar)
+{
+    GLfloat fW, fH;
+    fH = tan(fovY / 180 * M_PI) * zNear / 2;
+    fW = fH * aspect;
+    glFrustumf(-fW, fW, -fH, fH, zNear, zFar);
+}*/
+
+int main(int argc, char** argv)
+{
+	if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+		printf("Unable to initialize SDL: %s\n", SDL_GetError());
+		return 1;
+	}
+
+	if (!SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1"))
+	{
+		printf("Warning: Linear texture filtering not enabled!");
+	}
+
+#ifdef __EMSCRIPTEN__
+	emscripten_set_canvas_size(width, height); // using SDL_SetVideoMode 
+#endif
+
+	window = SDL_CreateWindow("sdl_gl_read", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, width, height, SDL_WINDOW_OPENGL);
+
+	if (!window) {
+		printf("Unable to create window: %s\n", SDL_GetError());
+		return 1;
+	}
+
 
 	//Use Vsync
 	/*if (SDL_GL_SetSwapInterval(1) < 0)
@@ -706,8 +749,6 @@ the same framebuffer object name in multiple contexts on the same share list.
 
 
 
-	printf("createWebKit... \n");
-  createWebKit(window, contextDisplay, width, height, true);
 
   /*
   //WebView->setViewWindow(scr);
@@ -731,6 +772,8 @@ the same framebuffer object name in multiple contexts on the same share list.
 		tick();
 	}
 #endif
+
+	printf("DestroyWindow... \n");
 
 #ifdef CAIRO_TEST
 	cairo_surface_destroy(WebView::cairo_surface_);

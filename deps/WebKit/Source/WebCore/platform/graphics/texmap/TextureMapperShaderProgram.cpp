@@ -53,7 +53,7 @@ TextureMapperShaderProgram::TextureMapperShaderProgram(PassRefPtr<GraphicsContex
     printf("TextureMapperShaderProgram::TextureMapperShaderProgram !m_context\n");
 
     m_vertexShader = m_context->createShader(GraphicsContext3D::VERTEX_SHADER);
-    
+
   printf("TextureMapperShaderProgram::TextureMapperShaderProgram 1.1\n");
     m_context->shaderSource(m_vertexShader, vertex);
   printf("TextureMapperShaderProgram::TextureMapperShaderProgram 1.2\n");
@@ -430,7 +430,7 @@ PassRefPtr<TextureMapperShaderProgram> TextureMapperShaderProgram::create(PassRe
 //LOG(TextureMapperShaderProgram, "TextureMapperShaderProgram fragmentSource %s", fragmentSource.ascii().data());
         
     if(!context)
-      printf("!context\n");
+      printf("TextureMapperShaderProgram !context\n");
 
     printf("TextureMapperShaderProgram::create 2\n");
     auto pt = new TextureMapperShaderProgram(context, vertexSource, fragmentSource);
