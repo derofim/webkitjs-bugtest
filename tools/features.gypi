@@ -170,8 +170,8 @@
       #
       # >>
       #
-      'WTF_USE_JSC=0',
-      'WTF_USE_V8=0',
+      #'WTF_USE_JSC=0',
+      #'WTF_USE_V8=0',
       #'WTF_USE_JSC=1',
       #
       # https://github.com/youtube/h5vcc/blob/7da685fe633dac18fd8db35624f7bade8619c977/external/chromium/third_party/WebKit/Source/WebKit/chromium/features.gypi
@@ -198,7 +198,7 @@
       # WTF_USE_IOSURFACE_CANVAS_BACKING_STORE
       # <<
       ##################
-      'WTF_IS_LINKED_IN_SAME_BINARY=1',
+      #'WTF_IS_LINKED_IN_SAME_BINARY=1',
       # <<
       #
       # ENABLE_CREDENTIAL_STORAGE
@@ -257,7 +257,7 @@
       'WTF_USE_OPENGL_ES_2=1',
       'WTF_USE_EGL=1',
 	'WTF_USE_ACCELERATED_COMPOSITING=1',
-	#'USE_ACCELERATED_COMPOSITING=1',
+	#'USE_ACCELERATED_COMPOSITING=1', # see WTF_USE_ACCELERATED_COMPOSITING
       'ENABLE_CSS_COMPOSITING=1', #must be disabled if ACCELERATED_COMPOSITING=0
       'WTF_USE_GLX=0',
 	'WTF_USE_3D_GRAPHICS=1',

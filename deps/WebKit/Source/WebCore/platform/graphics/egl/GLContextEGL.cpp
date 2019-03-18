@@ -298,7 +298,9 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window,
       //return nullptr;
     }
 
+    //EGLContext eglSharingContext = eglGetCurrentContext();
     EGLContext eglSharingContext = sharingContext ? static_cast<GLContextEGL*>(sharingContext)->m_context : 0;
+
     OwnPtr<GLContextEGL> context = window ? createWindowContext(window, sharingContext, sdl_window) : nullptr;
 #if !PLATFORM(JS)
     if (!context)

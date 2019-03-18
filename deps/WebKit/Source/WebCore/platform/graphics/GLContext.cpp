@@ -77,11 +77,16 @@ SDL_Window *GLContext::gWindow = 0;
 
 GLContext* GLContext::sharingContext()
 {
+      printf("GLContext::sharingContext ... !!!\n");
+
     if (!gWindow) {
       printf("sharingContext: Invalid gWindow!!!\n");
     }
+    // >>>
     DEFINE_STATIC_LOCAL(OwnPtr<GLContext>, sharing, (createOffscreenContext(0, gWindow)));
-    return sharing.get();
+    //DEFINE_STATIC_LOCAL( OwnPtr<GLContext>, sharing, (adoptPtr(eglGetCurrentContext())) );
+    //return sharing.get();
+    //return eglGetCurrentContext();
 }
 
 #if PLATFORM(X11)
@@ -195,6 +200,11 @@ PassOwnPtr<GLContext> GLContext::createContextForWindow(GLNativeWindowType windo
       printf("GLContext::createContextForWindow: Invalid gWindow!!!\n");
     }
 // TODO >>>
+    /*if (OwnPtr<GLContext> eglContext = GLContextEGL::createContext(windowHandle, sharingContext, gWindow)) {
+        return eglContext.release();
+    } else {
+        printf("invalid OwnPtr<GLContext> eglContext!\n");
+    }*/
     if (OwnPtr<GLContext> eglContext = GLContextEGL::createContext(windowHandle, sharingContext, gWindow)) {
         return eglContext.release();
     } else {
