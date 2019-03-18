@@ -64,6 +64,10 @@ namespace WebCore {
 		m_rootLayer = GraphicsLayer::create(0, this);
     if (!m_rootLayer) {
       printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
 		  webkitTrace();
 			return;
     }
@@ -84,6 +88,10 @@ namespace WebCore {
 		m_nonCompositedContentLayer = GraphicsLayer::create(0, this);
     if (!m_nonCompositedContentLayer) {
       printf("AcceleratedContext::initialize !m_nonCompositedContentLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
+      printf("AcceleratedContext::initialize !m_rootLayer !!!!!!!!!!\n");
 		  webkitTrace();
 			return;
     }
@@ -148,6 +156,11 @@ namespace WebCore {
     //m_textureMapper = TextureMapper::create(TextureMapper::SoftwareMode);
     if (!m_textureMapper) {
       printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
+      printf("TextureMapper::create !m_textureMapper!!!!!!!!!!!!!!!!!!!!!!\n");
 		  webkitTrace();
 			return;
     }
@@ -206,7 +219,7 @@ namespace WebCore {
       printf("prepareForRendering !enabled()\n");
 		  webkitTrace();
 			///////////////////////////return NULL;
-      // return NULL;
+      return NULL;
     }
 
     printf("AcceleratedContext::prepareForRendering 2 ....\n");
@@ -219,7 +232,7 @@ namespace WebCore {
       printf("!context makeContextCurrent\n");
 		  webkitTrace();
 			/////////////////////return NULL;
-      // return NULL;
+      return NULL;
     }
 
     printf("AcceleratedContext::prepareForRendering 3 ....\n");
@@ -242,8 +255,8 @@ namespace WebCore {
 		glViewport(0, 0, windowSize.width(), windowSize.height());
 
 		if (purpose == ForResize) {
-		//glClearColor(1, 1, 1, 0);
-			glClearColor(1.0, 0.5, 1.0, 0.5);
+		glClearColor(1, 1, 1, 0);
+			//glClearColor(1.0, 0.5, 1.0, 0.5);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
 
@@ -255,7 +268,7 @@ namespace WebCore {
 		if (!m_rootLayer) {
       printf("AcceleratedContext::compositeLayersToContext !m_rootLayer\n");
 		  webkitTrace();
-			return;
+			//return;
     }
 		m_textureMapper->beginPainting();
 		toTextureMapperLayer(m_rootLayer.get())->paint();
@@ -276,7 +289,7 @@ namespace WebCore {
 		if(toTextureMapperLayer(m_rootLayer.get())->descendantsOrSelfHaveRunningAnimations()) {
 		  webkitTrace();
 			m_layerFlushTimerCallbackId = 1;
-      printf("layerFlushTimerFired scheduleDelay %d\n", scheduleDelay);
+      printf("layerFlushTimerFired scheduleDelay %f\n", scheduleDelay);
 			emscripten_async_call(&layerFlushTimerFiredCallback, this, scheduleDelay * 1000.0);
       //layerFlushTimerFiredCallback(this);
 			//emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
@@ -288,6 +301,8 @@ namespace WebCore {
 
 	void AcceleratedContext::clearEverywhere()
 	{
+    printf("AcceleratedContext::clearEverywhere 1....\n");
+
 		webkitTrace();
 
 		GLContext* context = prepareForRendering();
@@ -300,12 +315,14 @@ namespace WebCore {
 
 		IntSize windowSize = roundedIntSize(m_view->positionAndSize().size());
 		glViewport(0, 0, windowSize.width(), windowSize.height());
-		//glClearColor(1, 1, 1, 0);
-			glClearColor(0.0, 0.5, 1.0, 0.5);
+		glClearColor(1, 1, 1, 0);
+			//glClearColor(0.0, 0.5, 1.0, 0.5);
 		glClear(GL_COLOR_BUFFER_BIT);
 
   // >>>>>>>
 		context->swapBuffers();
+
+    printf("AcceleratedContext::clearEverywhere 2....\n");
 	}
 
 	void AcceleratedContext::setRootCompositingLayer(GraphicsLayer* graphicsLayer)
@@ -341,7 +358,7 @@ namespace WebCore {
 		if (!m_nonCompositedContentLayer) {
       printf("AcceleratedContext::setRootCompositingLayer !m_nonCompositedContentLayer()\n");
 		  webkitTrace();
-			return;
+			//return;
     }
 
 		m_nonCompositedContentLayer->removeAllChildren();
@@ -387,7 +404,7 @@ namespace WebCore {
 		if (!m_nonCompositedContentLayer) {
       printf("!m_nonCompositedContentLayer\n");
 		  webkitTrace();
-			return;
+			//return;
     }
 
 		FloatSize oldSize = m_nonCompositedContentLayer->size();
@@ -420,7 +437,7 @@ namespace WebCore {
 		if (!m_nonCompositedContentLayer) {
       printf("!m_nonCompositedContentLayer\n");
 		  webkitTrace();
-			return;
+			//return;
     }
 		m_nonCompositedContentLayer->setNeedsDisplayInRect(scrollRect);
 		scheduleLayerFlush();
@@ -446,7 +463,7 @@ namespace WebCore {
       printf("scheduleLayerFlush !enabled\n");
       webkitTrace();
       ///////////return;
-      //return;
+      return;
     }
 
 		if (m_layerFlushTimerCallbackId) {
@@ -457,9 +474,9 @@ namespace WebCore {
     }
 
 		m_layerFlushTimerCallbackId = 1;
-		double nextFlush = std::max(scheduleDelay - (currentTime() - m_lastFlushTime), 1.0);
+		double nextFlush = std::max(scheduleDelay - (currentTime() - m_lastFlushTime), 0.0);
     printf("nextFlush in %f", nextFlush);
-		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 5000.0);
+		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 1000.0);
     //emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
     //layerFlushTimerFiredCallback(this);
 	}

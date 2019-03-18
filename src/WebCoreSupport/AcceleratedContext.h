@@ -23,6 +23,7 @@
 //#include "WebPreferences.h"
 
 #if USE(ACCELERATED_COMPOSITING)
+
 #include "GraphicsLayer.h"
 #include "GraphicsLayerClient.h"
 #include "IntRect.h"
@@ -94,6 +95,6 @@ class AcceleratedContext : public WebCore::GraphicsLayerClient {
 };
 
 }
-#endif
+#endif // USE(ACCELERATED_COMPOSITING)
 
 #endif // AcceleratedContext_h
