@@ -1150,6 +1150,7 @@ void BitmapTextureGL::createFboIfNeeded()
     if (m_fbo)
         return;
 
+		    webkitTrace();
     m_fbo = m_context3D->createFramebuffer();
     m_context3D->bindFramebuffer(GraphicsContext3D::FRAMEBUFFER, m_fbo);
     m_context3D->framebufferTexture2D(GraphicsContext3D::FRAMEBUFFER, GraphicsContext3D::COLOR_ATTACHMENT0, GraphicsContext3D::TEXTURE_2D, id(), 0);
@@ -1161,6 +1162,7 @@ void BitmapTextureGL::bind(TextureMapperGL* textureMapper)
     printf("BitmapTextureGL::bind...\n");
     m_context3D->bindTexture(GraphicsContext3D::TEXTURE_2D, 0);
     createFboIfNeeded();
+		    webkitTrace();
     m_context3D->bindFramebuffer(GraphicsContext3D::FRAMEBUFFER, m_fbo);
     m_context3D->viewport(0, 0, m_textureSize.width(), m_textureSize.height());
     clearIfNeeded();
@@ -1201,6 +1203,7 @@ TextureMapperGL::~TextureMapperGL()
 void TextureMapperGL::bindDefaultSurface()
 {
     printf("TextureMapperGL::bindDefaultSurface...\n");
+		    webkitTrace();
     m_context3D->bindFramebuffer(GraphicsContext3D::FRAMEBUFFER, data().targetFrameBuffer);
     IntSize viewportSize(data().viewport[2], data().viewport[3]);
     data().projectionMatrix = createProjectionMatrix(viewportSize, data().PaintFlags & PaintingMirrored);

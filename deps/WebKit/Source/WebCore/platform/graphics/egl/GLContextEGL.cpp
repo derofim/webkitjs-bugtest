@@ -80,6 +80,10 @@ static const EGLenum gGLAPI = EGL_OPENGL_API;
 
 static EGLDisplay sharedEGLDisplay()
 {
+///
+ SDL_GL_MakeCurrent(WebView::kWindow_, WebView::kContext);
+///
+
     printf("GLContextEGL::sharedEGLDisplay 1... \n");
 // https://github.com/Nekuromento/SDL2D/blob/0c3d27dec7b7044beb5b865fa2be5e8308589e92/Engine/GFX/Window.cpp
     static bool initialized = false;
@@ -153,6 +157,7 @@ static bool getEGLConfig(EGLConfig* config, GLContextEGL::EGLSurfaceType surface
     }
 
     EGLint numberConfigsReturned;
+		    webkitTrace();
     return eglChooseConfig(sharedEGLDisplay(), attributeList, config, 1, &numberConfigsReturned) && numberConfigsReturned;
 }
 
@@ -187,6 +192,7 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createWindowContext(EGLNativeWindowType w
         printf("Invalid display 1!!! %s\n", SDL_GetError());
         //return nullptr;
     }
+		    webkitTrace();
 
     printf("GLContextEGL::createWindowContext 5... \n");
     EGLConfig config;
@@ -261,6 +267,7 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPbufferContext(EGLContext sharingCo
         printf("GLContextEGL::createPbufferContext !display!!!\n");
         return nullptr;
     }
+		    webkitTrace();
 
     EGLConfig config;
     if (!getEGLConfig(&config, PbufferSurface)) {
@@ -295,6 +302,7 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPixmapContext(EGLContext sharingCon
     if (display == EGL_NO_DISPLAY)
         return nullptr;
 
+		    webkitTrace();
     EGLConfig config;
     if (!getEGLConfig(&config, PixmapSurface))
         return nullptr;
@@ -354,6 +362,8 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createContext(EGLNativeWindowType window,
         printf("createContext: Invalid sharedEGLDisplay!!! %s\n", SDL_GetError());
         //return nullptr;
     }
+		    webkitTrace();
+
 
     static bool initialized = false;
     static bool success = true;
@@ -544,9 +554,11 @@ cairo_device_t* GLContextEGL::cairoDevice()
     if (m_cairoDevice)
         return m_cairoDevice;
 
+		    webkitTrace();
 #if ENABLE(ACCELERATED_2D_CANVAS)
     m_cairoDevice = cairo_egl_device_create(sharedEGLDisplay(), m_context);
 #endif
+		    webkitTrace();
 
     return m_cairoDevice;
 }
