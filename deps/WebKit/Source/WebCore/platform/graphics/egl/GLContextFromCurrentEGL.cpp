@@ -29,6 +29,8 @@
 #include "OpenGLShims.h"
 #include "SDL2/SDL.h"
 
+#include "/home/denis/job/webkit.js/src/WebView.h"
+
 namespace WebCore {
 
 PassOwnPtr<GLContextFromCurrentEGL> GLContextFromCurrentEGL::createFromCurrentGLContext()
@@ -52,7 +54,8 @@ GLContextFromCurrentEGL::GLContextFromCurrentEGL()
 bool GLContextFromCurrentEGL::makeContextCurrent()
 {
     GLContext::makeContextCurrent();
-    return eglMakeCurrent(m_display, m_surface, m_surface, m_context);
+    //return eglMakeCurrent(m_display, m_surface, m_surface, m_context);
+    return SDL_GL_MakeCurrent(WebView::kWindow_, WebView::kContext);
 }
 
 bool GLContextFromCurrentEGL::initialize()

@@ -251,6 +251,9 @@ namespace WebCore {
 			return;
     }
 
+///
+ SDL_GL_MakeCurrent(WebView::kWindow_, WebView::kContext);
+///
 		IntSize windowSize = roundedIntSize(m_view->positionAndSize().size());
 		glViewport(0, 0, windowSize.width(), windowSize.height());
 
@@ -259,7 +262,10 @@ namespace WebCore {
 			//glClearColor(1.0, 0.5, 1.0, 0.5);
 			glClear(GL_COLOR_BUFFER_BIT);
 		}
-
+///
+glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glClearColor(1.0f, 1.0f, 0.0f, 0.5f);
+///
 #if USE(TEXTURE_MAPPER) && USE(TEXTURE_MAPPER_GL)
     if(!m_textureMapper) {
       printf("AcceleratedContext::compositeLayersToContext !m_textureMapper\n");

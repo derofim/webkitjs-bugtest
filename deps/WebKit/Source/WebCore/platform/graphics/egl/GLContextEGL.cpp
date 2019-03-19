@@ -286,7 +286,7 @@ PassOwnPtr<GLContextEGL> GLContextEGL::createPbufferContext(EGLContext sharingCo
     EGLSurface surface = eglCreatePbufferSurface(display, config, pbufferAttributes);
     if (surface == EGL_NO_SURFACE) {
         printf("GLContextEGL::createPbufferContext !surface!!!\n");
-        eglDestroyContext(display, context);
+        //eglDestroyContext(display, context);
         return nullptr;
     }
 

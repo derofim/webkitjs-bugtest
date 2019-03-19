@@ -147,6 +147,7 @@ bool EGLOffScreenContext::isCurrentContext() const
 
 bool EGLOffScreenContext::platformMakeCurrent(GLPlatformSurface* surface)
 {
+  printf("EGLOffScreenContext::platformMakeCurrent\n");
     if (!eglMakeCurrent(m_display, surface->drawable(), surface->drawable(), m_contextHandle)) {
         LOG_ERROR("Failed to make context current(%d).", eglGetError());
 
@@ -163,6 +164,7 @@ bool EGLOffScreenContext::platformMakeCurrent(GLPlatformSurface* surface)
 
 void EGLOffScreenContext::platformReleaseCurrent()
 {
+  printf("EGLOffScreenContext::platformReleaseCurrent\n");
     eglMakeCurrent(m_display, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 }
 
@@ -173,9 +175,9 @@ void EGLOffScreenContext::freeResources()
         return;
     }
 
-    eglDestroyContext(m_display, m_contextHandle);
+    /*eglDestroyContext(m_display, m_contextHandle);
     m_contextHandle = EGL_NO_CONTEXT;
-    m_display = 0;
+    m_display = 0;*/
 }
 
 void EGLOffScreenContext::destroy()
