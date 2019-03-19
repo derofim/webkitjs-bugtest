@@ -42,7 +42,7 @@ namespace WebCore {
 class AcceleratedContext : public WebCore::GraphicsLayerClient {
 		WTF_MAKE_NONCOPYABLE(AcceleratedContext);
 	public:
-		static PassOwnPtr<AcceleratedContext> create(WebView* webView)
+		static PassOwnPtr<AcceleratedContext> create1(WebView* webView)
 		{
 			return adoptPtr(new AcceleratedContext(webView));
 		}

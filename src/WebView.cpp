@@ -5,6 +5,8 @@
 #include <emscripten.h>
 #include <emscripten/html5.h>
 
+//#define SDL_GL_CREATE
+
 #include "config.h"
 #include "WebView.h"
 #include "Page.h"
@@ -66,13 +68,27 @@ using namespace WTF;
 
 namespace WebCore {
 
+     SDL_Window * WebView::kWindow_ = nullptr;
+     SDL_GLContext * WebView::kContext = nullptr;
+
   //cairo_t *WebView::cairo_context_;
   //cairo_surface_t *WebView::cairo_surface_;
 
 	WebView::WebView(SDL_Window *window, SDL_GLContext& context, int width, int height, bool accelerated = false) : 
     context_(context), window_(window)
 	{
+    kWindow_ = window;
+    kContext = &context;
+    
     printf("creating WebView...\n");
+
+    if (!context) {
+      printf("1 WebView !context! 1\n");
+    }
+    if (!context_) {
+      printf("2 WebView !context! 1\n");
+    }
+
     //WebView::cairo_context_ = cairo_context;
 
     //GLContext::setGlobalWindow(window_);
@@ -177,7 +193,17 @@ namespace WebCore {
 		webkitTrace();
     printf("initializeScreens...\n");
     printf("WebView: width = %d height = %d \n", width, height);
+          if(!m_private->glContext) {
+        printf("1 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
 		initializeScreens(width, height);
+          if(!m_private->glContext) {
+        printf("2 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
+    postinitializeScreens(width, height);
+          if(!m_private->glContext) {
+        printf("3 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
 
     if(m_private->glContext)
       m_private->glContext->setWindow(window_);
@@ -247,6 +273,7 @@ namespace WebCore {
 
 #if USE(ACCELERATED_COMPOSITING)
 	WebCore::GLContext *WebView::glWindowContext(SDL_Window *sdl_window) {
+      printf("WebView::glWindowContext...\n");
 		webkitTrace();
 
 		if (m_private->glContext) {
@@ -263,7 +290,7 @@ namespace WebCore {
 
     //->>>>>>>
     if(context_) {
-      GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+      //GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
     } else {
 		  webkitTrace();
       printf("glWindowContext !context_ !\n");
@@ -280,9 +307,47 @@ namespace WebCore {
 
     m_private->glContext->setWindow(sdl_window); // TODO
 		webkitTrace();
+      printf("WebView::glWindowContext 2...\n");
 		return m_private->glContext.get();
 	}
 #endif
+
+void WebView::postinitializeScreens(int width, int height) {
+        printf("WebView::postinitializeScreens...%s\n", SDL_GetError());
+#if USE(ACCELERATED_COMPOSITING)
+			//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
+      if(!m_private->glContext)
+			  m_private->glContext = GLContext::createContextForWindow(0, GLContext::sharingContext(), window_);
+      if(!m_private->glContext) {
+        printf("WebView::postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
+      m_private->glContext->setWindow(window_); // TODO
+			ASSERT(m_private->glContext->makeContextCurrent());
+			GLContext* context = GLContext::getCurrent();
+			ASSERT(context->makeContextCurrent());
+#endif
+        printf("WebView::postinitializeScreens AcceleratedContext::create 0...\n");
+
+#if USE(ACCELERATED_COMPOSITING)
+        printf("WebView::postinitializeScreens AcceleratedContext::create 1...\n");
+			if(!m_private->acceleratedContext) {
+        printf("WebView::postinitializeScreens AcceleratedContext::create 2...\n");
+				m_private->acceleratedContext = AcceleratedContext::create1(this);
+      }
+        printf("WebView::postinitializeScreens AcceleratedContext::create 3...\n");
+			if(!m_private->acceleratedContext) {
+        printf("WebView::postinitializeScreens no m_private->acceleratedContext...!!!!!!!!!!!!!!!!!!%s\n", SDL_GetError());
+      }
+      // >>>>>>>>.
+      //m_private->acceleratedContext->initialize();
+#endif
+
+			if ( !m_private->sdl_screen ) {
+        printf("WebView::postinitializeScreens no m_private->sdl_screen ...%s\n", SDL_GetError());
+				//SDL_Quit();
+				//exit(2);
+			}
+}
 
 	void WebView::initializeScreens(int width, int height) {
     printf("initializeScreens: width = %d height = %d \n", width, height);
@@ -318,8 +383,8 @@ namespace WebCore {
   SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
 #endif*/
 
-
 		if(m_private->accelerated) {
+#ifdef SDL_GL_CREATE
 			SDL_GL_SetAttribute( SDL_GL_DOUBLEBUFFER, 1);
 			SDL_GL_SetAttribute(SDL_GL_RED_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, 8);
@@ -333,7 +398,7 @@ namespace WebCore {
 			SDL_GL_SetAttribute(SDL_GL_ACCUM_ALPHA_SIZE, 8);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
-
+#endif
 // Remember SDL_SetVideoMode()? It's completely gone. SDL 2.0 allows you to have multiple windows, so the old function didn't make sense any more.
 			//m_private->sdl_screen = SDL_GetWindowSurface(window_);
       printf("SDL_SetVideoMode 1: width = %d height = %d \n", width, height);
@@ -345,20 +410,45 @@ namespace WebCore {
         //SDL_FreeSurface(m_private->sdl_screen);
       }
 
+    if(context_) {
+      printf("SD with context_...%s\n", SDL_GetError());
+    } else {
+      printf("SD no context_... nooo%s\n", SDL_GetError());
+    }
+
+#ifdef SDL_GL_CREATE
 			SDL_GL_SetSwapInterval(1);
+#endif
+
+    if(context_) {
+      printf("2 SD with context_...%s\n", SDL_GetError());
+    } else {
+      printf("2 SD no context_... nooo%s\n", SDL_GetError());
+    }
 
       if (!window_) {
         printf("WebView::initializeScreens: Invalid window_!!!\n");
       }
+        printf("AcceleratedContext::create -2...\n");
+
+
+    if(GLContext::sharingContext()) {
+      printf("GLContext::sharingContext()...%s\n", SDL_GetError());
+    } else {
+      printf("GLContext::sharingContext()!!! nooo%s\n", SDL_GetError());
+    }
 
     //->>>>>>>
     //->>>>>>>
     if(context_) {
-      GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
+		  webkitTrace();
+      printf("view context_ exists\n");
+      //GLContext::sharingContext()->m_context = reinterpret_cast<EGLContext>(context_);
     } else {
 		  webkitTrace();
       printf("view !context_ !\n");
     }
+        printf("AcceleratedContext::create -1...\n");
 
 #if USE(ACCELERATED_COMPOSITING)
 			//m_private->glContext = GLContext::createContextForWindow(1, GLContext::sharingContext(), window_);
@@ -372,14 +462,17 @@ namespace WebCore {
 			GLContext* context = GLContext::getCurrent();
 			ASSERT(context->makeContextCurrent());
 #endif
+        printf("AcceleratedContext::create 0...\n");
 
 #if USE(ACCELERATED_COMPOSITING)
+        printf("AcceleratedContext::create 1...\n");
 			if(!m_private->acceleratedContext) {
-        printf("AcceleratedContext::create...\n");
-				m_private->acceleratedContext = AcceleratedContext::create(this);
+        printf("AcceleratedContext::create 2...\n");
+				m_private->acceleratedContext = AcceleratedContext::create1(this);
       }
+        printf("AcceleratedContext::create 3...\n");
 			if(!m_private->acceleratedContext) {
-        printf("no m_private->acceleratedContext...%s\n", SDL_GetError());
+        printf("no m_private->acceleratedContext...!!!!!!!!!!!!!!!!!!%s\n", SDL_GetError());
       }
       // >>>>>>>>.
       //m_private->acceleratedContext->initialize();
@@ -409,7 +502,17 @@ namespace WebCore {
     printf("SDL_SetViresizedeoMode: width = %d height = %d \n", width, height);
 		webkitTrace();
 		IntSize oldSize = IntSize(m_private->size.width(), m_private->size.height());
+          if(!m_private->glContext) {
+        printf("(warn) 1 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
 		initializeScreens(width, height);
+          if(!m_private->glContext) {
+        printf("2 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
+    postinitializeScreens(width, height);
+          if(!m_private->glContext) {
+        printf("3 pre postinitializeScreens no glContext!...%s\n", SDL_GetError());
+      }
 		if(m_private->chromeClient) {
 			m_private->chromeClient->widgetSizeChanged(oldSize, IntSize(width,height));
     } else {

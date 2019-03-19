@@ -47,7 +47,8 @@ namespace WebCore {
     }
 
     stopSharedTimer();
-    timerInterval = intervalInMS;
+    //timerInterval = intervalInMS;
+    timerInterval = intervalInMS + 1.0;
     //timerInterval = intervalInMS + 500.0;
     timerActive = true;
     printf("setSharedTimerFireInterval timerInterval %d\n", timerInterval);

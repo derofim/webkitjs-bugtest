@@ -92,8 +92,10 @@ public:
     static SDL_Window *gWindow;
 
     EGLContext m_context;
-    EGLSurface m_surface;
+    //EGLSurface m_surface;
     EGLSurfaceType m_type;
+
+    static OwnPtr<GLContext> sharingC;
 };
 
 } // namespace WebCore

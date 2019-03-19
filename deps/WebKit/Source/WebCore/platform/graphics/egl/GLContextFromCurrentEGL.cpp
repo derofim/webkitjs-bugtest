@@ -27,6 +27,7 @@
 #include "GLContextFromCurrentEGL.h"
 
 #include "OpenGLShims.h"
+#include "SDL2/SDL.h"
 
 namespace WebCore {
 
@@ -40,8 +41,12 @@ PassOwnPtr<GLContextFromCurrentEGL> GLContextFromCurrentEGL::createFromCurrentGL
 GLContextFromCurrentEGL::GLContextFromCurrentEGL()
     : m_display(eglGetCurrentDisplay())
     , m_surface(eglGetCurrentSurface(EGL_DRAW))
-    , m_context(eglGetCurrentContext())
+    //, m_context(eglGetCurrentContext())
+    , m_context((EGLContext)SDL_GL_GetCurrentContext())
 {
+  if(!m_surface) {
+    printf("GLContextFromCurrentEGL::GLContextFromCurrentEGL() !m_surface\n");
+  }
 }
 
 bool GLContextFromCurrentEGL::makeContextCurrent()

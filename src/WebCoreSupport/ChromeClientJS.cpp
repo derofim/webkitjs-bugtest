@@ -24,6 +24,7 @@ using namespace WebCore;
 namespace WebCore {
 
 	ChromeClientJS* ChromeClientJS::createClient(WebView *view) {
+    printf("ChromeClientJS::createClient ...\n");
 		ChromeClientJS* client = new ChromeClientJS(view);
 		IntSize size = roundedIntSize(view->positionAndSize().size());
 		client->setWindowRect(FloatRect(0,0,size.width(),size.height()));
@@ -52,6 +53,11 @@ namespace WebCore {
 		, m_lastDisplayTime(0)
 	{
 		ASSERT(view);
+    if(!m_view->m_private->acceleratedContext) {
+      printf("ChromeClientJS::ChromeClientJS !m_view->m_private->acceleratedContext!!!\n");
+    } else {
+      printf("ChromeClientJS::ChromeClientJS HAS m_view->m_private->acceleratedContext\n");
+    }
 	}
 
 	ChromeClient* ChromeClientJS::toChromeClient() {
@@ -347,9 +353,9 @@ namespace WebCore {
 
 		// WebCore timers by default have a lower priority which leads to more artifacts when opaque
 		// resize is on
-		emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 0.0);
+		//emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 0.0);
     //repaintEverythingSoonTimeout(this);
-    //emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 6000.0);
+    emscripten_async_call((void (*)(void *))(&repaintEverythingSoonTimeout), this, 1000.0);
 	}
 
 	void ChromeClientJS::performAllPendingScrolls()
@@ -751,6 +757,7 @@ namespace WebCore {
 		webkitTrace();
 #if USE(ACCELERATED_COMPOSITING)
 		if(m_view->m_private->acceleratedContext) {
+      printf("has m_view->m_private->acceleratedContext\n");
 
 			bool turningOffCompositing = !rootLayer && m_view->m_private->acceleratedContext->enabled();
 			bool turningOnCompositing = rootLayer && !m_view->m_private->acceleratedContext->enabled();
@@ -796,7 +803,7 @@ namespace WebCore {
 				clearEverywhereInBackingStore(m_view, cr.get());
 			}
 		} else {
-      printf("!m_view->m_private->acceleratedContext !!!!!!!!!!!!!!\n");
+      printf("2 !m_view->m_private->acceleratedContext !!!!!!!!!!!!!!\n");
     }
 #endif
 	}

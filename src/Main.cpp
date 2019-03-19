@@ -35,6 +35,7 @@
 #include <emscripten/html5.h>
 
 #include "SDL_opengles2.h"
+#include "SDL2/SDL.h"
 //#include <SDL2/SDL_opengles2.h>
 
 #include <cstdio>
@@ -387,11 +388,10 @@ void eglInit() {
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
 			SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
 
-
+#ifdef TRY_EGL
   // https://skryabiin.wordpress.com/2015/04/25/hello-world/
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1); 
 
-#ifdef TRY_EGL
   auto sdlContext = SDL_GL_CreateContext(window);
     SDL_GL_MakeCurrent(window, sdlContext);
     printf("SDL_GL_MakeCurrent sdlContext...%s\n", SDL_GetError());
@@ -552,6 +552,14 @@ the same framebuffer object name in multiple contexts on the same share list.
 
 
 void tick() {
+
+#ifdef __EMSCRIPTEN__
+	if (quit) emscripten_cancel_main_loop();
+#endif
+
+	while (SDL_PollEvent(&e) != 0)
+	{
+
   if(!WebCore::mainView) {
     printf("(makes warning) !webview!\n");
     eglInit();
@@ -571,16 +579,9 @@ void tick() {
   //eglSwapBuffers(contextDisplay, glSurface);
   
 
-    return;
+    //return;
   }
-
-#ifdef __EMSCRIPTEN__
-	if (quit) emscripten_cancel_main_loop();
-#endif
-
-	while (SDL_PollEvent(&e) != 0)
-	{
-
+  
 #ifdef __EMSCRIPTEN__
 	if (quit) emscripten_cancel_main_loop();
 #endif

@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "EGLContext.h"
+#include "SDL2/SDL.h"
 
 #if USE(EGL) && USE(ACCELERATED_COMPOSITING)
 
@@ -141,7 +142,7 @@ EGLOffScreenContext::~EGLOffScreenContext()
 
 bool EGLOffScreenContext::isCurrentContext() const
 {
-    return m_contextHandle == eglGetCurrentContext();
+    return m_contextHandle == (EGLContext)SDL_GL_GetCurrentContext();//eglGetCurrentContext();
 }
 
 bool EGLOffScreenContext::platformMakeCurrent(GLPlatformSurface* surface)

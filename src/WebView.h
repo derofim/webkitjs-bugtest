@@ -88,6 +88,8 @@ namespace WebCore {
 		void inputMethodEvent(void *);
 		bool focusNextPrevChild(bool next);
 		void initializeScreens(int width, int height);
+		void postinitializeScreens(int width, int height);
+    
 #if USE(ACCELERATED_COMPOSITING)
 		WebCore::GLContext *glWindowContext(SDL_Window *sdl_window);
 #endif
@@ -104,6 +106,9 @@ namespace WebCore {
 		//void handleSDLEvent(const SDL_Event& event);
     SDL_Window *window_;
     SDL_GLContext& context_;
+
+    static SDL_Window * kWindow_;
+    static SDL_GLContext * kContext;
     //static cairo_t *cairo_context_;
     //static cairo_surface_t *cairo_surface_;
 	};

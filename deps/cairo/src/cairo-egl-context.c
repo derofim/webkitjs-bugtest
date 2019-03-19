@@ -41,6 +41,7 @@
 #include "cairo-gl-private.h"
 
 #include "cairo-error-private.h"
+#include "SDL2/SDL.h"
 
 typedef struct _cairo_egl_context {
     cairo_gl_context_t base;
@@ -84,7 +85,13 @@ static void
 _egl_query_current_state (cairo_egl_context_t *ctx)
 {
     ctx->previous_surface = eglGetCurrentSurface (EGL_DRAW);
-    ctx->previous_context = eglGetCurrentContext ();
+
+
+  if(!ctx->previous_surface) {
+    printf("2 _egl_query_current_state ctx->previous_surface\n");
+  }
+
+    ctx->previous_context = (EGLContext)SDL_GL_GetCurrentContext();//eglGetCurrentContext ();
 
     /* If any of the values were none, assume they are all none. Not all
        drivers seem well behaved when it comes to using these values across

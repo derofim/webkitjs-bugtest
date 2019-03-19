@@ -25,6 +25,7 @@
 
 #include "config.h"
 #include "GLPlatformContext.h"
+#include "SDL2/SDL.h"
 
 #if USE(ACCELERATED_COMPOSITING)
 
@@ -57,7 +58,7 @@ public:
 #if USE(GLX)
         m_contextHandle = glXGetCurrentContext();
 #elif USE(EGL)
-        m_contextHandle = eglGetCurrentContext();
+        m_contextHandle = (EGLContext)SDL_GL_GetCurrentContext();//eglGetCurrentContext();
 #endif
         if (m_contextHandle)
             m_currentContext = this;

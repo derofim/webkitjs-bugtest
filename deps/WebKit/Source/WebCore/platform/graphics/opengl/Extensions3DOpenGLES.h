@@ -37,10 +37,6 @@
 #include <GLES2/gl2ext.h>
 #include <SDL2/SDL_opengles2.h>
 
-#if PLATFORM(JS)
-#undef GL_IMG_multisampled_render_to_texture
-#endif
-
 #if OS(QNX)
 // See https://bugs.webkit.org/show_bug.cgi?id=91030.
 // Newer Khorons headers do define these with a PROC suffix, but older headers don't.
@@ -48,7 +44,7 @@
 #define PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC
 #endif
 
-#if PLATFORM(JS) && !GL_IMG_multisampled_render_to_texture
+#if PLATFORM(JS)
 // https://github.com/emscripten-ports/SDL2/blob/master/include/SDL_opengles2_gl2ext.h
 // https://github.com/google/swiftshader/blob/master/third_party/PowerVR_SDK/Tools/OGLES2/PVRTgles2Ext.h
 	typedef void (GL_APIENTRYP PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG) (GLenum target, GLsizei samples, GLenum internalformat, GLsizei width, GLsizei height);

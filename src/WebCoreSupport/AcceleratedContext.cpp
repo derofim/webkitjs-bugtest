@@ -290,7 +290,7 @@ namespace WebCore {
 		  webkitTrace();
 			m_layerFlushTimerCallbackId = 1;
       printf("layerFlushTimerFired scheduleDelay %f\n", scheduleDelay);
-			emscripten_async_call(&layerFlushTimerFiredCallback, this, scheduleDelay * 1000.0);
+			emscripten_async_call(&layerFlushTimerFiredCallback, this, scheduleDelay * 5000.0);
       //layerFlushTimerFiredCallback(this);
 			//emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
 		}
@@ -476,7 +476,7 @@ namespace WebCore {
 		m_layerFlushTimerCallbackId = 1;
 		double nextFlush = std::max(scheduleDelay - (currentTime() - m_lastFlushTime), 0.0);
     printf("nextFlush in %f", nextFlush);
-		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 1000.0);
+		emscripten_async_call(&layerFlushTimerFiredCallback, this, nextFlush * 5000.0);
     //emscripten_async_call(&layerFlushTimerFiredCallback, this, 5000.0);
     //layerFlushTimerFiredCallback(this);
 	}
