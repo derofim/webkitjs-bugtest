@@ -577,18 +577,22 @@ namespace WebCore {
 
 #if USE(ACCELERATED_COMPOSITING)
 		if (m_view->m_private->acceleratedContext && m_view->m_private->acceleratedContext->enabled()) {
+      printf("invalidateContentsAndRootView 1 ....\n");
 			m_view->m_private->acceleratedContext->setNonCompositedContentsNeedDisplay(updateRect);
 			return;
 		}
 #endif
+    printf("invalidateContentsAndRootView 2 ....\n");
 
 		if (updateRect.isEmpty()) {
       webkitTrace();
 			return;
     }
 
+    printf("invalidateContentsAndRootView 3 ....\n");
 		m_dirtyRegion.unite(updateRect);
 		m_displayTimer.startOneShot(0);
+    printf("invalidateContentsAndRootView 4 ....\n");
 	}
 
 	void ChromeClientJS::invalidateContentsForSlowScroll(const IntRect& updateRect, bool immediate)

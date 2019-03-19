@@ -24,6 +24,7 @@
  */
 
 #include "config.h"
+#include "stdio.h"
 
 #if USE(ACCELERATED_COMPOSITING)
 #include "RenderLayerCompositor.h"
@@ -1768,8 +1769,14 @@ RenderLayer& RenderLayerCompositor::rootRenderLayer() const
 
 GraphicsLayer* RenderLayerCompositor::rootGraphicsLayer() const
 {
+  printf("RenderLayerCompositor::rootGraphicsLayer() 1\n");
     if (m_overflowControlsHostLayer)
         return m_overflowControlsHostLayer.get();
+
+if(!m_rootContentLayer)
+  printf("RenderLayerCompositor::rootGraphicsLayer() !m_rootContentLayer !!!\n");
+
+  printf("RenderLayerCompositor::rootGraphicsLayer() 2\n");
     return m_rootContentLayer.get();
 }
 
