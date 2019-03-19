@@ -18,6 +18,7 @@
 
 #include "config.h"
 #include "GLContext.h"
+#include "SDL2/SDL.h"
 
 #if PLATFORM(JS)
 #include "DebuggerJS.h"
@@ -75,18 +76,26 @@ inline ThreadGlobalGLContext* currentContext()
 
 SDL_Window *GLContext::gWindow = 0;
 
+OwnPtr<GLContext> GLContext::sharingC = nullptr;
+
 GLContext* GLContext::sharingContext()
 {
-      printf("GLContext::sharingContext ... !!!\n");
+      printf("GLContext::sharingContext ...1 !!!\n");
 
     if (!gWindow) {
       printf("sharingContext: Invalid gWindow!!!\n");
     }
     // >>>
-    DEFINE_STATIC_LOCAL(OwnPtr<GLContext>, sharing, (createOffscreenContext(0, gWindow)));
+
+    /////DEFINE_STATIC_LOCAL(OwnPtr<GLContext>, sharing, (createOffscreenContext(0, gWindow)));
+    sharingC = createOffscreenContext(0, gWindow);
+
     //DEFINE_STATIC_LOCAL( OwnPtr<GLContext>, sharing, (adoptPtr(eglGetCurrentContext())) );
     //return sharing.get();
     //return eglGetCurrentContext();
+      printf("GLContext::sharingContext ...2 !!!\n");
+
+      return sharingC.get();
 }
 
 #if PLATFORM(X11)
@@ -206,12 +215,21 @@ PassOwnPtr<GLContext> GLContext::createContextForWindow(GLNativeWindowType windo
         printf("invalid OwnPtr<GLContext> eglContext!\n");
     }*/
     if (OwnPtr<GLContext> eglContext = GLContextEGL::createContext(windowHandle, sharingContext, gWindow)) {
-        return eglContext.release();
+        auto ptr = eglContext.release();
+        if(!ptr) {
+          printf("ptr invalid OwnPtr<GLContext> eglContext! ! !!!!\n");
+        }
+        /*auto ptr2 = eglContext.release();
+        if(!ptr2) {
+          printf("ptr2 invalid OwnPtr<GLContext> eglContext! ! !!!!\n");
+        }*/
+        return ptr;
     } else {
-        printf("invalid OwnPtr<GLContext> eglContext!\n");
+        printf("invalid OwnPtr<GLContext> eglContext! ! !!!!\n");
     }
 #endif
-#endif
+#endif // !PLATFORM(NIX) || PLATFORM(JS)
+
     return nullptr;
 }
 
